@@ -12,7 +12,7 @@ This was in part a nostalgic trip back to the days my Dad's old 8-bit computer w
 I also have developed it with the hope it might be a useful tool for trying out some multi-threaded algorithmic ideas and playing around with numeric data types, in C++14, with some quick visual feedback to help explore those ideas.
 Nowadays desktop PCs seem to have more and more cores available, so it seems a shame not to use them sometimes....
 
-Development setups
+Development setups (64-bit only)
 =======================
 
 Windows
