@@ -40,9 +40,13 @@ Other
 The maximum number of threads is currently hard-coded to 10 (more than that should be possible, but that's never been tested).
 Other than that, the application should detect the number of CPU cores (taking into account possible multithreading) available and adjust the possible range of worker thread counts accordingly, to leave one or two free for other tasks whilst rendering is underway.
 
+To run the generated executable on Windows, you may need to copy Qt library DLLs into the build output directory.
+
 TODOs
 ===============
 Try it on something with more cores
+
+Document/make more visible some UI features (resize, region select, + and - keys)
 
 Code tidy (alas, always true)
 

@@ -246,7 +246,7 @@ private:
     static constexpr int PROGRESS_BAR_WAIT_IN_MS = 200;
     static constexpr int REQUESTED_TIMER_TICKS_PER_SECOND = InformationDisplay::getRequiredTimerTicksPerSecond();
     static constexpr int MS_IN_ONE_SEC = 1000;
-    static constexpr bool threadReallocationDefaultEnabled = false;
+    static constexpr bool threadReallocationDefaultEnabled = true;
 
     static int count;
     void populateColorMap();
