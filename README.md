@@ -34,27 +34,34 @@ Qt 5.12.0  + gcc 7.3.0 + Qt Creator 4.8.1
 Optional requirements
 ---------------------
 For (optional) higher precision type support, the multiprecision library in Boost (I used Version 1.69.0) is additionally required.
+The current codebase has this enabled (because USE_BOOST_MULTIPRECISION=1), before building this configuration, you need to unzip the boost.zip file to its current location (ie generate a boost directory at the same level as the zip file).
 
 Other
 ===============
 The maximum number of threads is currently hard-coded to 10 (more than that should be possible, but that's never been tested).
-Other than that, the application should detect the number of CPU cores (taking into account possible multithreading) available and adjust the possible range of worker thread counts accordingly, to leave one or two free for other tasks whilst rendering is underway.
+Other than that, the application should detect the number of CPU cores available (taking into account possible multithreading) and adjust the possible range of worker thread counts accordingly, to leave one or two free for other tasks whilst rendering is underway.
 
 To run the generated executable on Windows, you may need to copy Qt library DLLs into the build output directory.
 
+This tool uses the QSettings class in Qt to maintain a .ini file for configuration details (it stores this under the _ShinkuSoft_ name that I sometimes use for my code).
+
 TODOs
 ===============
-Try it on something with more cores
+* Try this tool on something with more cores
 
-Document/make more visible some UI features (resize, region select, + and - keys)
+* Document/make more visible some UI features (resize, region select, + and - keys)
 
-Code tidy (alas, always true)
+* Separate the compute engine and GUI code for software testing and better reusability
 
-Better handling of the GUI zoom/region select for very small regions (currently precision is lost)
+* Code tidy (alas, always true)
 
-More intelligent sharing of tasks between threads?
+* Better handling of the GUI zoom/region select for very small regions (currently precision is being lost in some cases)
 
-HW acceleration? (GPU? FPGA?)
+* Try some algorithmic improvements:
+     + More intelligent sharing of tasks between threads?
+     + A dedicated thread for graphics operations only?
+
+* HW acceleration? (GPU? FPGA?)
 
 
 

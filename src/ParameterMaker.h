@@ -3,12 +3,50 @@
 
 #include "computeddatasegment.h"
 
+namespace MandelParams
+{
+    template <typename T>
+    struct needs_scale_shift {
+        static const bool value = false;
+    };
+
+    template <typename T>
+    struct multiply_by_float_supported {
+        static const bool value = true;
+    };
+
+    #if (USE_BOOST_MULTIPRECISION == 1 || defined(__GNUC__))
+    template <>
+    struct needs_scale_shift<Int128> {
+        static const bool value = true;
+    };
+
+    #if !defined(__GNUC__)
+    template <>
+    struct multiply_by_float_supported<Int128> {
+        static const bool value = false;
+    };
+    #endif //!__GNUC__
+    #endif //USE_BOOST_MULTIPRECISION == 1 || defined(__GNUC__)
+
+    template <>
+    struct needs_scale_shift<int32_t> {
+        static const bool value = true;
+    };
+
+    template <>
+    struct needs_scale_shift<int64_t> {
+        static const bool value = true;
+    };
+}
+
 template <typename T>
 struct ParameterMaker
 {
 
     template <typename TT, typename U = ComputedDataSegment>
-    ParameterMaker(typename std::enable_if<std::is_floating_point<TT>::value, U>::type dataSegment, TT limitValue) :
+    ParameterMaker(typename std::enable_if<!MandelParams::needs_scale_shift<TT>::value &&
+                                        MandelParams::multiply_by_float_supported<TT>::value, U>::type dataSegment, TT limitValue) :
         scalingShift(0),
         scaling(1),
         minX(dataSegment.getMinX()),
@@ -22,7 +60,8 @@ struct ParameterMaker
 
 
     template <typename TT, typename U = ComputedDataSegment>
-    ParameterMaker(typename std::enable_if<std::is_integral<TT>::value, U>::type dataSegment, TT limitValue) :
+    ParameterMaker(typename std::enable_if<MandelParams::needs_scale_shift<TT>::value &&
+                                            MandelParams::multiply_by_float_supported<TT>::value, U>::type dataSegment, TT limitValue) :
     scalingShift(((sizeof(T) * CHAR_BIT) / 2) - (MAGNITUDE_BITS * 2)),
     scaling(static_cast<int64_t>(1LL << scalingShift)),
     minX(dataSegment.getMinX()),
@@ -36,8 +75,6 @@ struct ParameterMaker
 
 #if (USE_BOOST_MULTIPRECISION == 1 && !defined(__GNUC__))
 
-    const int doubleToIntShift = 56;
-    const int64_t doubleToIntScaling =  1LL << doubleToIntShift;
     template <typename U = ComputedDataSegment>
     ParameterMaker(ComputedDataSegment dataSegment, Int128 limitValue) :
         scalingShift(doubleToIntShift),
@@ -51,82 +88,12 @@ struct ParameterMaker
         limit(scaling * scaling * limitValue)
     {}
 
-    template <typename U = ComputedDataSegment>
-    ParameterMaker(ComputedDataSegment dataSegment, Float80 limitValue) :
-        scalingShift(0),
-        scaling(1),
-        minX(dataSegment.getMinX()),
-        maxX(dataSegment.getMaxX()),
-        centerX((dataSegment.getCenterX())),
-        centerY((dataSegment.getCenterY())),
-        scaleFactor((dataSegment.getScaleFactor())),
-        limit(limitValue)
-    {}
 
-    template <typename U = ComputedDataSegment>
-    ParameterMaker(ComputedDataSegment dataSegment, Float128 limitValue) :
-        scalingShift(0),
-        scaling(1),
-        minX(dataSegment.getMinX()),
-        maxX(dataSegment.getMaxX()),
-        centerX((dataSegment.getCenterX())),
-        centerY((dataSegment.getCenterY())),
-        scaleFactor((dataSegment.getScaleFactor())),
-        limit(limitValue)
-    {}
+    const int doubleToIntShift = 56;
+    const int64_t doubleToIntScaling = 1LL << doubleToIntShift;
+
+
 #endif //(USE_BOOST_MULTIPRECISION == 1 && !defined(__GNUC__))
-
-
-#if (USE_BOOST_MULTIPRECISION == 1)
-    template <typename U = ComputedDataSegment>
-    ParameterMaker(ComputedDataSegment dataSegment, Float20dd limitValue) :
-        scalingShift(0),
-        scaling(1),
-        minX(dataSegment.getMinX()),
-        maxX(dataSegment.getMaxX()),
-        centerX((dataSegment.getCenterX())),
-        centerY((dataSegment.getCenterY())),
-        scaleFactor((dataSegment.getScaleFactor())),
-        limit(limitValue)
-    {}
-
-    template <typename U = ComputedDataSegment>
-    ParameterMaker(ComputedDataSegment dataSegment, Float30dd limitValue) :
-        scalingShift(0),
-        scaling(1),
-        minX(dataSegment.getMinX()),
-        maxX(dataSegment.getMaxX()),
-        centerX((dataSegment.getCenterX())),
-        centerY((dataSegment.getCenterY())),
-        scaleFactor((dataSegment.getScaleFactor())),
-        limit(limitValue)
-    {}
-
-    template <typename U = ComputedDataSegment>
-    ParameterMaker(ComputedDataSegment dataSegment, Float50dd limitValue) :
-        scalingShift(0),
-        scaling(1),
-        minX(dataSegment.getMinX()),
-        maxX(dataSegment.getMaxX()),
-        centerX((dataSegment.getCenterX())),
-        centerY((dataSegment.getCenterY())),
-        scaleFactor((dataSegment.getScaleFactor())),
-        limit(limitValue)
-    {}
-
-    template <typename U = ComputedDataSegment>
-    ParameterMaker(ComputedDataSegment dataSegment, CustomFloat limitValue) :
-        scalingShift(0),
-        scaling(1),
-        minX(dataSegment.getMinX()),
-        maxX(dataSegment.getMaxX()),
-        centerX((dataSegment.getCenterX())),
-        centerY((dataSegment.getCenterY())),
-        scaleFactor((dataSegment.getScaleFactor())),
-        limit(limitValue)
-    {}
-#endif //(USE_BOOST_MULTIPRECISION == 1)
-
 
     const int64_t scalingShift;
     const T scaling;
