@@ -5,6 +5,8 @@ This application is based on the Qt Mandelbrot Example code available in the Qt 
 
 ![Alt text](./snapshots/MandelThreadTyperScreenGrab.jpg?raw=true "Screen Shot")
 
+____
+
 ![Alt text](./snapshots/smallRegion.jpg?raw=true "Small region + parameters screen shot")
 
 Why make yet another Mandelbrot demo?
