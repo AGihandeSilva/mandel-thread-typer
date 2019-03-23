@@ -1,60 +1,70 @@
 QT += widgets
 
-HEADERS       = mandelbrotwidget.h \
-                renderthread.h \
-    computeddatasegment.h \
-    workerthreaddata.h \
-    informationdisplay.h \
-    mandelbrotrenderer.h \
-    toolsmenu.h \
-    filemenu.h \
-    regionattributes.h \
-    toolsoptionswidget.h \
-    radiointegerbutton.h \
-    windowthreadinfo.h \
-    windowmenu.h \
-    renderthreadmediator.h \
-    threadiconmap.h \
-    windowthreadinfokey.h \
-    settingshandler.h \
-    settingsuser.h \
-    buttonuser.h \
-    renderworker.h \
-    RendererConfig.h \
-    RenderMenu.h \
-    RenderHistory.h \
-    EditMenu.h \
-    ComputeTaskGenerator.h \
-    ParameterMaker.h
-SOURCES       = main.cpp \
-                mandelbrotwidget.cpp \
-                renderthread.cpp \
-    computeddatasegment.cpp \
-    workerthreaddata.cpp \
-    informationdisplay.cpp \
-    mandelbrotrenderer.cpp \
-    toolsmenu.cpp \
-    filemenu.cpp \
-    regionattributes.cpp \
-    toolsoptionswidget.cpp \
-    radiointegerbutton.cpp \
-    windowthreadinfo.cpp \
-    windowmenu.cpp \
-    renderthreadmediator.cpp \
-    threadiconmap.cpp \
-    windowthreadinfokey.cpp \
-    settingshandler.cpp \
-    renderworker.cpp \
-    RendererConfig.cpp \
-    RenderMenu.cpp \
-    RenderHistory.cpp \
-    EditMenu.cpp
+HEADERS += \
+    include/buttonuser.h \
+    include/computeddatasegment.h \
+    include/ComputeTaskGenerator.h \
+    include/EditMenu.h \
+    include/filemenu.h \
+    include/informationdisplay.h \
+    include/MandelbrotGuiTools.h \
+    include/mandelbrotrenderer.h \
+    include/mandelbrotwidget.h \
+    include/ParameterMaker.h \
+    include/ParametersMenu.h \
+    include/PrecisionHandler.h \
+    include/radiointegerbutton.h \
+    include/regionattributes.h \
+    include/RendererConfig.h \
+    include/RenderHistory.h \
+    include/RenderMenu.h \
+    include/RenderParametersWidget.h \
+    include/renderthread.h \
+    include/renderthreadmediator.h \
+    include/renderworker.h \
+    include/settingshandler.h \
+    include/settingsuser.h \
+    include/threadiconmap.h \
+    include/toolsmenu.h \
+    include/toolsoptionswidget.h \
+    include/windowmenu.h \
+    include/windowthreadinfo.h \
+    include/windowthreadinfokey.h \
+    include/workerthreaddata.h
 
-OTHER_FILES +=  ComputeTaskGenerator.cpp
+SOURCES       = src/main.cpp \
+    src/computeddatasegment.cpp \
+    src/EditMenu.cpp \
+    src/filemenu.cpp \
+    src/informationdisplay.cpp \
+    src/MandelbrotGuiTools.cpp \
+    src/mandelbrotrenderer.cpp \
+    src/mandelbrotwidget.cpp \
+    src/ParametersMenu.cpp \
+    src/PrecisionHandler.cpp \
+    src/radiointegerbutton.cpp \
+    src/regionattributes.cpp \
+    src/RendererConfig.cpp \
+    src/RenderHistory.cpp \
+    src/RenderMenu.cpp \
+    src/RenderParametersWidget.cpp \
+    src/renderthread.cpp \
+    src/renderthreadmediator.cpp \
+    src/renderworker.cpp \
+    src/settingshandler.cpp \
+    src/threadiconmap.cpp \
+    src/toolsmenu.cpp \
+    src/toolsoptionswidget.cpp \
+    src/windowmenu.cpp \
+    src/windowthreadinfo.cpp \
+    src/windowthreadinfokey.cpp \
+    src/workerthreaddata.cpp
+
+OTHER_FILES +=  src/ComputeTaskGenerator.cpp
 
 DEFINES += "USE_BOOST_MULTIPRECISION=1"
 
-unix:!mac:!vxworks:!integrity:!haiku:LIBS += -lm
+unix:!mac:!vxworks:!integrity:!haiku:LIBS += -lm -lquadmath
 
 CONFIG += c++17
 
@@ -62,7 +72,9 @@ CONFIG += c++17
 target.path = $$[QT_INSTALL_EXAMPLES]/corelib/threads/mandelbrot
 INSTALLS += target
 
-INCLUDEPATH += "../"
+INCLUDEPATH += "../" \
+               "./src" \
+               "./include"
 
 win32:RC_ICONS = mandelbrot.ico
 

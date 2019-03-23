@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 3.1.0)
 
 project(mandelbrot)
 
+#add include directory
+include_directories(./include)
+include_directories(./src)
+
 # Find includes in corresponding build directories
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -16,16 +20,14 @@ if (MSVC)
 set(CMAKE_VS_PLATFORM_NAME x64)
 endif (MSVC)
 
-if (UNIX)
 set(CMAKE_CXX_STANDARD 14)
-endif (UNIX)
 
 #add header files to IDE project (no target for them)
-FILE(GLOB_RECURSE myHeaderFiles "*.h")
+FILE(GLOB_RECURSE myHeaderFiles "${CMAKE_CURRENT_LIST_DIR}/include/*.h")
 add_custom_target(headers SOURCES ${myHeaderFiles})
 
 #templated function code
-add_custom_target(AdditionalCode SOURCES ComputeTaskGenerator.cpp)
+add_custom_target(AdditionalCode SOURCES src/ComputeTaskGenerator.cpp)
 
 # Find the QtWidgets library
 #find_package(Qt5Widgets CONFIG REQUIRED)
@@ -33,39 +35,44 @@ find_package(Qt5 COMPONENTS Core Widgets REQUIRED)
 
 # Populate a CMake variable with the sources
 set(mandelbrot_SRCS
-    computeddatasegment.cpp
-    EditMenu.cpp
-    filemenu.cpp
-    informationdisplay.cpp
-    main.cpp
-    mandelbrotrenderer.cpp
-    mandelbrotwidget.cpp
-    radiointegerbutton.cpp
-    regionattributes.cpp
-    RendererConfig.cpp
-    RenderHistory.cpp
-    RenderMenu.cpp
-    renderthread.cpp
-    renderthreadmediator.cpp
-    renderworker.cpp
-    settingshandler.cpp
-    threadiconmap.cpp
-    toolsmenu.cpp
-    toolsoptionswidget.cpp
-    windowmenu.cpp
-    windowthreadinfo.cpp
-    windowthreadinfokey.cpp
-    workerthreaddata.cpp
+    src/computeddatasegment.cpp
+    src/EditMenu.cpp
+    src/filemenu.cpp
+    src/informationdisplay.cpp
+    src/main.cpp
+    src/MandelbrotGuiTools.cpp
+    src/mandelbrotrenderer.cpp
+    src/mandelbrotwidget.cpp
+    src/ParametersMenu.cpp
+    src/PrecisionHandler.cpp
+    src/radiointegerbutton.cpp
+    src/regionattributes.cpp
+    src/RendererConfig.cpp
+    src/RenderHistory.cpp
+    src/RenderMenu.cpp
+    src/RenderParametersWidget.cpp
+    src/renderthread.cpp
+    src/PrecisionHandler.cpp
+    src/renderthreadmediator.cpp
+    src/renderworker.cpp
+    src/settingshandler.cpp
+    src/threadiconmap.cpp
+    src/toolsmenu.cpp
+    src/toolsoptionswidget.cpp
+    src/windowmenu.cpp
+    src/windowthreadinfo.cpp
+    src/windowthreadinfokey.cpp
+    src/workerthreaddata.cpp
 	mandelbrotresources.qrc
 	mandelbrot.rc
 )
 # Tell CMake to create the mandelbrot executable
-add_executable(mandelbrot WIN32 ${mandelbrot_SRCS} mandelbrot.rc)
+add_executable(mandelbrot WIN32 ${mandelbrot_SRCS} ${myHeaderFiles} mandelbrot.rc)
 # Use the Widgets module from Qt 5
 target_link_libraries(mandelbrot Qt5::Widgets)
 
 if (UNIX)
-target_link_libraries(mandelbrot -lpthread)
+target_link_libraries(mandelbrot -lpthread -lquadmath)
 endif (UNIX)
 
 #add boost for extended type support (as desired)

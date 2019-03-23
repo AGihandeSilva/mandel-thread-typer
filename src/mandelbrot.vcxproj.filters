@@ -37,161 +37,197 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="EditMenu.cpp">
+    <ClCompile Include="src\EditMenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RenderHistory.cpp">
+    <ClCompile Include="src\MandelbrotGuiTools.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RenderMenu.cpp">
+    <ClCompile Include="src\ParametersMenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RendererConfig.cpp">
+    <ClCompile Include="src\PrecisionHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="computeddatasegment.cpp">
+    <ClCompile Include="src\RenderHistory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="filemenu.cpp">
+    <ClCompile Include="src\RenderMenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="informationdisplay.cpp">
+    <ClCompile Include="src\RenderParametersWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="src\RendererConfig.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="mandelbrotrenderer.cpp">
+    <ClCompile Include="src\computeddatasegment.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="mandelbrotwidget.cpp">
+    <ClCompile Include="src\filemenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="radiointegerbutton.cpp">
+    <ClCompile Include="src\informationdisplay.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="regionattributes.cpp">
+    <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="renderthread.cpp">
+    <ClCompile Include="src\mandelbrotrenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="renderthreadmediator.cpp">
+    <ClCompile Include="src\mandelbrotwidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="renderworker.cpp">
+    <ClCompile Include="src\radiointegerbutton.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="settingshandler.cpp">
+    <ClCompile Include="src\regionattributes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="threadiconmap.cpp">
+    <ClCompile Include="src\renderthread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="toolsmenu.cpp">
+    <ClCompile Include="src\renderthreadmediator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="toolsoptionswidget.cpp">
+    <ClCompile Include="src\renderworker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="windowmenu.cpp">
+    <ClCompile Include="src\settingshandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="windowthreadinfo.cpp">
+    <ClCompile Include="src\threadiconmap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="windowthreadinfokey.cpp">
+    <ClCompile Include="src\toolsmenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="workerthreaddata.cpp">
+    <ClCompile Include="src\toolsoptionswidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\windowmenu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\windowthreadinfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\windowthreadinfokey.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\workerthreaddata.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ComputeTaskGenerator.h">
+    <ClInclude Include="include\ComputeTaskGenerator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <CustomBuild Include="EditMenu.h">
+    <CustomBuild Include="include\EditMenu.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="RenderHistory.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="RenderMenu.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <ClInclude Include="RendererConfig.h">
+    <ClInclude Include="include\MandelbrotGuiTools.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="buttonuser.h">
+    <ClInclude Include="include\ParameterMaker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="computeddatasegment.h">
+    <CustomBuild Include="include\ParametersMenu.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="include\PrecisionHandler.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="include\RenderHistory.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="include\RenderMenu.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <ClInclude Include="include\RenderParametersWidget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <CustomBuild Include="filemenu.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="informationdisplay.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <ClInclude Include="mandelbrotrenderer.h">
+    <ClInclude Include="include\RendererConfig.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <CustomBuild Include="mandelbrotwidget.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="radiointegerbutton.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <ClInclude Include="regionattributes.h">
+    <ClInclude Include="include\buttonuser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <CustomBuild Include="renderthread.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="renderthreadmediator.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="renderworker.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <ClInclude Include="settingshandler.h">
+    <ClInclude Include="include\computeddatasegment.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="settingsuser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="threadiconmap.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <CustomBuild Include="toolsmenu.h">
+    <CustomBuild Include="include\filemenu.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <ClInclude Include="toolsoptionswidget.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <CustomBuild Include="windowmenu.h">
+    <CustomBuild Include="include\informationdisplay.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="windowthreadinfo.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <ClInclude Include="windowthreadinfokey.h">
+    <ClInclude Include="include\mandelbrotrenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <CustomBuild Include="workerthreaddata.h">
+    <CustomBuild Include="include\mandelbrotwidget.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <ClInclude Include="ParameterMaker.h">
+    <CustomBuild Include="include\radiointegerbutton.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <ClInclude Include="include\regionattributes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <CustomBuild Include="include\renderthread.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="include\renderthreadmediator.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="include\renderworker.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <ClInclude Include="include\settingshandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\settingsuser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\threadiconmap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <CustomBuild Include="include\toolsmenu.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <ClInclude Include="include\toolsoptionswidget.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <CustomBuild Include="include\windowmenu.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="include\windowthreadinfo.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <ClInclude Include="include\windowthreadinfokey.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <CustomBuild Include="include\workerthreaddata.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="debug\moc_EditMenu.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="release\moc_EditMenu.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="debug\moc_ParametersMenu.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="release\moc_ParametersMenu.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="debug\moc_PrecisionHandler.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="release\moc_PrecisionHandler.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="debug\moc_RenderHistory.cpp">

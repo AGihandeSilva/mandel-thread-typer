@@ -5,6 +5,8 @@ This application is based on the Qt Mandelbrot Example code available in the Qt 
 
 ![Alt text](./snapshots/MandelThreadTyperScreenGrab.jpg?raw=true "Screen Shot")
 
+![Alt text](./snapshots/smallRegion.jpg?raw=true "Small region + parameters screen shot")
+
 Why make yet another Mandelbrot demo?
 ==================================
 
@@ -51,11 +53,17 @@ TODOs
 
 * Document/make more visible some UI features (resize, region select, + and - keys)
 
+* Bug fixing - some occasional problems occur
+     + e.g. sometimes the renderer shows blank output rather than the computed results, usually when traversing the render history (buffering scheme bug?)
+
 * Separate the compute engine and GUI code for software testing and better reusability
 
 * Code tidy (alas, always true)
 
-* Better handling of the GUI zoom/region select for very small regions (currently precision is being lost in some cases)
+* make the new render parameters window editable so that render region coordinates can be manually entered
+
+* ~~Better handling of the GUI zoom/region select for very small regions (currently precision is being lost in some cases)~~
+     + this should work much better than before, as float128 + string representations (when available) are now used for the region coordinates
 
 * Try some algorithmic improvements:
      + More intelligent sharing of tasks between threads?
