@@ -3,11 +3,11 @@ A multi-threaded mandelbrot fractal generator with selectable thread and numeric
 
 This application is based on the Qt Mandelbrot Example code available in the Qt Core documentation, and also (optionally) uses the Boost libraries (Version 1.69.0)
 
-![Alt text](./snapshots/MandelThreadTyperScreenGrab.jpg?raw=true "Screen Shot")
+![Render with doubles](./snapshots/MandelThreadTyperScreenGrab.jpg?raw=true "Screen Shot")
 
 ____
 
-![Alt text](./snapshots/smallRegion.jpg?raw=true "Small region + parameters screen shot")
+![Render with 50 decimal digit float](./snapshots/smallRegion.jpg?raw=true "Small region + parameters screen shot")
 
 Why make yet another Mandelbrot demo?
 ==================================
