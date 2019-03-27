@@ -27,7 +27,7 @@ public:
     void setPassesInfo(int numPasses);
     void setDynamicTasksInfo(bool dynamicTasksEnabled);
     void setColorMapSize(int colorMapSize);
-    void setInternalDataType(QString description);
+    void displayInternalDataType(QString description);
     void setIterationSumCount(int64_t iterationSum);
     void setIterationsPerPixel(double iterationsPerPixel);
     void resetElapsedTimeInfo();

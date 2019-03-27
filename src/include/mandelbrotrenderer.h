@@ -107,6 +107,8 @@ using PreciseFloatResult = std::pair<Float128, bool>;
     //misc Qt GUI parameters
     static constexpr int ThreadIndicatorFrameWidth = 4;
 
+    static constexpr internalDataType defaultRendererType = internalDataType::doublePrecisionFloat;
+
     //using colorMapStore = MQuintVector;
     using colorMapStore = std::vector<uint>;
 

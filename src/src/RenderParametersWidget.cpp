@@ -167,24 +167,21 @@ void RenderParametersWidget::processSettingUpdate(QSettings &settings)
     settings.beginGroup("RenderParameters");
         xValue->setText(settings.value("centerX", MandelbrotWidget::getDefaultCenterX()).toString());
         yValue->setText(settings.value("centerY", MandelbrotWidget::getDefaultCenterY()).toString());
-        //curScale = settings.value("curScale", DefaultScale).toDouble();
-        //pixmapScale = settings.value("pixmapScale", DefaultScale).toDouble();
     settings.endGroup();
 }
 
 void RenderParametersWidget::updateAndShow()
 {
-    updateFromSettings();
     raise();
     show();
 }
 
 void RenderParametersWidget::refresh()
 {
+    updateFromSettings();
 }
 
 void RenderParametersWidget::updateFromSettings()
 {
     processSettingUpdate(applicationSettingsHandler.getSettings());
-    refresh();
 }

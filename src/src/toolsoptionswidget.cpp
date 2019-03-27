@@ -327,7 +327,7 @@ void ToolsOptionsWidget::addColorMapSizeField()
     toolsOptionsLayout->addWidget(colorMapTitle);
     toolsOptionsLayout->addWidget(colorMapSizeSetting);
 
-    mainWidget->setColorMapSizeInfo(colorMapSize);
+    mainWidget->displayColorMapSizeInfo(colorMapSize);
 }
 
 void ToolsOptionsWidget::enforceChosenDataType(int index)

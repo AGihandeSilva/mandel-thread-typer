@@ -131,7 +131,7 @@ void RenderThread::populateColorMap()
 void RenderThread::publishDynamicTasksEnabled()
 {
     if (owner != nullptr) {
-        this->owner->setDynamicTasksInfo(dynamicThreadAllocationEnabled());
+        this->owner->displayDynamicTasksInfo(dynamicThreadAllocationEnabled());
     }
     writeSettings();
 }
@@ -142,8 +142,8 @@ void RenderThread::setOwnerOnce(MandelbrotWidget * owner)
     if (this->owner == nullptr) {
         this->owner = owner;
         connectUpOwner();
-        owner->setThreadsInfo(numWorkerThreads);
-        owner->setPassesInfo(rendererData.currentNumPassValue);
+        owner->displayThreadsInfo(numWorkerThreads);
+        owner->displayPassesInfo(rendererData.currentNumPassValue);
         publishDynamicTasksEnabled();
     }
 }
@@ -170,7 +170,7 @@ void RenderThread::render(const MandelBrotRenderer::CoordValue& centerX, const M
     this->resultSize = resultSize;
 
 
-    owner->setDynamicTasksInfo(threadMediator.getEnabled());
+    owner->displayDynamicTasksInfo(threadMediator.getEnabled());
 
     passesDone = 0;
 
@@ -413,7 +413,7 @@ void RenderThread::adjustWorkerThreadCount()
 {
     if (numWorkerThreads != rendererData.pendingNumWorkerThreads) {
         numWorkerThreads = rendererData.pendingNumWorkerThreads;
-        owner->setThreadsInfo(numWorkerThreads);
+        owner->displayThreadsInfo(numWorkerThreads);
         for (size_t i = 0; i < static_cast<size_t>(numWorkerThreads); ++i) {
             bufferedResults.at(i).clear();
         }
@@ -436,7 +436,7 @@ int RenderThread::adjustNumPasses()
         rendererData.currentNumPassValue = NumPasses;
     }
 
-    owner->setPassesInfo(rendererData.currentNumPassValue);
+    owner->displayPassesInfo(rendererData.currentNumPassValue);
     emit numPassesUpdate();
 
     return NumPasses;
@@ -452,14 +452,61 @@ void RenderThread::releaseHelpers(std::vector <RenderWorker *>& helpers)
     helpers.clear();
 }
 
+bool RenderThread::getTypeIsSupported(const QString& typeDescription) const
+{
+    Q_ASSERT(!descriptionToTypeMap.empty());
+    bool supported = false;
+
+    auto findResult = descriptionToTypeMap.find(typeDescription);
+    if (findResult != descriptionToTypeMap.end())
+    {
+        supported = (*findResult).second.supported;
+        Q_ASSERT(getTypeIsSupported((*findResult).second.type) == supported);
+    }
+
+    return supported;
+}
+
+//TODO look into reducing the code duplication here
+QString RenderThread::getTypeDescription(internalDataType type) const
+{
+    Q_ASSERT(!typeToDescriptionMap.empty());
+
+    QString description;
+    auto findResult = typeToDescriptionMap.find(type);
+
+    if (findResult != typeToDescriptionMap.end()){
+        description = (*findResult).second.typeString;
+     }
+    return description;
+}
+
+bool RenderThread::getTypeIsSupported(MandelBrotRenderer::internalDataType type) const
+{
+    Q_ASSERT(!typeToDescriptionMap.empty());
+
+    bool supported = false;
+    auto findResult = typeToDescriptionMap.find(type);
+
+    if (findResult != typeToDescriptionMap.end()){
+        supported = (*findResult).second.supported;
+     }
+    return supported;
+}
+
 void RenderThread::AddNumericTypeToSelector(const QString &description, internalDataType dataType,
                                             typeNameUser& nameUser, bool enabled)
 {
-    supportedType newValue {dataType, enabled};
+    supportedType newTypeValue {dataType, enabled};
 
-    auto i = typeToDescriptionMap.insert(std::make_pair(description, newValue));
+    auto i = descriptionToTypeMap.insert(std::make_pair(description, newTypeValue));
 
     Q_ASSERT(i.second);
+
+    supportedTypeString newDescriptionValue { description, enabled};
+    auto j = typeToDescriptionMap.insert(std::make_pair(dataType, newDescriptionValue));
+    Q_ASSERT(j.second);
+
     nameUser(description, enabled);
 }
 
@@ -505,7 +552,7 @@ QString RenderThread::getDataTypeName()
 {
     QString result;
     //TODO change this if the number of types starts to grow
-    for (const auto& i : typeToDescriptionMap) {
+    for (const auto& i : descriptionToTypeMap) {
 
         if (i.second.type == rendererData.numericType) {
             result = i.first;
@@ -519,15 +566,15 @@ void RenderThread::setInternalDataType(const QString& description)
 {
     internalDataType result = internalDataType::doublePrecisionFloat;
 
-    auto findResult = typeToDescriptionMap.find(description);
+    auto findResult = descriptionToTypeMap.find(description);
 
-    Q_ASSERT(findResult != typeToDescriptionMap.end());
+    Q_ASSERT(findResult != descriptionToTypeMap.end());
     bool typeIsSupported = (*findResult).second.supported;
     Q_ASSERT(typeIsSupported);
 
-    if(findResult != typeToDescriptionMap.end() && typeIsSupported){
+    if(findResult != descriptionToTypeMap.end() && typeIsSupported){
         result = (*findResult).second.type;
-        owner->setInternalDataType(description);
+        owner->displayInternalDataType(description);
     }
 
     rendererData.numericType = result;
@@ -576,7 +623,7 @@ void RenderThread::processSettingUpdate(QSettings &settings)
 
 void RenderThread::InitializeDynamicValuesInGUI()
 {
-    owner->setInternalDataType(getDataTypeName());
+    owner->displayInternalDataType(getDataTypeName());
     owner->setIterationSumCount(rendererData.iterationSumCount);
 }
 
@@ -592,7 +639,7 @@ void RenderThread::prepareForNewTasks()
 void RenderThread::run()
 {
     bool endThisRun = false;
-    owner->setDynamicTasksInfo(dynamicThreadAllocationEnabled());
+    owner->displayDynamicTasksInfo(dynamicThreadAllocationEnabled());
 
     std::vector <RenderWorker *> helpers(static_cast<std::size_t>(numWorkerThreads));
 

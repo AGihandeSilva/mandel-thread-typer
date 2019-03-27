@@ -125,21 +125,43 @@ MandelbrotWidget::MandelbrotWidget(QWidget *parent)
     logger = new QTextEdit();
     miscLogger = new QTextEdit();
 
+    qRegisterMetaType<ComputedDataSegment>("ComputedDataSegment&");
+
+    connectToComponents();
+
+    QApplication::setQuitOnLastWindowClosed(true);
+
+    setWindowTitle(tr("Mandelbrot"));
+
+    infoDisplayer->prepareTimerInfo();
+
+    prepareProgressBar();
+
+    prepareMenuBar();
+
+    preparePauseLocks();
+
+    setupLayout();
+
+    setupLoggers();
+
+#ifndef QT_NO_CURSOR
+    setCursor(Qt::CrossCursor);
+#endif
+    processWindowSize();
+    writeSettings();
+}
+
+void MandelbrotWidget::connectToComponents()
+{
     setStatusBar(messageBar);
-    this->menuBar()->setStyleSheet("QMenuBar {background: lightgray; }");
-
-    this->menuBar()->setLayout(new QHBoxLayout());
-
     settingsHandler.registerSettingsUser(this);
-
     thread.setOwnerOnce(this);
 
     connect(&thread, SIGNAL(renderedImage(const QImage*,double)), this, SLOT(updatePixmap(const QImage*,double)));
 
     connect(this, SIGNAL(quitAll()), &thread, SLOT(quitApplication()));
-    //connect(this, SIGNAL(quitAll()), &thread, SLOT(clearBuffers()));
     connect(this, SIGNAL(halt()), &thread, SLOT(haltComputations()));
-    //connect(this, SIGNAL(halt()), &thread, SLOT(clearBuffers()));
 
     connect(&thread, SIGNAL(numThreadsUpdate()), this, SLOT(resizeProgressBar()));
     connect(&thread, SIGNAL(numPassesUpdate()), this, SLOT(resizeProgressBar()));
@@ -157,33 +179,35 @@ MandelbrotWidget::MandelbrotWidget(QWidget *parent)
 
     connect(&thread, SIGNAL(renderStarting()), this, SLOT(disableFileMenu()));
     connect(&thread, SIGNAL(allDone()), this, SLOT(enableFileMenu()));
+}
 
-    QApplication::setQuitOnLastWindowClosed(true);
-
-    setWindowTitle(tr("Mandelbrot"));
-
-    infoDisplayer->prepareTimerInfo();
-
-    prepareProgressBar();
-
-    menuBar()->addMenu(fileMenu);
-
-    menuBar()->addMenu(editMenu);
-
-    menuBar()->addMenu(toolsMenu);
-
-    menuBar()->addMenu(parametersMenu);
-
-    menuBar()->addMenu(renderMenu);
-
-    menuBar()->addMenu(windowMenu);
-
-    menuBar()->addSeparator();
-
-        for (auto& i : pauseMutexes) {
+void MandelbrotWidget::preparePauseLocks()
+{
+    for (auto& i : pauseMutexes) {
         i = new QMutex();
     }
+}
 
+void MandelbrotWidget::prepareMenuBar()
+{
+    this->menuBar()->setStyleSheet("QMenuBar {background: lightgray; }");
+    this->menuBar()->setLayout(new QHBoxLayout());
+
+    menuBar()->addMenu(fileMenu);
+    menuBar()->addMenu(editMenu);
+    menuBar()->addMenu(toolsMenu);
+    menuBar()->addMenu(parametersMenu);
+    menuBar()->addMenu(renderMenu);
+    menuBar()->addMenu(windowMenu);
+    menuBar()->addSeparator();
+
+    prepareButtons();
+
+    menuBar()->show();
+}
+
+void MandelbrotWidget::prepareButtons()
+{
     QAction* playAction = menuBar()->addAction("Play");
     QIcon playIcon(":/play.png");
     playAction->setIcon(playIcon);
@@ -198,10 +222,10 @@ MandelbrotWidget::MandelbrotWidget(QWidget *parent)
     QIcon pauseIcon(":/pause.png");
     pauseAction->setIcon(pauseIcon);
     connect(pauseAction, SIGNAL(triggered()), this, SLOT(initiatePause()));
+}
 
-
-    menuBar()->show();
-
+void MandelbrotWidget::setupLayout()
+{
     this->setCentralWidget(centralPlotArea);
     this->centralWidget()->setLayout(mandelbrotWidgetLayout);
 
@@ -210,21 +234,15 @@ MandelbrotWidget::MandelbrotWidget(QWidget *parent)
     mandelbrotWidgetLayout->addWidget(progressBar);
 
     centralPlotArea->show();
+}
 
-    qRegisterMetaType<ComputedDataSegment>("ComputedDataSegment&");
-
+void MandelbrotWidget::setupLoggers()
+{
     outputToLog("Log Output");
     outputToLog("->");
     logger->setWindowFlags(Qt::Window | Qt::WindowTitleHint |
                            Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint | Qt::CustomizeWindowHint);
     logger->show();
-    //miscLogger.show();
-
-#ifndef QT_NO_CURSOR
-    setCursor(Qt::CrossCursor);
-#endif
-    processWindowSize();
-    writeSettings();
 }
 
 void MandelbrotWidget::processWindowSize()
@@ -296,9 +314,14 @@ void MandelbrotWidget::enforceConfigData(RendererConfig &newConfigData)
     getInfoDisplayer()->setEnabled(newConfigData.getDetailedDisplayEnabled());
     centerX = QString::number(newConfigData.getCenterX());
     centerY = QString::number(newConfigData.getCenterY());
+#if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
+    preciseCenterX = newConfigData.getPreciseCenterX();
+    preciseCenterY = newConfigData.getPreciseCenterY();
+#endif
     curScale = newConfigData.getCurScale();
     pixmapScale = newConfigData.getPixmapScale();
     thread.getThreadMediator().setEnabled(newConfigData.getThreadMediatorEnabled());
+    setInternalDataType(newConfigData.getInternalDataType());
 
     move(newConfigData.getPos());
     resize(newConfigData.getSize());
@@ -314,26 +337,6 @@ void MandelbrotWidget::prepareProgressBar()
     progressBar->setStyleSheet("QProgressBar {color : darkgray; }");
     hideProgress();
 
-}
-
-RegionLimits MandelbrotWidget::getParameterSpace() const
-{
-    return parameterSpace;
-}
-
-QString MandelbrotWidget::getDefaultCenterY()
-{
-    return DefaultCenterY;
-}
-
-QString MandelbrotWidget::getDefaultCenterX()
-{
-    return DefaultCenterX;
-}
-
-MandelBrotRenderer::internalDataType MandelbrotWidget::getNumericType() const
-{
-    return numericType;
 }
 
 bool MandelbrotWidget::confirmOperation(const QString& message, const QString& informative, bool suggestSave)
@@ -362,16 +365,6 @@ bool MandelbrotWidget::confirmOperation(const QString& message, const QString& i
     }
 
     return (ret != QMessageBox::Cancel);
-}
-
-bool MandelbrotWidget::getUnsavedChangesExist() const
-{
-    return unsavedChangesExist;
-}
-
-void MandelbrotWidget::setUnsavedChangesExist(bool value)
-{
-    unsavedChangesExist = value;
 }
 
 void MandelbrotWidget::showProgress()
@@ -644,7 +637,7 @@ void MandelbrotWidget::mouseMoveEvent(QMouseEvent *event)
     if (event->buttons() & Qt::LeftButton) {
         pixmapOffset += event->pos() - lastDragPos;
         lastDragPos = event->pos();
-        updateView();
+        update();
         return;
     }
     if(event->buttons() & Qt::RightButton) {
@@ -744,16 +737,11 @@ void MandelbrotWidget::updatePixmap(const QImage *image, double scaleFactor)
     pixmapOffset = QPoint();
     lastDragPos = QPoint();
     pixmapScale = scaleFactor;
-    updateView();
+    update();
     outputToLog("update Pixmap!");
 }
 //! [16]
 //!
-
-void MandelbrotWidget::updateView()
-{
-    update();
-}
 
 void MandelbrotWidget::updateCoordInfo(const MandelBrotRenderer::CoordValue& centerX, const MandelBrotRenderer::CoordValue& centerY,
                                        double scaleFactor)
@@ -791,17 +779,17 @@ void MandelbrotWidget::updateCoordInfo(const MandelBrotRenderer::CoordValue& cen
     }
 }
 
-void MandelbrotWidget::setThreadsInfo(int numThreads)
+void MandelbrotWidget::displayThreadsInfo(int numThreads)
 {
     infoDisplayer->setThreadsInfo(numThreads);
 }
 
-void MandelbrotWidget::setPassesInfo(int numPasses)
+void MandelbrotWidget::displayPassesInfo(int numPasses)
 {
     infoDisplayer->setPassesInfo(numPasses);
 }
 
-void MandelbrotWidget::setDynamicTasksInfo(bool dynamicTasksEnabled)
+void MandelbrotWidget::displayDynamicTasksInfo(bool dynamicTasksEnabled)
 {
     infoDisplayer->setDynamicTasksInfo(dynamicTasksEnabled);
 }
@@ -809,22 +797,37 @@ void MandelbrotWidget::setDynamicTasksInfo(bool dynamicTasksEnabled)
 void MandelbrotWidget::setIterationSumCount(int64_t iterationSum)
 {
     infoDisplayer->setIterationSumCount(iterationSum);
-    setIterationsPerPixel(iterationSum);
+    displayIterationsPerPixel(iterationSum);
 }
 
-void MandelbrotWidget::setIterationsPerPixel(int64_t iterationSum)
+void MandelbrotWidget::displayIterationsPerPixel(int64_t iterationSum)
 {
     infoDisplayer->setIterationsPerPixel(static_cast<double>(iterationSum) * perPixelCoeff);
 }
 
-void MandelbrotWidget::setColorMapSizeInfo(int colorMapSize)
+void MandelbrotWidget::displayColorMapSizeInfo(int colorMapSize)
 {
     infoDisplayer->setColorMapSize(colorMapSize);
 }
 
-void MandelbrotWidget::setInternalDataType(const QString& description)
+void MandelbrotWidget::displayInternalDataType(const QString& description)
 {
-    infoDisplayer->setInternalDataType(description);
+    if (thread.getTypeIsSupported(description)){
+        infoDisplayer->displayInternalDataType(description);
+    }
+}
+
+void MandelbrotWidget::setInternalDataType(internalDataType newTypeSetting)
+{
+    numericType = thread.getTypeIsSupported(newTypeSetting) ?
+                newTypeSetting : MandelBrotRenderer::defaultRendererType;
+
+    QString typeDescription = thread.getTypeDescription(numericType);
+    Q_ASSERT(!typeDescription.isEmpty());
+    displayInternalDataType(typeDescription);
+
+    //TODO : confirm that this absolutely cannot occur when a render is underway
+    thread.setInternalDataType(typeDescription);
 }
 
 float MandelbrotWidget::getElapsedTimeDisplayed() const
@@ -903,11 +906,13 @@ void MandelbrotWidget::executeRender(bool hideProgress)
         if (historyLog->saveState() && historyLog->undoIsPossible()) {
             unsavedChangesExist = true;
         }
+    } else if (historyLog->redoIsPossible()) {
+        //intermediate state that should be offered for saving on exit
+        unsavedChangesExist = true;
     }
 
 #if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
-    if (preciseCenterX == undefinedFloatString || preciseCenterY == undefinedFloatString)
-    {
+    if (preciseCenterX == undefinedFloatString || preciseCenterY == undefinedFloatString) {
         preciseCenterX = centerX;
         preciseCenterY = centerY;
     }
@@ -918,13 +923,12 @@ void MandelbrotWidget::executeRender(bool hideProgress)
                 preciseCenterX, preciseCenterY,
 #endif
                   curScale, size());
-    usingUndoRedo = false;
 }
 
 void MandelbrotWidget::zoom(double zoomFactor)
 {
     curScale *= zoomFactor;
-    updateView();
+    update();
     executeRender();
     outputToLog("New operation : zoom");
     scaleHasChanged = true;
@@ -939,8 +943,6 @@ void MandelbrotWidget::disableOptions()
 {
     toolsMenu->setEnabled(false);
 }
-
-
 
 QString MandelbrotWidget::computeDeltaWithHigherPrecision(QString& value, int deltaPixels, double currentScale)
 {
@@ -978,7 +980,7 @@ void MandelbrotWidget::scroll(int deltaX, int deltaY)
     centerX = MandelBrotRenderer::generateDoubleAsString(currentCenterX);
     centerY = MandelBrotRenderer::generateDoubleAsString(currentCenterY);
 #endif
-    updateView();
+    update();
     executeRender();
     outputToLog("New operation : scroll");
 }

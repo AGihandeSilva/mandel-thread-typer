@@ -102,7 +102,7 @@ class RenderThread : public QThread, public SettingsUser, public ButtonUser
 
 public:
     explicit RenderThread(SettingsHandler& settingsHandler, QObject *parent = nullptr);
-    virtual ~RenderThread() override { --count; wait(); }
+    ~RenderThread() override { --count; wait(); }
 
     void render(const MandelBrotRenderer::CoordValue& centerX, const MandelBrotRenderer::CoordValue& centerY,
 #if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
@@ -123,12 +123,15 @@ public:
     void setThreadInfoDisplayer(WindowThreadInfo* displayer);
     void setThreadState(uint index, MandelBrotRenderer::threadState state);
     bool dynamicThreadAllocationEnabled();
+    bool getTypeIsSupported(MandelBrotRenderer::internalDataType type) const;
+    bool getTypeIsSupported(const QString& typeDescription) const;
+    QString getTypeDescription(MandelBrotRenderer::internalDataType type) const;
 
     RenderThreadMediator& getThreadMediator() { return threadMediator; }
 
     SettingsHandler& getApplicationSettings() const { return applicationSettingsHandler; }
 
-    virtual void processIntegerValueFromButtonPress(int value) override;
+    void processIntegerValueFromButtonPress(int value) override;
 
     static int calculateInitialNumThreads();
 
@@ -181,7 +184,7 @@ private slots:
 private:
     void run() override;
     void connectUpOwner();
-    void halt(const bool quitApplication);
+    void halt(bool quitApplication);
     void createChecksum(bool forcedToStop) const;
     void adjustWorkerThreadCount();
     int adjustNumPasses();
@@ -216,7 +219,15 @@ private:
         bool supported;
     };
 
-    std::map<QString, supportedType> typeToDescriptionMap;
+    std::map<QString, supportedType> descriptionToTypeMap;
+
+    struct supportedTypeString
+    {
+        QString typeString;
+        bool supported;
+    };
+
+    std::map<MandelBrotRenderer::internalDataType, supportedTypeString> typeToDescriptionMap;
 
 #ifdef DEBUG_RAW_RESULTS
     bool detectMismatches(MQuintVector results) const;

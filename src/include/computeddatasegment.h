@@ -9,6 +9,8 @@ QT_BEGIN_NAMESPACE
 class QImage;
 QT_END_NAMESPACE
 
+class QMutex;
+
 /*
  *A data object class containing compute task parameters
  * and containers for computed results
@@ -62,6 +64,8 @@ public:
     void ChangeRegionAttributes(const RegionAttributes& newRegionAttributes);
 
 private:
+    static QMutex* getMutex();
+
     QImage *image;
     int rawDataSize;
     MandelBrotRenderer::MQuintVector rawResultData;

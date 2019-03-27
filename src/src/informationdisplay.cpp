@@ -125,7 +125,7 @@ void InformationDisplay::setColorMapSize(int colorMapSize)
     colorMapSizeInfo.setText(QString::number(colorMapSize));
 }
 
-void InformationDisplay::setInternalDataType(QString description)
+void InformationDisplay::displayInternalDataType(QString description)
 {
     int firstBracketPos = description.indexOf("(");
     if (firstBracketPos != -1) {

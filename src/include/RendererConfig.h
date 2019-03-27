@@ -35,6 +35,10 @@ public:
     QPoint getPos() const;
     double getCenterX() const;
     double getCenterY() const;
+#if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
+    const QString& getPreciseCenterX() const;
+    const QString& getPreciseCenterY() const;
+#endif
     double getCurScale() const;
     double getPixmapScale() const;
     bool getThreadMediatorEnabled() const;

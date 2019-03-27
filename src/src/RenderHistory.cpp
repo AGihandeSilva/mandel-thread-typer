@@ -2,6 +2,15 @@
 #include "mandelbrotwidget.h"
 #include "PrecisionHandler.h"
 
+/*
+ *
+ * This class is responsible for managing the undo/redo flow.
+ * It also assists in deciding whether to ask the user to
+ * consider saving the state to prevent its loss on quitting
+ * the program.
+ *
+ */
+
 RenderHistory::RenderHistory(MandelbrotWidget* stateHolder) : stateHolder(stateHolder), currentPos(historyLog.begin())
 {
     connect(this, SIGNAL(undoIsAvailable(bool)), stateHolder, SLOT(setUndoEnabled(bool)));
@@ -16,6 +25,16 @@ RenderHistory::stateListIter RenderHistory::getLastEntryPos()
 
     return result;
 }
+
+/*
+ *
+ * Save the current render parameters to the history log
+ * if this is a new state generated within the history sequence,
+ * 'upstream' states are removed to avoid having to create branches
+ *
+ * returns: true if a state was added to the history log,
+ *          false otherwise
+ */
 
 bool RenderHistory::saveState()
 {
@@ -87,6 +106,7 @@ void RenderHistory::setNewState(Direction moveDirection)
     RendererConfig newConfig((MandelBrotRenderer::RenderState(*currentPos)));
     stateHolder->setUsingUndoRedo();
     stateHolder->enforceConfigData(newConfig);
+    stateHolder->clearUsingUndoRedo();
 }
 
 void RenderHistory::checkAvailability()

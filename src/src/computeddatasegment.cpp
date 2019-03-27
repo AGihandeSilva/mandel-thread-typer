@@ -1,6 +1,7 @@
 #include "computeddatasegment.h"
 #include <QImage>
 #include <iostream>
+#include <QMutex>
 
 using MandelBrotRenderer::notYetInitializedValue;
 
@@ -8,6 +9,7 @@ ComputedDataSegment::ComputedDataSegment() :
         image(nullptr), rawDataSize(notYetInitializedValue), taskResults {nullptr, 0 },
         segmentIndex(MandelBrotRenderer::nonExistentThreadIndex), consumed(false)
 {
+    QMutexLocker locker(getMutex());
     ++count;
 }
 
@@ -26,6 +28,7 @@ ComputedDataSegment::ComputedDataSegment(RegionAttributes attributes,
          consumed(false),
          attributes(attributes)
 {
+    QMutexLocker locker(getMutex());
     ++count;
 
     //TODO : check this for efficiency / memory leaks
@@ -46,6 +49,7 @@ ComputedDataSegment::ComputedDataSegment(RegionAttributes attributes,
 
 ComputedDataSegment::~ComputedDataSegment()
 {
+    QMutexLocker locker(getMutex());
     if (count-- == 0)
     {
         std::cout << "data segment delete error!" << std::endl;
@@ -63,6 +67,7 @@ ComputedDataSegment::ComputedDataSegment(ComputedDataSegment&& other) noexcept
       consumed(other.consumed),
       attributes(std::move(other.attributes))
 {
+    QMutexLocker locker(getMutex());
     ++count;
 }
 
@@ -75,11 +80,13 @@ ComputedDataSegment::ComputedDataSegment(const ComputedDataSegment& other)
       consumed(other.consumed),
       attributes(other.attributes)
 {
+    QMutexLocker locker(getMutex());
     ++count;
 }
 
 ComputedDataSegment& ComputedDataSegment::operator=(const ComputedDataSegment& other)
 {
+    QMutexLocker locker(getMutex());
     image = other.image;
     rawDataSize = other.rawDataSize;
     rawResultData = other.rawResultData;
@@ -94,6 +101,7 @@ ComputedDataSegment& ComputedDataSegment::operator=(const ComputedDataSegment& o
 
 ComputedDataSegment& ComputedDataSegment::operator=(ComputedDataSegment&& other) noexcept
 {
+    QMutexLocker locker(getMutex());
     image = other.image;
     rawDataSize = other.rawDataSize;
     rawResultData = MandelBrotRenderer::MQuintVector(std::move(other.rawResultData));
@@ -106,8 +114,16 @@ ComputedDataSegment& ComputedDataSegment::operator=(ComputedDataSegment&& other)
     return *this;
 }
 
+QMutex* ComputedDataSegment::getMutex()
+{
+    static QMutex mutex;
+
+    return &mutex;
+}
+
 void ComputedDataSegment::clearRawData()
 {
+   QMutexLocker locker(getMutex());
    rawResultData.fill(qRgb(0, 0, 0));
    taskResults.iterationSum = 0;
 }
@@ -119,6 +135,7 @@ const RegionAttributes& ComputedDataSegment::getAttributes() const
 
 void ComputedDataSegment::ChangeRegionAttributes(const RegionAttributes& newRegionAttributes)
 {
+    QMutexLocker locker(getMutex());
     attributes = newRegionAttributes;
     rawDataSize =  newRegionAttributes.computeRawDataSize();
     rawResultData.resize(rawDataSize);

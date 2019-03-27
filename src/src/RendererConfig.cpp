@@ -20,7 +20,7 @@ RendererConfig::RendererConfig(MandelBrotRenderer::RenderState&& state) : state(
 
 bool RendererConfig::operator==(RendererConfig &rhs) const
 {
-    return (state != rhs.getState());
+    return (state == rhs.getState());
 }
 
 bool  RendererConfig::operator!=(RendererConfig &rhs) const
@@ -116,6 +116,18 @@ double RendererConfig::getCenterY() const
     Q_ASSERT(centerY_float.second);
     return centerY_float.first;
 }
+
+#if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
+const QString& RendererConfig::getPreciseCenterX() const
+{
+    return state.centerX;
+}
+
+const QString& RendererConfig::getPreciseCenterY() const
+{
+    return state.centerY;
+}
+#endif
 
 double RendererConfig::getCenterX() const
 {

@@ -7,6 +7,15 @@
 
 class MandelbrotWidget;
 
+/*
+ *
+ * This class is responsible for managing the undo/redo flow.
+ * It also assists in deciding whether to ask the user to
+ * consider saving the state to prevent its loss on quitting
+ * the program.
+ *
+ */
+
 class RenderHistory : public QObject
 {
     Q_OBJECT
