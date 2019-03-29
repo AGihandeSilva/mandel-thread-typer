@@ -30,13 +30,15 @@ public:
     static PrecisionHandler& getPreciseValuesHandler();
     QMutex* getMutex() { return &mutex; }
 
-private:
-    PrecisionHandler() = default;
-    ~PrecisionHandler() = default;
     PrecisionHandler(const PrecisionHandler&) = delete;
     PrecisionHandler(PrecisionHandler&&) = delete;
     PrecisionHandler& operator=(const PrecisionHandler&) = delete;
     PrecisionHandler& operator=(PrecisionHandler&&) = delete;
+
+private:
+    PrecisionHandler() = default;
+    ~PrecisionHandler() override = default;
+
     QMutex mutex;
 };
 

@@ -20,7 +20,7 @@ public:
     explicit InformationDisplay(MandelbrotWidget& mainWidget, SettingsHandler& applicationSettingsHandler);
     void prepareTimerInfo();
 
-    virtual void updateCoordData(const QString& centerX, const QString& centerY,
+    void updateCoordData(const QString& centerX, const QString& centerY,
                          const QString& width, const QString& height) override;
     void updateProgress(uint progressInPercent);
     void setThreadsInfo(int numThreads);
@@ -59,10 +59,10 @@ public:
         InformationLabel()
             : InformationLabel("", "darkBlue", "rgba(128, 128, 180, 0.8)", "10px", "AlignCenter") {}
 
-        explicit InformationLabel(const QString& text, QString colour = "white",
-                                  QString backgroundColour = "rgba(0,0,0, 0.4)",
-                                  QString radius = "5px",
-                                  QString alignment = "AlignLeft")
+        explicit InformationLabel(const QString& text, const QString& colour = "white",
+                                  const QString& backgroundColour = "rgba(0,0,0, 0.4)",
+                                  const QString& radius = "5px",
+                                  const QString& alignment = "AlignLeft")
         : QLabel(text)
         {
             setStyleSheet("QLabel {color : " + colour + "; " \

@@ -180,10 +180,10 @@ using PreciseFloatResult = std::pair<Float128, bool>;
         virtual ~CoordinateListener() = default;
         virtual void updateCoordData(const QString& centerX, const QString& centerY,
                                      const QString& width, const QString& height) = 0;
-        CoordinateListener(const CoordinateListener&) = default;
-        CoordinateListener(CoordinateListener&&) = default;
-        CoordinateListener& operator= (const CoordinateListener&) = default;
-        CoordinateListener& operator= (CoordinateListener&&) = default;
+        CoordinateListener(const CoordinateListener&) = delete;
+        CoordinateListener(CoordinateListener&&) = delete;
+        CoordinateListener& operator= (const CoordinateListener&) = delete;
+        CoordinateListener& operator= (CoordinateListener&&) = delete;
     };
 
     using ListenerGroup = std::vector<std::pair<MandelBrotRenderer::CoordinateListener*,

@@ -314,7 +314,6 @@ void ToolsOptionsWidget::addColorMapSizeField()
              colorMapSize <= colorMapSizeSetting->maximum());
     setColorMapSizeinGUI();
 
-    connect(colorMapSizeSetting, SIGNAL(valueChanged(int)), mainWidget, SLOT(setColorMapSizeInfo(int)));
     colorMapSizeSetting->setValue(colorMapSize);
 
     connect(colorMapSizeSetting, SIGNAL(valueChanged(int)), masterThread, SLOT(setColormapSize(int)));

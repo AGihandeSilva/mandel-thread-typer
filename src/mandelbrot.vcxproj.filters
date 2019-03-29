@@ -144,9 +144,9 @@
     <CustomBuild Include="include\RenderMenu.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <ClInclude Include="include\RenderParametersWidget.h">
+    <CustomBuild Include="include\RenderParametersWidget.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
+    </CustomBuild>
     <ClInclude Include="include\RendererConfig.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -240,6 +240,12 @@
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="release\moc_RenderMenu.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="debug\moc_RenderParametersWidget.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="release\moc_RenderParametersWidget.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="debug\moc_filemenu.cpp">

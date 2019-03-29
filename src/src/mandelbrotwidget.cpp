@@ -107,7 +107,7 @@ MandelbrotWidget::MandelbrotWidget(QWidget *parent)
       scaleHasChanged(false), renderInProgress(false), usingUndoRedo(false), numericType(internalDataType::doublePrecisionFloat),
       pauseMutexes(MAX_NUM_WORKER_THREADS, nullptr), paused(),
       historyLog(std::make_unique<RenderHistory>(this)), unsavedChangesExist(false),
-      parameterSpace(-1.5, 1.5, -2.0, 2.0)
+      parameterSpace(-1.5, 2.5, -2.0, 2.5)
 {
     thread.processSettingUpdate(settingsHandler.getSettings());
     infoDisplayer = new InformationDisplay(*this, settingsHandler);
@@ -508,6 +508,144 @@ void MandelbrotWidget::registerCoordinateUser(MandelBrotRenderer::CoordinateList
     coordinateUsers.push_back(std::make_pair(listener, config));
 }
 
+template <typename T>
+bool MandelbrotWidget::validateRegion(T centerX, T centerY, T width, T height)
+{
+    bool regionOK = true;
+
+    if (width < T(0.0) || height < T(0.0)) {
+        regionOK = false;
+    }
+
+    regionOK = regionOK && (centerX > static_cast<T>(parameterSpace.xMin));
+    regionOK = regionOK && (centerY > static_cast<T>(parameterSpace.yMin));
+    regionOK = regionOK && (centerX + width < static_cast<T>(parameterSpace.xMax));
+    regionOK = regionOK && (centerY + height < static_cast<T>(parameterSpace.yMax));
+
+    return regionOK;
+}
+
+/*
+ * Adjust the rendered region to match the given parameters
+ * (if they are contained within the allowed parameter space)
+ *
+ * NB: this function expects string parameters holding
+ * pre-validated numeric values
+ *
+ * If the change occurs, the exact width and height will
+ * probably not exactly match the input values, due to
+ * pixel boundaries
+ *
+ * This function uses the current pixel scaling -
+ * it will not execute the change if the final image will
+ * be very small or large using that scaling
+ *
+ * returns: true if the change was accepted and made,
+ *          false otherwise
+ */
+bool MandelbrotWidget::changeRegionParameters(const QString &centerXvalue,
+                                              const QString &centerYvalue,
+                                              const QString &widthValue,
+                                              const QString &heightValue)
+{
+    int pWidth = pixmap.width();
+    int pHeight = pixmap.height();
+    if (pWidth <= 0 || pHeight <= 0) {
+        return false;
+    }
+
+#if (USE_BOOST_MULTIPRECISION == 1 || defined(__GNUC__))
+    PreciseFloatResult centerX_result = generateFloatFromPreciseString(centerXvalue);
+    PreciseFloatResult centerY_result = generateFloatFromPreciseString(centerYvalue);
+#else
+    auto centerX_result  = generateFloatFromString(centerXvalue);
+    auto centerY_result  = generateFloatFromString(centerYvalue);
+#endif
+
+    auto width_result    = generateFloatFromString(widthValue);
+    auto height_result   = generateFloatFromString(heightValue);
+
+    Q_ASSERT(centerX_result.second);
+    auto centerX_f = centerX_result.first;
+    Q_ASSERT(centerY_result.second);
+    auto centerY_f = centerY_result.first;
+    Q_ASSERT(width_result.second);
+    auto width_f = width_result.first;
+    Q_ASSERT(height_result.second);
+    auto height_f = height_result.first;
+
+    bool regionOk= centerX_result.second && centerY_result.second &&
+            width_result.second && height_result.second;
+
+#if (USE_BOOST_MULTIPRECISION == 1 || defined(__GNUC__))
+    regionOk = regionOk && validateRegion<Float128>(centerX_f, centerY_f,
+                                                    static_cast<Float128>(width_f),
+                                                    static_cast<Float128>(height_f));
+#else
+    regionOk = regionOk && validateRegion<double>(centerX_f, centerY_f, width_f, height_f);
+#endif
+
+    std::cout << "new Region OK:" << regionOk << std::endl;
+
+    if (regionOk) {
+
+        //prepare to do some more validity checks
+        regionOk = false;
+
+        constexpr int minimumWidgetSize = 50;
+        constexpr int maximumPixelWidth = 4000;
+        constexpr int maximumPixelHeight = 2000;
+        constexpr int maxPixelCount = maximumPixelWidth * maximumPixelHeight;
+
+        //compute the old and new sizes of the set parameter regions
+        const auto originalPixelCount = pixmap.width() * pixmap.height();
+        const double regionSize = curScale * originalPixelCount * curScale;
+
+        Q_ASSERT(regionSize > 0);
+        if (regionSize > 0) {
+
+            //TODO: switch between these approaches depending on a GUI switch?
+            //scale to preserve the pixel area of the widget
+            //const auto newRegionSize = width_f * height_f;
+            //auto newScale = curScale * sqrt(newRegionSize / regionSize);
+
+            //preserve scale
+            auto newScale = curScale;
+
+            if (newScale > 0) {
+                //recompute the new widths
+                int newWidth = static_cast<int>(width_f / newScale);
+                int newHeight = static_cast<int>(height_f / newScale);
+
+                int pixelCount = newWidth * newHeight;
+
+                if (pixelCount > minimumWidgetSize &&
+                    pixelCount < maxPixelCount) {
+
+                    centerX = centerXvalue;
+                    centerY = centerYvalue;
+#if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
+                    preciseCenterX = centerXvalue;
+                    preciseCenterY = centerYvalue;
+#endif
+
+                    curScale = newScale;
+                    pixmapScale = newScale;
+                    if (newWidth != pWidth ||
+                        newHeight != pHeight) {
+                        resize(static_cast<int>(newWidth), static_cast<int>(newHeight));
+                    } else {
+                        initiateRefresh();
+                    }
+                    regionOk = true;
+                }
+            }
+        }
+    }
+
+    return regionOk;
+}
+
 void MandelbrotWidget::progressMade(int computationChunksDone)
 {
     outputToLog("<<< ProgressMade" + QString::number(computationChunksDone) + ">>>");
@@ -698,7 +836,7 @@ void MandelbrotWidget::processSettingUpdate(QSettings &settings)
     settings.beginGroup("RenderParameters");
         centerX = settings.value("centerX", DefaultCenterX).toString();
         centerY = settings.value("centerY", DefaultCenterY).toString();
-#if (USE_BOOST_MULTIPRECISION == 1)
+#if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
         preciseCenterX = centerX;
         preciseCenterY = centerY;
 #endif
@@ -748,7 +886,7 @@ void MandelbrotWidget::updateCoordInfo(const MandelBrotRenderer::CoordValue& cen
 {
     QString centerX_s;
     QString centerY_s;
-    QSize currentSize = infoDisplayer->size();
+    QSize currentSize = size();
     QString widthAsString(QString::number(currentSize.width() * scaleFactor));
     QString heightAsString(QString::number(currentSize.height() * scaleFactor));
 
@@ -946,11 +1084,11 @@ void MandelbrotWidget::disableOptions()
 
 QString MandelbrotWidget::computeDeltaWithHigherPrecision(QString& value, int deltaPixels, double currentScale)
 {
-#if (USE_BOOST_MULTIPRECISION == 1)
+#if (USE_BOOST_MULTIPRECISION == 1 || defined(__GNUC__))
     Float128 preciseDelta = deltaPixels * static_cast<Float128>(currentScale);
     PreciseFloatResult floatValue = generateFloatFromPreciseString(value);
     Q_ASSERT(floatValue.second);
-    Float128 preciseOrigin = floatValue.second ? floatValue.first : 0.0;
+    Float128 preciseOrigin = floatValue.second ? floatValue.first : Float128(0.0);
     Float128 preciseValue = preciseOrigin + preciseDelta;
     return (MandelBrotRenderer::generatePreciseFloatingPointString(preciseValue));
 #else

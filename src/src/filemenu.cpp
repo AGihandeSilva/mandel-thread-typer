@@ -38,7 +38,7 @@ void FileMenu::quit()
     plotHandler->initiateQuit();
 
     //TODO make sure all windows are closed
-    //TODO make sure no memory is leaked: (how?)
+    //TODO assert no memory is leaked: (how?)
 }
 
 void FileMenu::openParams()

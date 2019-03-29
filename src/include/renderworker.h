@@ -23,7 +23,7 @@ class RenderWorker : public QObject
     Q_OBJECT
 
 public:
-    explicit RenderWorker(//QObject *parent,
+    explicit RenderWorker(
                        RenderThread* parentThread,
                        MandelbrotWidget* owner,
                        uint currentPassValue,
@@ -36,7 +36,11 @@ public:
                        MandelBrotRenderer::haltChecker abortChecker,
                        QMutex&  pauseMutex);
 
-    virtual ~RenderWorker() = default;
+    ~RenderWorker() override = default;
+    RenderWorker(const RenderWorker&) = delete;
+    RenderWorker(RenderWorker&&) = delete;
+    RenderWorker& operator=(const RenderWorker&) = delete;
+    RenderWorker& operator=(RenderWorker&&) = delete;
 
     using computeFunction = std::function<void (const ComputedDataSegment &, const bool &, int &, MandelBrotRenderer::ComputeTaskResults &, int)>;
 

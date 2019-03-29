@@ -2,6 +2,7 @@
 #define RENDERPARAMETERSWIDGET_H
 
 #include <QDialog>
+#include <QDoubleValidator>
 
 #include "settingsuser.h"
 #include "mandelbrotrenderer.h"
@@ -13,10 +14,11 @@ class QLineEdit;
 class SettingsHandler;
 class QString;
 class QLabel;
-class QDoubleValidator;
+class QDialogButtonBox;
 
 class RenderParametersWidget : public QDialog, public SettingsUser, public MandelBrotRenderer::CoordinateListener
 {
+    Q_OBJECT
 public:
     explicit RenderParametersWidget(RenderThread *masterThread,
                                     MandelbrotWidget& mainWidget, SettingsHandler& settingsHandler);
@@ -28,11 +30,31 @@ public slots:
     void processSettingUpdate(QSettings& settings) override;
     void updateAndShow();
     void refresh();
+    void processNewRegionParameters();
 
 private:
 
+    class RevertingDoubleValidator : public QDoubleValidator
+    {
+        public:
+            explicit RevertingDoubleValidator(QObject *parent = nullptr)
+             : QDoubleValidator(parent) {}
+
+            void setRevertValue(const QString& text) { originalText = text; }
+            QString getRevertValue() const { return originalText; }
+
+            void fixup(QString& input) const override
+            {
+                input = originalText;
+            }
+
+        private:
+            QString originalText;
+    };
+
     void updateFromSettings();
     void initializeFieldsAndValidators();
+    void revertParameters();
 
     RenderThread *masterThread;
     MandelbrotWidget& mainWidget;
@@ -47,11 +69,12 @@ private:
     QLineEdit* widthValue;
     QLabel* heightTitle;
     QLineEdit* heightValue;
+    QDialogButtonBox* acceptOrCancelBox;
 
-    QDoubleValidator* xValidator;
-    QDoubleValidator* yYValidator;
-    QDoubleValidator* widthValidator;
-    QDoubleValidator* heightValidator;
+    RevertingDoubleValidator* xValidator;
+    RevertingDoubleValidator* yValidator;
+    RevertingDoubleValidator* widthValidator;
+    RevertingDoubleValidator* heightValidator;
     void setUpFields();
 };
 

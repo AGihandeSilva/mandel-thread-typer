@@ -113,6 +113,9 @@ public:
 
     QString computeDeltaWithHigherPrecision(QString& value, int deltaPixels, double currentScale);
 
+    /*
+     * Get the edge values of the permitted region for manually entered parameters
+     */
     MandelBrotRenderer::RegionLimits getParameterSpace() const { return parameterSpace; }
 
 public slots:
@@ -147,6 +150,10 @@ public slots:
     void clearUsingUndoRedo() { usingUndoRedo = false; }
     void registerCoordinateUser(MandelBrotRenderer::CoordinateListener* listener,
                                 MandelBrotRenderer::CoordinateListenerConfig config);
+    bool changeRegionParameters(const QString &centerXvalue,
+                                const QString &centerYvalue,
+                                const QString &widthValue,
+                                const QString &heightValue);
 
 signals:
     void quitAll();
@@ -183,6 +190,9 @@ private:
     void zoomToSelectedRectangle(QMouseEvent *event);
     void displayIterationsPerPixel(int64_t iterationSum);
     void processWindowSize();
+
+    template <typename T>
+    bool validateRegion(T centerX, T centerY, T width, T height);
 
     InformationDisplay* infoDisplayer;
     QTextEdit* logger;

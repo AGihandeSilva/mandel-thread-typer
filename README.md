@@ -57,12 +57,14 @@ TODOs
 
 * Bug fixing - some occasional problems occur
      + e.g. sometimes the renderer shows blank output rather than the computed results, usually when traversing the render history (buffering scheme bug?)
+        + investigating...
 
 * Separate the compute engine and GUI code for software testing and better reusability
 
 * Code tidy (alas, always true)
 
-* make the new render parameters window editable so that render region coordinates can be manually entered
+* ~~make the new render parameters window editable so that render region coordinates can be manually entered~~
+     + this is implemented as of 29/3/19
 
 * ~~Better handling of the GUI zoom/region select for very small regions (currently precision is being lost in some cases)~~
      + this should work much better than before, as float128 + string representations (when available) are now used for the region coordinates

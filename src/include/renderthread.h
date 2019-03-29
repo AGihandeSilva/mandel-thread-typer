@@ -106,7 +106,7 @@ public:
 
     void render(const MandelBrotRenderer::CoordValue& centerX, const MandelBrotRenderer::CoordValue& centerY,
 #if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
-              QString preciseCenterX, QString preciseCenterY,
+              const QString& preciseCenterX, const QString& preciseCenterY,
 #endif
                 double scaleFactor, QSize resultSize);
 
@@ -140,6 +140,7 @@ public:
     using typeNameUser = std::function<void (const QString&, bool) >;
 
 public slots:
+    void publishCoordinates() const;
     void cleanup();
     void drawPreComputedData(ComputedDataSegment& data);
     void markThreadProgressComplete();

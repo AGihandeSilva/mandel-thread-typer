@@ -13,7 +13,11 @@ class WorkerThreadData : public QObject
 public:
     WorkerThreadData(MandelbrotWidget* owner = nullptr, uint pass = 0);
 
-    virtual ~WorkerThreadData();
+    ~WorkerThreadData() override;
+    WorkerThreadData(const WorkerThreadData&) = delete;
+    WorkerThreadData(WorkerThreadData&&) = delete;
+    WorkerThreadData& operator= (const WorkerThreadData&) = delete;
+    WorkerThreadData& operator= (WorkerThreadData&&) = delete;
 
     uint getPassData() const { return pass; }
     std::vector<int>& getValues() { return values; }

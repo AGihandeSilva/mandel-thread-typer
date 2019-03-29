@@ -6,6 +6,7 @@
 #include <QSizePolicy>
 #include <QFontMetrics>
 #include <QDoubleValidator>
+#include <QDialogButtonBox>
 
 #include "settingshandler.h"
 
@@ -13,6 +14,30 @@
 #include "mandelbrotwidget.h"
 
 using MandelBrotRenderer::addHorizontalLine;
+
+RenderParametersWidget::RenderParametersWidget(RenderThread *masterThread, MandelbrotWidget& mainWidget, SettingsHandler& settingsHandler)
+    : masterThread(masterThread), mainWidget(mainWidget),
+      applicationSettingsHandler(settingsHandler), renderParametersLayout(nullptr),
+        xTitle(nullptr), xValue(nullptr), yTitle(nullptr), yValue(nullptr),
+        widthTitle(nullptr), widthValue(nullptr), heightTitle(nullptr), heightValue(nullptr),
+        acceptOrCancelBox(nullptr), xValidator(nullptr), yValidator(nullptr),
+        widthValidator(nullptr), heightValidator(nullptr)
+{
+    setWindowTitle("Render Parameters");
+    renderParametersLayout = new QVBoxLayout;
+    initializeFieldsAndValidators();
+    this->setLayout(renderParametersLayout);
+    setUpFields();
+
+    updateFromSettings();
+
+    applicationSettingsHandler.registerSettingsUser(this);
+    mainWidget.registerCoordinateUser(this,
+              MandelBrotRenderer::CoordinateListenerfullPrecision  );
+
+    connect(acceptOrCancelBox, SIGNAL(accepted()), this, SLOT(processNewRegionParameters()));
+    connect(acceptOrCancelBox, SIGNAL(rejected()), masterThread, SLOT(publishCoordinates()));
+}
 
 void RenderParametersWidget::setUpFields()
 {
@@ -47,7 +72,7 @@ void RenderParametersWidget::setUpFields()
     yTitle = new QLabel("Y:");
     renderParametersLayout->addWidget(yTitle);
 
-    yValue->setValidator(yYValidator);
+    yValue->setValidator(yValidator);
     yValue->setFixedHeight(boxHeight);
     yValue->setMinimumWidth(pixelsWidth / 2);
     yValue->setMaximumWidth(pixelsWidth);
@@ -73,36 +98,9 @@ void RenderParametersWidget::setUpFields()
     heightValue->setFixedHeight(boxHeight);
     renderParametersLayout->addWidget(heightValue);
     addHorizontalLine(this, renderParametersLayout);
-}
 
-RenderParametersWidget::RenderParametersWidget(RenderThread *masterThread, MandelbrotWidget& mainWidget, SettingsHandler& settingsHandler)
-    : masterThread(masterThread), mainWidget(mainWidget),
-      applicationSettingsHandler(settingsHandler), renderParametersLayout(nullptr),
-        xTitle(nullptr), xValue(nullptr), yTitle(nullptr), yValue(nullptr),
-        widthTitle(nullptr), widthValue(nullptr), heightTitle(nullptr), heightValue(nullptr),
-        xValidator(nullptr), yYValidator(nullptr),
-        widthValidator(nullptr), heightValidator(nullptr)
-{
-    setWindowTitle("Render Parameters");
-    renderParametersLayout = new QVBoxLayout;
-
-
-    initializeFieldsAndValidators();
-
-
-
-
-    //renderParametersLayout->setSizeConstraint(QLayout::SetMinimumSize);
-    //renderParametersLayout->SetMinimumSize(width, height);
-    this->setLayout(renderParametersLayout);
-
-    setUpFields();
-
-    updateFromSettings();
-
-    applicationSettingsHandler.registerSettingsUser(this);
-    mainWidget.registerCoordinateUser(this,
-              MandelBrotRenderer::CoordinateListenerfullPrecision  );
+    acceptOrCancelBox = new QDialogButtonBox(QDialogButtonBox::Cancel | QDialogButtonBox::Ok, this);
+    renderParametersLayout->addWidget(acceptOrCancelBox);
 }
 
 void RenderParametersWidget::initializeFieldsAndValidators()
@@ -113,29 +111,23 @@ void RenderParametersWidget::initializeFieldsAndValidators()
     widthValue = new QLineEdit;
     heightValue = new QLineEdit;
 
-    //TODO enable editing of these fields to make another
-    //user input flow
-    xValue->setReadOnly(true);
-    yValue->setReadOnly(true);
-    widthValue->setReadOnly(true);
-    heightValue->setReadOnly(true);
 
     MandelBrotRenderer::RegionLimits parameterBoundaryValues = mainWidget.getParameterSpace();
     const double minSize = 1.0E-70;
 
-    xValidator = new QDoubleValidator(xValue);
+    xValidator = new RevertingDoubleValidator(xValue);
     xValidator->setBottom(parameterBoundaryValues.xMin);
     xValidator->setTop(parameterBoundaryValues.xMax);
 
-    yYValidator = new QDoubleValidator(yValue);
-    yYValidator->setBottom(parameterBoundaryValues.yMin);
-    yYValidator->setTop(parameterBoundaryValues.yMax);
+    yValidator = new RevertingDoubleValidator(yValue);
+    yValidator->setBottom(parameterBoundaryValues.yMin);
+    yValidator->setTop(parameterBoundaryValues.yMax);
 
-    widthValidator = new QDoubleValidator(widthValue);
+    widthValidator = new RevertingDoubleValidator(widthValue);
     widthValidator->setBottom(minSize);
     widthValidator->setTop(parameterBoundaryValues.xMax - parameterBoundaryValues.xMin);
 
-    heightValidator = new QDoubleValidator(heightValue);
+    heightValidator = new RevertingDoubleValidator(heightValue);
     heightValidator->setBottom(minSize);
     heightValidator->setTop(parameterBoundaryValues.yMax - parameterBoundaryValues.yMin);
 }
@@ -147,26 +139,36 @@ void RenderParametersWidget::updateCoordData(const QString &centerX, const QStri
     QFontMetrics metrics(currentFont);
     const int extraMarginInPercent = 20;
 
-
     if (!centerX.isEmpty()) {
         int pixelsWidth = ((100 + extraMarginInPercent) * metrics.size(Qt::TextSingleLine, centerX).width()) / 100;
         xValue->setMinimumWidth(pixelsWidth);
         xValue->setText(centerX);
+        xValidator->setRevertValue(centerX);
     }
     if (!centerY.isEmpty()) {
         int pixelsWidth = ((100 + extraMarginInPercent) * metrics.size(Qt::TextSingleLine, centerY).width()) / 100;
         yValue->setMinimumWidth(pixelsWidth);
         yValue->setText(centerY);
+        yValidator->setRevertValue(centerY);
     }
     widthValue->setText(width);
+    widthValidator->setRevertValue(width);
     heightValue->setText(height);
+    heightValidator->setRevertValue(height);
 }
 
 void RenderParametersWidget::processSettingUpdate(QSettings &settings)
 {
     settings.beginGroup("RenderParameters");
-        xValue->setText(settings.value("centerX", MandelbrotWidget::getDefaultCenterX()).toString());
-        yValue->setText(settings.value("centerY", MandelbrotWidget::getDefaultCenterY()).toString());
+
+        auto centerXValue = settings.value("centerX", MandelbrotWidget::getDefaultCenterX()).toString();
+        xValue->setText(centerXValue);
+        xValidator->setRevertValue(centerXValue);
+
+        auto centerYValue = settings.value("centerY", MandelbrotWidget::getDefaultCenterY()).toString();
+        yValue->setText(centerYValue);
+        yValidator->setRevertValue(centerYValue);
+
     settings.endGroup();
 }
 
@@ -179,6 +181,29 @@ void RenderParametersWidget::updateAndShow()
 void RenderParametersWidget::refresh()
 {
     updateFromSettings();
+    masterThread->publishCoordinates();
+}
+
+void RenderParametersWidget::processNewRegionParameters()
+{
+    //std::cout << static_cast<const char*>(__FUNCTION__) << std::endl;
+    //std::cout << "centerX" << xValue->text().toStdString() << std::endl;
+    bool accepted = mainWidget.changeRegionParameters(xValue->text(), yValue->text(), widthValue->text(), heightValue->text());
+    std::cout << "parameters validation result: " << accepted << std::endl;
+
+    if (!accepted)
+    {
+        mainWidget.writeTransientStatusMessage("Input Parameters were invalid, reverting to last good set", true);
+        revertParameters();
+    }
+}
+
+void RenderParametersWidget::revertParameters()
+{
+    xValue->setText(xValidator->getRevertValue());
+    yValue->setText(yValidator->getRevertValue());
+    widthValue->setText(widthValidator->getRevertValue());
+    heightValue->setText(heightValidator->getRevertValue());
 }
 
 void RenderParametersWidget::updateFromSettings()

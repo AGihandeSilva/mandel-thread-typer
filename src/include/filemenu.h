@@ -24,7 +24,7 @@ class FileMenu : public QMenu, public SettingsUser
 public:
     explicit FileMenu(QMenuBar* parentMenu, MandelbrotWidget* plotHandler, SettingsHandler& applicationSettingsHandler);
 
-    virtual void processSettingUpdate(QSettings& settings) override;
+    void processSettingUpdate(QSettings& settings) override;
 
     FileMenuConfig getFileMenuConfig() const;
 

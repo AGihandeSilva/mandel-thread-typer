@@ -150,7 +150,7 @@ void RenderThread::setOwnerOnce(MandelbrotWidget * owner)
 
 void RenderThread::render(const MandelBrotRenderer::CoordValue& centerX, const MandelBrotRenderer::CoordValue& centerY,
 #if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
-                          QString preciseCenterX, QString preciseCenterY,
+                          const QString& preciseCenterX, const QString& preciseCenterY,
 #endif
                           double scaleFactor,
                           QSize resultSize)
@@ -163,12 +163,10 @@ void RenderThread::render(const MandelBrotRenderer::CoordValue& centerX, const M
 #if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
     this->preciseCenterX = preciseCenterX;
     this->preciseCenterY = preciseCenterY;
-    owner->updateCoordInfo(preciseCenterX, preciseCenterY, scaleFactor);
-#else
-    owner->updateCoordInfo(centerX, centerY, scaleFactor);
 #endif
-    this->resultSize = resultSize;
+    publishCoordinates();
 
+    this->resultSize = resultSize;
 
     owner->displayDynamicTasksInfo(threadMediator.getEnabled());
 
@@ -229,8 +227,6 @@ void RenderThread::cleanup()
 {
     QMutexLocker locker(&mutex);
     sem->release();
-    //std::cout << static_cast<const char*>(__FUNCTION__) << std::endl;
-    //std::cout << "sem->available : " << sem->available() << std::endl;
     QObject* signalSender = QObject::sender();
     if (signalSender != nullptr)
     {
@@ -238,7 +234,6 @@ void RenderThread::cleanup()
         if (thread != nullptr)
         {
             emit writeToLog("cleanup thread, p:" + QString::number(thread->getPassValue()));
-            //std::cout << "cleanup thread : " << thread->getPassValue() << std::endl;
 
             if (!thread->isCleanedUp())
             {
@@ -423,16 +418,13 @@ void RenderThread::adjustWorkerThreadCount()
 
         emit numThreadsUpdate();
     }
-
-
 }
 
 int RenderThread::adjustNumPasses()
 {
     const int NumPasses = rendererData.nextNumPassValue;
 
-    if (rendererData.currentNumPassValue != NumPasses)
-    {
+    if (rendererData.currentNumPassValue != NumPasses) {
         rendererData.currentNumPassValue = NumPasses;
     }
 
@@ -458,8 +450,7 @@ bool RenderThread::getTypeIsSupported(const QString& typeDescription) const
     bool supported = false;
 
     auto findResult = descriptionToTypeMap.find(typeDescription);
-    if (findResult != descriptionToTypeMap.end())
-    {
+    if (findResult != descriptionToTypeMap.end()) {
         supported = (*findResult).second.supported;
         Q_ASSERT(getTypeIsSupported((*findResult).second.type) == supported);
     }
@@ -475,7 +466,7 @@ QString RenderThread::getTypeDescription(internalDataType type) const
     QString description;
     auto findResult = typeToDescriptionMap.find(type);
 
-    if (findResult != typeToDescriptionMap.end()){
+    if (findResult != typeToDescriptionMap.end()) {
         description = (*findResult).second.typeString;
      }
     return description;
@@ -488,7 +479,7 @@ bool RenderThread::getTypeIsSupported(MandelBrotRenderer::internalDataType type)
     bool supported = false;
     auto findResult = typeToDescriptionMap.find(type);
 
-    if (findResult != typeToDescriptionMap.end()){
+    if (findResult != typeToDescriptionMap.end()) {
         supported = (*findResult).second.supported;
      }
     return supported;
@@ -840,6 +831,15 @@ void RenderThread::run()
 void RenderThread::processIntegerValueFromButtonPress(int value)
 {
     setNumberOfPasses(value);
+}
+
+void RenderThread::publishCoordinates() const
+{
+#if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
+    owner->updateCoordInfo(preciseCenterX, preciseCenterY, scaleFactor);
+#else
+    owner->updateCoordInfo(centerX, centerY, scaleFactor);
+#endif
 }
 
  void RenderThread::drawPreComputedData(ComputedDataSegment& data)
