@@ -133,23 +133,23 @@ void RenderParametersWidget::initializeFieldsAndValidators()
 }
 
 
-void RenderParametersWidget::updateCoordData(const QString &centerX, const QString &centerY, const QString &width, const QString &height)
+void RenderParametersWidget::updateCoordData(const QString &originX, const QString &originY, const QString &width, const QString &height)
 {
     QFont currentFont = font();
     QFontMetrics metrics(currentFont);
     const int extraMarginInPercent = 20;
 
-    if (!centerX.isEmpty()) {
-        int pixelsWidth = ((100 + extraMarginInPercent) * metrics.size(Qt::TextSingleLine, centerX).width()) / 100;
+    if (!originX.isEmpty()) {
+        int pixelsWidth = ((100 + extraMarginInPercent) * metrics.size(Qt::TextSingleLine, originX).width()) / 100;
         xValue->setMinimumWidth(pixelsWidth);
-        xValue->setText(centerX);
-        xValidator->setRevertValue(centerX);
+        xValue->setText(originX);
+        xValidator->setRevertValue(originX);
     }
-    if (!centerY.isEmpty()) {
-        int pixelsWidth = ((100 + extraMarginInPercent) * metrics.size(Qt::TextSingleLine, centerY).width()) / 100;
+    if (!originY.isEmpty()) {
+        int pixelsWidth = ((100 + extraMarginInPercent) * metrics.size(Qt::TextSingleLine, originY).width()) / 100;
         yValue->setMinimumWidth(pixelsWidth);
-        yValue->setText(centerY);
-        yValidator->setRevertValue(centerY);
+        yValue->setText(originY);
+        yValidator->setRevertValue(originY);
     }
     widthValue->setText(width);
     widthValidator->setRevertValue(width);
@@ -157,19 +157,16 @@ void RenderParametersWidget::updateCoordData(const QString &centerX, const QStri
     heightValidator->setRevertValue(height);
 }
 
-void RenderParametersWidget::processSettingUpdate(QSettings &settings)
+void RenderParametersWidget::processSettingUpdate(QSettings &)
 {
-    settings.beginGroup("RenderParameters");
+    QString X;
+    QString Y;
+    applicationSettingsHandler.getXYSettingsData(X, Y);
 
-        auto centerXValue = settings.value("centerX", MandelbrotWidget::getDefaultCenterX()).toString();
-        xValue->setText(centerXValue);
-        xValidator->setRevertValue(centerXValue);
-
-        auto centerYValue = settings.value("centerY", MandelbrotWidget::getDefaultCenterY()).toString();
-        yValue->setText(centerYValue);
-        yValidator->setRevertValue(centerYValue);
-
-    settings.endGroup();
+    xValue->setText(X);
+    xValidator->setRevertValue(X);
+    yValue->setText(Y);
+    yValidator->setRevertValue(Y);
 }
 
 void RenderParametersWidget::updateAndShow()
@@ -187,7 +184,7 @@ void RenderParametersWidget::refresh()
 void RenderParametersWidget::processNewRegionParameters()
 {
     //std::cout << static_cast<const char*>(__FUNCTION__) << std::endl;
-    //std::cout << "centerX" << xValue->text().toStdString() << std::endl;
+    //std::cout << "originX" << xValue->text().toStdString() << std::endl;
     bool accepted = mainWidget.changeRegionParameters(xValue->text(), yValue->text(), widthValue->text(), heightValue->text());
     std::cout << "parameters validation result: " << accepted << std::endl;
 

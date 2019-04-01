@@ -95,17 +95,17 @@ RenderWorker::computeFunction ComputeTaskGenerator<T>::generateComputeTask()
                     const ParameterMaker<T> newParams(segment, limit);
 
                     const MandelBrotRenderer::setType setToGenerate =  workerOwner.getSetToGenerate();
-                    const T ay = static_cast<T>((setToGenerate == MandelBrotRenderer::setType::mandelbrot) ? newParams.centerY + (y * newParams.scaleFactor) :
-                                                                         newParams.centerY);
+                    const T ay = static_cast<T>((setToGenerate == MandelBrotRenderer::setType::mandelbrot) ? newParams.originY + (y * newParams.scaleFactor) :
+                                                                         newParams.originY);
 
                     const MandelBrotRenderer::colorMapStore& colormap = workerOwner.getColormap();
                     const T iterationColourScale =  static_cast<T>(workerOwner.getIterationColourScale());
 
                 for (int x = newParams.minX; x < newParams.maxX && !abort; ++x) {
-                    const T ax = static_cast<T>((setToGenerate == MandelBrotRenderer::setType::mandelbrot) ? newParams.centerX + (x * newParams.scaleFactor):
-                                                                   newParams.centerX);
-                    T a1 = static_cast<T>((setToGenerate == MandelBrotRenderer::setType::mandelbrot) ? ax : newParams.centerX + (x * newParams.scaleFactor));
-                    T b1 = static_cast<T>((setToGenerate == MandelBrotRenderer::setType::mandelbrot) ? ay : newParams.centerY + (y * newParams.scaleFactor));
+                    const T ax = static_cast<T>((setToGenerate == MandelBrotRenderer::setType::mandelbrot) ? newParams.originX + (x * newParams.scaleFactor):
+                                                                   newParams.originX);
+                    T a1 = static_cast<T>((setToGenerate == MandelBrotRenderer::setType::mandelbrot) ? ax : newParams.originX + (x * newParams.scaleFactor));
+                    T b1 = static_cast<T>((setToGenerate == MandelBrotRenderer::setType::mandelbrot) ? ay : newParams.originY + (y * newParams.scaleFactor));
                     uint numIterations = 0;
 
 //TODO: consider optimizations of the normalization scheme

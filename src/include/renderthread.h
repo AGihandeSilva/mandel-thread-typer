@@ -104,9 +104,9 @@ public:
     explicit RenderThread(SettingsHandler& settingsHandler, QObject *parent = nullptr);
     ~RenderThread() override { --count; wait(); }
 
-    void render(const MandelBrotRenderer::CoordValue& centerX, const MandelBrotRenderer::CoordValue& centerY,
+    void render(const MandelBrotRenderer::CoordValue& originX, const MandelBrotRenderer::CoordValue& originY,
 #if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
-              const QString& preciseCenterX, const QString& preciseCenterY,
+              const QString& preciseOriginX, const QString& preciseOriginY,
 #endif
                 double scaleFactor, QSize resultSize);
 
@@ -239,11 +239,11 @@ private:
     QMutex mutex;
     QMutex mutex2;
     QWaitCondition condition;
-    MandelBrotRenderer::CoordValue centerX;
-    MandelBrotRenderer::CoordValue centerY;
+    MandelBrotRenderer::CoordValue originX;
+    MandelBrotRenderer::CoordValue originY;
 #if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
-    QString preciseCenterX;
-    QString preciseCenterY;
+    QString preciseOriginX;
+    QString preciseOriginY;
 #endif
     double scaleFactor;
 

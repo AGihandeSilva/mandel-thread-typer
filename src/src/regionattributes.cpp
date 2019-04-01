@@ -13,25 +13,25 @@ using MandelBrotRenderer::PreciseFloatResult;
 #endif
 
 RegionAttributes::RegionAttributes()
-: scaleFactor(0.0), centerX("0.0"), centerY("0.0"),
+: scaleFactor(0.0), originX("0.0"), originY("0.0"),
 #if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
-  preciseCenterX("0.0"), preciseCenterY("0.0"),
+  preciseOriginX("0.0"), preciseOriginY("0.0"),
 #endif
   minX(defaultDimension), maxX(defaultDimension), minY(defaultDimension), maxY(defaultDimension), fullHeight(defaultDimension)
 {
 
 }
 
-RegionAttributes::RegionAttributes(double scaleFactor, MandelBrotRenderer::CoordValue& centerX, MandelBrotRenderer::CoordValue& centerY,
+RegionAttributes::RegionAttributes(double scaleFactor, MandelBrotRenderer::CoordValue& originX, MandelBrotRenderer::CoordValue& originY,
 #if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
-                                   QString preciseCenterX,
-                                   QString preciseCenterY,
+                                   QString preciseOriginX,
+                                   QString preciseOriginY,
 #endif
                                    int minX, int maxX, int minY, int maxY, int fullHeight)
-    : scaleFactor(scaleFactor), centerX(centerX), centerY(centerY),
+    : scaleFactor(scaleFactor), originX(originX), originY(originY),
 #if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
-      preciseCenterX(preciseCenterX),
-      preciseCenterY(preciseCenterY),
+      preciseOriginX(preciseOriginX),
+      preciseOriginY(preciseOriginY),
 #endif
       minX(minX), maxX(maxX), minY(minY), maxY(maxY), fullHeight(fullHeight)
 {
@@ -40,19 +40,19 @@ RegionAttributes::RegionAttributes(double scaleFactor, MandelBrotRenderer::Coord
 
 bool RegionAttributes::operator==(const RegionAttributes &other)
 {
-    DoubleResult centerX_float_this = generateFloatFromString(centerX);
-    DoubleResult centerY_float_this = generateFloatFromString(centerY);
-    DoubleResult centerX_float_other = generateFloatFromString(other.centerX);
-    DoubleResult centerY_float_other = generateFloatFromString(other.centerY);
+    DoubleResult originX_float_this = generateFloatFromString(originX);
+    DoubleResult originY_float_this = generateFloatFromString(originY);
+    DoubleResult originX_float_other = generateFloatFromString(other.originX);
+    DoubleResult originY_float_other = generateFloatFromString(other.originY);
     return (
                 comparefloatingPointValues(scaleFactor, other.scaleFactor) &&
-                centerX_float_this.second && centerX_float_other.second &&
-                comparefloatingPointValues(centerX_float_this.first, centerX_float_other.second) &&
-                centerY_float_this.second && centerY_float_other.second &&
-                comparefloatingPointValues(centerY_float_this.first,centerY_float_other.first) &&
+                originX_float_this.second && originX_float_other.second &&
+                comparefloatingPointValues(originX_float_this.first, originX_float_other.second) &&
+                originY_float_this.second && originY_float_other.second &&
+                comparefloatingPointValues(originY_float_this.first, originY_float_other.first) &&
             #if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
-                  preciseCenterX == other.preciseCenterX &&
-                  preciseCenterY == other.preciseCenterY &&
+                  preciseOriginX == other.preciseOriginX &&
+                  preciseOriginY == other.preciseOriginY &&
             #endif
                 minX == other.minX &&
                 maxX == other.maxX &&
@@ -116,44 +116,44 @@ void RegionAttributes::adjustYValues(int currentYPos, bool isLowerHalf)
 
 
 #if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
-double RegionAttributes::getCenterX() const
+double RegionAttributes::getOriginX() const
 {
     std::streamsize XYprecision = 6;
-    PreciseFloatResult centerX_float = generateFloatFromPreciseString(centerX, XYprecision);
-    Q_ASSERT(centerX_float.second);
-    return static_cast<double>(centerX_float.first);
+    PreciseFloatResult originX_float = generateFloatFromPreciseString(originX, XYprecision);
+    Q_ASSERT(originX_float.second);
+    return static_cast<double>(originX_float.first);
 }
 
-QString RegionAttributes::getPreciseCenterX() const
+QString RegionAttributes::getPreciseOriginX() const
 {
-    return preciseCenterX;
+    return preciseOriginX;
 }
 
-QString RegionAttributes::getPreciseCenterY() const
+QString RegionAttributes::getPreciseOriginY() const
 {
-    return preciseCenterY;
+    return preciseOriginY;
 }
 
-double RegionAttributes::getCenterY() const
+double RegionAttributes::getOriginY() const
 {
     std::streamsize XYprecision = 6;
-    PreciseFloatResult centerY_float = generateFloatFromPreciseString(centerY, XYprecision);
-    Q_ASSERT(centerY_float.second);
-    return static_cast<double>(centerY_float.first);
+    PreciseFloatResult originY_float = generateFloatFromPreciseString(originY, XYprecision);
+    Q_ASSERT(originY_float.second);
+    return static_cast<double>(originY_float.first);
 }
 #else
-double RegionAttributes::getCenterX() const
+double RegionAttributes::getOriginX() const
 {
-   DoubleResult centerX_double =  generateFloatFromString(centerX);
-   Q_ASSERT(centerX_double.second);
-    return centerX_double.first;
+   DoubleResult originX_double =  generateFloatFromString(originX);
+   Q_ASSERT(originX_double.second);
+    return originX_double.first;
 }
 
-double RegionAttributes::getCenterY() const
+double RegionAttributes::getOriginY() const
 {
-   DoubleResult centerY_double =  generateFloatFromString(centerY);
-   Q_ASSERT(centerY_double.second);
-    return centerY_double.first;
+   DoubleResult originY_double =  generateFloatFromString(originY);
+   Q_ASSERT(originY_double.second);
+    return originY_double.first;
 }
 
 #endif

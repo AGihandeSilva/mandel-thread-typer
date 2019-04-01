@@ -151,14 +151,14 @@ void InformationDisplay::setIterationsPerPixel(double iterationsPerPixel)
     iterationsPerPixelInfo.setText(result);
 }
 
-void InformationDisplay::updateCoordData(const QString& centerX, const QString& centerY,
+void InformationDisplay::updateCoordData(const QString& originX, const QString& originY,
                      const QString& width, const QString& height)
 {
-    if (!centerX.isEmpty()) {
-        leftBottomXInfo.setText(centerX);
+    if (!originX.isEmpty()) {
+        leftBottomXInfo.setText(originX);
     }
-    if (!centerY.isEmpty()) {
-        leftBottomYInfo.setText(centerY);
+    if (!originY.isEmpty()) {
+        leftBottomYInfo.setText(originY);
     }
     widthInfo.setText(width);
     heightInfo.setText(height);

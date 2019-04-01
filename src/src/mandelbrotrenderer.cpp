@@ -63,7 +63,8 @@ QDataStream &operator <<(QDataStream &outputStream, const MandelBrotRenderer::Re
     outputStream << state.detailedDisplayEnabled << static_cast<qint32>(state.size.width());
     outputStream << static_cast<qint32>(state.size.height());
     outputStream << static_cast<qint32>(state.pos.x()) << static_cast<qint32>(state.pos.y());
-    outputStream << state.centerX << state.centerY << state.curScale << state.pixmapScale << state.threadMediatorEnabled;
+    outputStream << state.originX << state.originY << state.curScale << state.pixmapScale << state.threadMediatorEnabled;
+    outputStream << static_cast<int>(state.numericType);
 
     return outputStream;
 }
@@ -84,11 +85,15 @@ QDataStream &operator >>(QDataStream &inputStream, MandelBrotRenderer::RenderSta
     inputStream >> y;
     state.pos = QPoint(x, y);
 
-    inputStream >> state.centerX;
-    inputStream >> state.centerY;
+    inputStream >> state.originX;
+    inputStream >> state.originY;
     inputStream >> state.curScale;
     inputStream >> state.pixmapScale;
     inputStream >> state.threadMediatorEnabled;
+
+    int numericTypeAsInt;
+    inputStream >> numericTypeAsInt;
+    state.numericType = static_cast<MandelBrotRenderer::internalDataType>(numericTypeAsInt);
 
     return inputStream;
 }

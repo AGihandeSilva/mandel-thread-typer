@@ -10,10 +10,10 @@ using MandelBrotRenderer::generateFloatFromPreciseString;
 using MandelBrotRenderer::DoubleResult;
 
 RendererConfig::RendererConfig(bool detailedDisplayEnabled,
-                   QSize size, QPoint pos, const MandelBrotRenderer::CoordValue& centerX, const MandelBrotRenderer::CoordValue& centerY, double curScale, double pixmapScale,
+                   QSize size, QPoint pos, const MandelBrotRenderer::CoordValue& originX, const MandelBrotRenderer::CoordValue& originY, double curScale, double pixmapScale,
                    bool threadMediatorEnabled, int colorMapSize, MandelBrotRenderer::internalDataType dataType) :
 
-    state { detailedDisplayEnabled, size, pos, centerX, centerY, curScale,
+    state { detailedDisplayEnabled, size, pos, originX, originY, curScale,
             pixmapScale, threadMediatorEnabled, colorMapSize, dataType} {}
 
 RendererConfig::RendererConfig(MandelBrotRenderer::RenderState&& state) : state(std::move(state)){}
@@ -110,30 +110,30 @@ double RendererConfig::getCurScale() const
     return state.curScale;
 }
 
-double RendererConfig::getCenterY() const
+double RendererConfig::getOriginY() const
 {
-    DoubleResult centerY_float = MandelBrotRenderer::generateFloatFromString(state.centerY);
-    Q_ASSERT(centerY_float.second);
-    return centerY_float.first;
+    DoubleResult originY_float = MandelBrotRenderer::generateFloatFromString(state.originY);
+    Q_ASSERT(originY_float.second);
+    return originY_float.first;
 }
 
 #if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
-const QString& RendererConfig::getPreciseCenterX() const
+const QString& RendererConfig::getPreciseOriginX() const
 {
-    return state.centerX;
+    return state.originX;
 }
 
-const QString& RendererConfig::getPreciseCenterY() const
+const QString& RendererConfig::getPreciseOriginY() const
 {
-    return state.centerY;
+    return state.originY;
 }
 #endif
 
-double RendererConfig::getCenterX() const
+double RendererConfig::getOriginX() const
 {
-    DoubleResult centerX_float = MandelBrotRenderer::generateFloatFromString(state.centerX);
-    Q_ASSERT(centerX_float.second);
-    return centerX_float.first;
+    DoubleResult originX_float = MandelBrotRenderer::generateFloatFromString(state.originX);
+    Q_ASSERT(originX_float.second);
+    return originX_float.first;
 }
 
 QPoint RendererConfig::getPos() const

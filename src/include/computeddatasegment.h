@@ -38,11 +38,11 @@ public:
     ComputedDataSegment& operator=(ComputedDataSegment&& other) noexcept;
 
     double getScaleFactor() const { return attributes.getScaleFactor(); }
-    double getCenterX() const { return attributes.getCenterX(); }
-    double getCenterY() const { return attributes.getCenterY(); }
+    double getOriginX() const { return attributes.getOriginX(); }
+    double getOriginY() const { return attributes.getOriginY(); }
 #if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
-    QString getPreciseCenterX() const { return attributes.getPreciseCenterX(); }
-    QString getPreciseCenterY() const { return attributes.getPreciseCenterY(); }
+    QString getPreciseOriginX() const { return attributes.getPreciseOriginX(); }
+    QString getPreciseOriginY() const { return attributes.getPreciseOriginY(); }
 #endif
     int getMinX() const { return attributes.getMinX(); }
     int getMaxX() const { return attributes.getMaxX(); }

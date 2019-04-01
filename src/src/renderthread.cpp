@@ -100,8 +100,8 @@ RenderThread::RenderThread(SettingsHandler&settingsHandler, QObject *parent)
       applicationSettingsHandler(settingsHandler),
       bufferedResults(MAX_NUM_WORKER_THREADS, MQuintVector(0)),
       bufferedAttributes(MAX_NUM_WORKER_THREADS, RegionAttributes()),
-      centerX(MandelbrotWidget::unInitializedFloatString),  //TODO improve this, check for the lifetime of this static value
-      centerY(MandelbrotWidget::unInitializedFloatString),
+      originX(MandelbrotWidget::unInitializedFloatString),  //TODO improve this, check for the lifetime of this static value
+      originY(MandelbrotWidget::unInitializedFloatString),
       scaleFactor(notYetInitializedDouble),
       abort(false), currentImage(nullptr), computationChunksDone(0), colorMapSize(MandelBrotRenderer::DefaultColormapSize),
       timerInSeconds(this),
@@ -148,21 +148,21 @@ void RenderThread::setOwnerOnce(MandelbrotWidget * owner)
     }
 }
 
-void RenderThread::render(const MandelBrotRenderer::CoordValue& centerX, const MandelBrotRenderer::CoordValue& centerY,
+void RenderThread::render(const MandelBrotRenderer::CoordValue& originX, const MandelBrotRenderer::CoordValue& originY,
 #if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
-                          const QString& preciseCenterX, const QString& preciseCenterY,
+                          const QString& preciseOriginX, const QString& preciseOriginY,
 #endif
                           double scaleFactor,
                           QSize resultSize)
 {
     QMutexLocker locker(&mutex);
 
-    this->centerX = centerX;
-    this->centerY = centerY;
+    this->originX = originX;
+    this->originY = originY;
     this->scaleFactor = scaleFactor;
 #if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
-    this->preciseCenterX = preciseCenterX;
-    this->preciseCenterY = preciseCenterY;
+    this->preciseOriginX = preciseOriginX;
+    this->preciseOriginY = preciseOriginY;
 #endif
     publishCoordinates();
 
@@ -605,7 +605,8 @@ void RenderThread::processSettingUpdate(QSettings &settings)
     rendererData.currentNumPassValue = settings.value("currentNumPassValue", possiblePassValues[1]).toInt();
     rendererData.nextNumPassValue = rendererData.currentNumPassValue;
     rendererData.colorMapSize = settings.value("colourMapSize", MandelBrotRenderer::DefaultColormapSize).toInt();
-    rendererData.numericType = static_cast<internalDataType>(settings.value("internalNumericType", toUnderlyingType(internalDataType::doublePrecisionFloat)).toInt());
+    rendererData.numericType = static_cast<internalDataType>(settings.value("internalNumericType",
+                                                                            static_cast<int>(internalDataType::doublePrecisionFloat)).toInt());
 
     threadMediator.setEnabled(settings.value("threadMediatorEnabled", threadReallocationDefaultEnabled).toBool());
 
@@ -646,11 +647,11 @@ void RenderThread::run()
         QSize resultSize = this->resultSize;
         double scaleFactor = this->scaleFactor;
         //TODO - fix this shadowing
-        MandelBrotRenderer::CoordValue centerX = this->centerX;
-        MandelBrotRenderer::CoordValue centerY = this->centerY;
+        MandelBrotRenderer::CoordValue originX = this->originX;
+        MandelBrotRenderer::CoordValue originY = this->originY;
 #if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
-        QString preciseCenterX = this->preciseCenterX;
-        QString preciseCenterY = this->preciseCenterY;
+        QString preciseOriginX = this->preciseOriginX;
+        QString preciseOriginY = this->preciseOriginY;
 #endif
         mutex.unlock();
 
@@ -737,10 +738,10 @@ void RenderThread::run()
                                                  abort,
                                                  i,
                                                 ComputedDataSegment( RegionAttributes(scaleFactor,
-                                                                                      centerX, centerY,
+                                                                                      originX, originY,
 #if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
-                                                                                      preciseCenterX,
-                                                                                      preciseCenterY,
+                                                                                      preciseOriginX,
+                                                                                      preciseOriginY,
 #endif
                                                                                       static_cast<int>(-halfWidth),
                                                                                       static_cast<int>(halfWidth),
@@ -836,9 +837,9 @@ void RenderThread::processIntegerValueFromButtonPress(int value)
 void RenderThread::publishCoordinates() const
 {
 #if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
-    owner->updateCoordInfo(preciseCenterX, preciseCenterY, scaleFactor);
+    owner->updateCoordInfo(preciseOriginX, preciseOriginY, scaleFactor);
 #else
-    owner->updateCoordInfo(centerX, centerY, scaleFactor);
+    owner->updateCoordInfo(originX, originY, scaleFactor);
 #endif
 }
 

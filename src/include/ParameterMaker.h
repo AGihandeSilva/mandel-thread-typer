@@ -64,11 +64,11 @@ struct ParameterMaker
         minX(dataSegment.getMinX()),
         maxX(dataSegment.getMaxX()),
 #if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
-        centerX(MandelBrotRenderer::generateFloatFromPreciseString(dataSegment.getPreciseCenterX()).first),
-        centerY(MandelBrotRenderer::generateFloatFromPreciseString(dataSegment.getPreciseCenterY()).first),
+        originX(MandelBrotRenderer::generateFloatFromPreciseString(dataSegment.getPreciseOriginX()).first),
+        originY(MandelBrotRenderer::generateFloatFromPreciseString(dataSegment.getPreciseOriginY()).first),
 #else
-        centerX(static_cast<T>(dataSegment.getCenterX())),
-        centerY(static_cast<T>(dataSegment.getCenterY())),
+        originX(static_cast<T>(dataSegment.getOriginX())),
+        originY(static_cast<T>(dataSegment.getOriginY())),
 #endif
         scaleFactor(static_cast<T>(dataSegment.getScaleFactor())),
         limit(limitValue)
@@ -85,8 +85,8 @@ struct ParameterMaker
     scaling(static_cast<int64_t>(1LL << scalingShift)),
     minX(dataSegment.getMinX()),
     maxX( dataSegment.getMaxX()),
-    centerX(static_cast<T>(scaling * dataSegment.getCenterX())),
-    centerY(static_cast<T>(scaling * dataSegment.getCenterY())),
+    originX(static_cast<T>(scaling * dataSegment.getOriginX())),
+    originY(static_cast<T>(scaling * dataSegment.getOriginY())),
     scaleFactor(static_cast<T>(scaling * dataSegment.getScaleFactor())),
     limit(static_cast<T>(scaling * scaling * limitValue))
 {}
@@ -103,8 +103,8 @@ struct ParameterMaker
         minX(dataSegment.getMinX()),
         maxX(dataSegment.getMaxX()),
         //multiplication by floating point types is not supported for this boost type, convert scaling factor to a fixed point value
-        centerX((scaling * static_cast<int64_t>(dataSegment.getCenterX() * doubleToIntScaling)) >> doubleToIntShift),
-        centerY((scaling * static_cast<int64_t>(dataSegment.getCenterY() * doubleToIntScaling)) >> doubleToIntShift),
+        originX((scaling * static_cast<int64_t>(dataSegment.getOriginX() * doubleToIntScaling)) >> doubleToIntShift),
+        originY((scaling * static_cast<int64_t>(dataSegment.getOriginY() * doubleToIntScaling)) >> doubleToIntShift),
         scaleFactor((scaling * static_cast<int64_t>(dataSegment.getScaleFactor() * doubleToIntScaling)) >> doubleToIntShift),
         limit(scaling * scaling * limitValue)
     {}
@@ -121,8 +121,8 @@ struct ParameterMaker
     const int minX;
     const int maxX;
 
-    const T centerX;
-    const T centerY;
+    const T originX;
+    const T originY;
     const T scaleFactor;
     const T limit;              // the end value at which kernel iterations stop
 

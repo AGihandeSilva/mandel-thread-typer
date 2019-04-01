@@ -90,7 +90,7 @@ public:
 
     void outputToLog(const QString& outputString, logMode outputMode, bool show = false);
     void executeRender(bool hideProgress = false);
-    void updateCoordInfo(const MandelBrotRenderer::CoordValue& centerX, const MandelBrotRenderer::CoordValue& centerY,
+    void updateCoordInfo(const MandelBrotRenderer::CoordValue& originX, const MandelBrotRenderer::CoordValue& originY,
                          double scaleFactor);
     void displayThreadsInfo(int numThreads);
     void displayPassesInfo(int numPasses);
@@ -150,8 +150,8 @@ public slots:
     void clearUsingUndoRedo() { usingUndoRedo = false; }
     void registerCoordinateUser(MandelBrotRenderer::CoordinateListener* listener,
                                 MandelBrotRenderer::CoordinateListenerConfig config);
-    bool changeRegionParameters(const QString &centerXvalue,
-                                const QString &centerYvalue,
+    bool changeRegionParameters(const QString &originXvalue,
+                                const QString &originYvalue,
                                 const QString &widthValue,
                                 const QString &heightValue);
 
@@ -192,7 +192,7 @@ private:
     void processWindowSize();
 
     template <typename T>
-    bool validateRegion(T centerX, T centerY, T width, T height);
+    bool validateRegion(T originX, T originY, T width, T height);
 
     InformationDisplay* infoDisplayer;
     QTextEdit* logger;
@@ -217,11 +217,11 @@ private:
     QPixmap pixmap;
     QPoint pixmapOffset;
     QPoint lastDragPos;
-    MandelBrotRenderer::CoordValue centerX;
-    MandelBrotRenderer::CoordValue centerY;
+    MandelBrotRenderer::CoordValue originX;
+    MandelBrotRenderer::CoordValue originY;
 #if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
-    QString preciseCenterX;
-    QString preciseCenterY;
+    QString preciseOriginX;
+    QString preciseOriginY;
 #endif
     double pixmapScale;
     double curScale;
@@ -245,8 +245,8 @@ private:
     static const int kInitialHeight = 500;
     static const int kInitialPosCoord = 400;
 
-    static QString DefaultCenterX;
-    static QString DefaultCenterY;
+    static QString DefaultOriginX;
+    static QString DefaultOriginY;
 
     void connectToComponents();
     void prepareMenuBar();
@@ -259,8 +259,8 @@ private:
 public:
     static QString undefinedFloatString;
     static QString unInitializedFloatString;
-    static QString getDefaultCenterX() { return DefaultCenterX; }
-    static QString getDefaultCenterY() { return DefaultCenterY; }
+    static QString getDefaultOriginX() { return DefaultOriginX; }
+    static QString getDefaultOriginY() { return DefaultOriginY; }
 };
 //! [0]
 

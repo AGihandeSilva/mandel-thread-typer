@@ -44,7 +44,27 @@ void SettingsHandler::notifyUsersSettingsUpdatedByOwner(SettingsUser *ownerRecei
 void SettingsHandler::reset()
 {
     settingsReceivers.clear();
-	topSharer = nullptr;
+    topSharer = nullptr;
+}
+
+void SettingsHandler::getXYSettingsData(QString &Xvalue, QString &Yvalue)
+{
+    settings.beginGroup("RenderParameters");
+        const QString defaultXKey("X");
+        if (settings.contains(defaultXKey)) {
+            Xvalue = settings.value(defaultXKey, MandelbrotWidget::getDefaultOriginX()).toString();
+        } else {
+            Xvalue = settings.value("centerX", MandelbrotWidget::getDefaultOriginX()).toString();
+        }
+
+        const QString defaultYKey("Y");
+        if (settings.contains(defaultYKey)) {
+            Yvalue= settings.value(defaultYKey, MandelbrotWidget::getDefaultOriginY()).toString();
+        } else {
+            Yvalue= settings.value("centerY", MandelbrotWidget::getDefaultOriginY()).toString();
+        }
+
+    settings.endGroup();
 }
 
 void SettingsHandler::notifyUsersSettingsUpdated()

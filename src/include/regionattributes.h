@@ -11,11 +11,11 @@ public:
    RegionAttributes();
 
    explicit RegionAttributes(double scaleFactor,
-                     MandelBrotRenderer::CoordValue& centerX,
-                     MandelBrotRenderer::CoordValue& centerY,
+                     MandelBrotRenderer::CoordValue& originX,
+                     MandelBrotRenderer::CoordValue& originY,
 #if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
-                     QString preciseCenterX,
-                     QString preciseCenterY,
+                     QString preciseOriginX,
+                     QString preciseOriginY,
 #endif
                      int minX,
                      int maxX,
@@ -33,11 +33,11 @@ public:
     bool operator==(const RegionAttributes& other);
 
     double getScaleFactor() const;
-    double getCenterX() const;
-    double getCenterY() const;
+    double getOriginX() const;
+    double getOriginY() const;
 #if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
-    QString getPreciseCenterX() const;
-    QString getPreciseCenterY() const;
+    QString getPreciseOriginX() const;
+    QString getPreciseOriginY() const;
 #endif
     int getMinX() const;
     int getMaxX() const;
@@ -49,11 +49,11 @@ public:
 
 private:
     double scaleFactor;
-    MandelBrotRenderer::CoordValue centerX;
-    MandelBrotRenderer::CoordValue centerY;
+    MandelBrotRenderer::CoordValue originX;
+    MandelBrotRenderer::CoordValue originY;
 #if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
-    QString preciseCenterX;
-    QString preciseCenterY;
+    QString preciseOriginX;
+    QString preciseOriginY;
 #endif
     int minX;
     int maxX;

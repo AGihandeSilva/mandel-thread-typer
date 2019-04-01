@@ -16,7 +16,7 @@ public:
     RendererConfig() = default;
 
     RendererConfig(bool detailedDisplayEnabled,
-                   QSize size, QPoint pos, const MandelBrotRenderer::CoordValue& centerX, const MandelBrotRenderer::CoordValue& centerY, double curScale, double pixmapScale,
+                   QSize size, QPoint pos, const MandelBrotRenderer::CoordValue& originX, const MandelBrotRenderer::CoordValue& originY, double curScale, double pixmapScale,
                    bool threadMediatorEnabled, int colorMapSize, MandelBrotRenderer::internalDataType dataType);
 
     explicit RendererConfig(MandelBrotRenderer::RenderState&& state);
@@ -33,11 +33,11 @@ public:
     bool getDetailedDisplayEnabled() const;
     QSize getSize() const;
     QPoint getPos() const;
-    double getCenterX() const;
-    double getCenterY() const;
+    double getOriginX() const;
+    double getOriginY() const;
 #if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
-    const QString& getPreciseCenterX() const;
-    const QString& getPreciseCenterY() const;
+    const QString& getPreciseOriginX() const;
+    const QString& getPreciseOriginY() const;
 #endif
     double getCurScale() const;
     double getPixmapScale() const;

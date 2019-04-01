@@ -81,8 +81,8 @@ const double ZoomInFactor = 0.8;
 const double ZoomOutFactor = 1 / ZoomInFactor;
 const int ScrollStep = 20;
 
-QString MandelbrotWidget::DefaultCenterX("-0.637011");
-QString MandelbrotWidget::DefaultCenterY("-0.0395159");
+QString MandelbrotWidget::DefaultOriginX("-0.637011");
+QString MandelbrotWidget::DefaultOriginY("-0.0395159");
 
 QString MandelbrotWidget::undefinedFloatString = "NaN";
 QString MandelbrotWidget::unInitializedFloatString = "-1.0";
@@ -98,9 +98,9 @@ using namespace MandelBrotRenderer;
 
 MandelbrotWidget::MandelbrotWidget(QWidget *parent)
     : QMainWindow(parent), settingsHandler(this), thread(settingsHandler, this),
-      centerX(unInitializedFloatString), centerY(unInitializedFloatString),
+      originX(unInitializedFloatString), originY(unInitializedFloatString),
 #if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
-        preciseCenterX(undefinedFloatString), preciseCenterY(undefinedFloatString),
+        preciseOriginX(undefinedFloatString), preciseOriginY(undefinedFloatString),
 #endif
       pixmapScale(notYetInitializedDouble),
       curScale(notYetInitializedDouble), perPixelCoeff(notYetInitializedDouble),
@@ -268,8 +268,8 @@ void MandelbrotWidget::writeSettings()
     settingsHandler.getSettings().endGroup();
 
     settingsHandler.getSettings().beginGroup("RenderParameters");
-        settingsHandler.getSettings().setValue("centerX", centerX);
-        settingsHandler.getSettings().setValue("centerY", centerY);
+        settingsHandler.getSettings().setValue("X", originX);
+        settingsHandler.getSettings().setValue("Y", originY);
         settingsHandler.getSettings().setValue("curScale", curScale);
         settingsHandler.getSettings().setValue("pixmapScale", pixmapScale);
     settingsHandler.getSettings().endGroup();
@@ -297,8 +297,8 @@ RendererConfig MandelbrotWidget::generateConfigData()
     auto result = RendererConfig(getInfoDisplayer()->getDetailedDisplayEnabled(),
                           size(),
                           pos(),
-                          centerX,
-                          centerY,
+                          originX,
+                          originY,
                           curScale,
                           pixmapScale,
                           thread.getRendererData().threadMediatorEnabled,
@@ -312,11 +312,11 @@ void MandelbrotWidget::enforceConfigData(RendererConfig &newConfigData)
 {
     RendererConfig originalConfig = generateConfigData();
     getInfoDisplayer()->setEnabled(newConfigData.getDetailedDisplayEnabled());
-    centerX = QString::number(newConfigData.getCenterX());
-    centerY = QString::number(newConfigData.getCenterY());
+    originX = QString::number(newConfigData.getOriginX());
+    originY = QString::number(newConfigData.getOriginY());
 #if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
-    preciseCenterX = newConfigData.getPreciseCenterX();
-    preciseCenterY = newConfigData.getPreciseCenterY();
+    preciseOriginX = newConfigData.getPreciseOriginX();
+    preciseOriginY = newConfigData.getPreciseOriginY();
 #endif
     curScale = newConfigData.getCurScale();
     pixmapScale = newConfigData.getPixmapScale();
@@ -509,7 +509,7 @@ void MandelbrotWidget::registerCoordinateUser(MandelBrotRenderer::CoordinateList
 }
 
 template <typename T>
-bool MandelbrotWidget::validateRegion(T centerX, T centerY, T width, T height)
+bool MandelbrotWidget::validateRegion(T originX, T originY, T width, T height)
 {
     bool regionOK = true;
 
@@ -517,10 +517,10 @@ bool MandelbrotWidget::validateRegion(T centerX, T centerY, T width, T height)
         regionOK = false;
     }
 
-    regionOK = regionOK && (centerX > static_cast<T>(parameterSpace.xMin));
-    regionOK = regionOK && (centerY > static_cast<T>(parameterSpace.yMin));
-    regionOK = regionOK && (centerX + width < static_cast<T>(parameterSpace.xMax));
-    regionOK = regionOK && (centerY + height < static_cast<T>(parameterSpace.yMax));
+    regionOK = regionOK && (originX > static_cast<T>(parameterSpace.xMin));
+    regionOK = regionOK && (originY > static_cast<T>(parameterSpace.yMin));
+    regionOK = regionOK && (originX + width < static_cast<T>(parameterSpace.xMax));
+    regionOK = regionOK && (originY + height < static_cast<T>(parameterSpace.yMax));
 
     return regionOK;
 }
@@ -543,8 +543,8 @@ bool MandelbrotWidget::validateRegion(T centerX, T centerY, T width, T height)
  * returns: true if the change was accepted and made,
  *          false otherwise
  */
-bool MandelbrotWidget::changeRegionParameters(const QString &centerXvalue,
-                                              const QString &centerYvalue,
+bool MandelbrotWidget::changeRegionParameters(const QString &originXvalue,
+                                              const QString &originYvalue,
                                               const QString &widthValue,
                                               const QString &heightValue)
 {
@@ -555,34 +555,34 @@ bool MandelbrotWidget::changeRegionParameters(const QString &centerXvalue,
     }
 
 #if (USE_BOOST_MULTIPRECISION == 1 || defined(__GNUC__))
-    PreciseFloatResult centerX_result = generateFloatFromPreciseString(centerXvalue);
-    PreciseFloatResult centerY_result = generateFloatFromPreciseString(centerYvalue);
+    PreciseFloatResult originX_result = generateFloatFromPreciseString(originXvalue);
+    PreciseFloatResult originY_result = generateFloatFromPreciseString(originYvalue);
 #else
-    auto centerX_result  = generateFloatFromString(centerXvalue);
-    auto centerY_result  = generateFloatFromString(centerYvalue);
+    auto originX_result  = generateFloatFromString(originXvalue);
+    auto originY_result  = generateFloatFromString(originYvalue);
 #endif
 
     auto width_result    = generateFloatFromString(widthValue);
     auto height_result   = generateFloatFromString(heightValue);
 
-    Q_ASSERT(centerX_result.second);
-    auto centerX_f = centerX_result.first;
-    Q_ASSERT(centerY_result.second);
-    auto centerY_f = centerY_result.first;
+    Q_ASSERT(originX_result.second);
+    auto originX_f = originX_result.first;
+    Q_ASSERT(originY_result.second);
+    auto originY_f = originY_result.first;
     Q_ASSERT(width_result.second);
     auto width_f = width_result.first;
     Q_ASSERT(height_result.second);
     auto height_f = height_result.first;
 
-    bool regionOk= centerX_result.second && centerY_result.second &&
+    bool regionOk= originX_result.second && originY_result.second &&
             width_result.second && height_result.second;
 
 #if (USE_BOOST_MULTIPRECISION == 1 || defined(__GNUC__))
-    regionOk = regionOk && validateRegion<Float128>(centerX_f, centerY_f,
+    regionOk = regionOk && validateRegion<Float128>(originX_f, originY_f,
                                                     static_cast<Float128>(width_f),
                                                     static_cast<Float128>(height_f));
 #else
-    regionOk = regionOk && validateRegion<double>(centerX_f, centerY_f, width_f, height_f);
+    regionOk = regionOk && validateRegion<double>(originX_f, originY_f, width_f, height_f);
 #endif
 
     std::cout << "new Region OK:" << regionOk << std::endl;
@@ -622,11 +622,11 @@ bool MandelbrotWidget::changeRegionParameters(const QString &centerXvalue,
                 if (pixelCount > minimumWidgetSize &&
                     pixelCount < maxPixelCount) {
 
-                    centerX = centerXvalue;
-                    centerY = centerYvalue;
+                    originX = originXvalue;
+                    originY = originYvalue;
 #if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
-                    preciseCenterX = centerXvalue;
-                    preciseCenterY = centerYvalue;
+                    preciseOriginX = originXvalue;
+                    preciseOriginY = originYvalue;
 #endif
 
                     curScale = newScale;
@@ -833,12 +833,11 @@ void MandelbrotWidget::processSettingUpdate(QSettings &settings)
         move(settings.value("pos", QPoint(kInitialPosCoord, kInitialPosCoord)).toPoint());
     settings.endGroup();
 
+    settingsHandler.getXYSettingsData(originX, originY);
     settings.beginGroup("RenderParameters");
-        centerX = settings.value("centerX", DefaultCenterX).toString();
-        centerY = settings.value("centerY", DefaultCenterY).toString();
 #if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
-        preciseCenterX = centerX;
-        preciseCenterY = centerY;
+        preciseOriginX = originX;
+        preciseOriginY = originY;
 #endif
         curScale = settings.value("curScale", DefaultScale).toDouble();
         pixmapScale = settings.value("pixmapScale", DefaultScale).toDouble();
@@ -881,11 +880,11 @@ void MandelbrotWidget::updatePixmap(const QImage *image, double scaleFactor)
 //! [16]
 //!
 
-void MandelbrotWidget::updateCoordInfo(const MandelBrotRenderer::CoordValue& centerX, const MandelBrotRenderer::CoordValue& centerY,
+void MandelbrotWidget::updateCoordInfo(const MandelBrotRenderer::CoordValue& originX, const MandelBrotRenderer::CoordValue& originY,
                                        double scaleFactor)
 {
-    QString centerX_s;
-    QString centerY_s;
+    QString originX_s;
+    QString originY_s;
     QSize currentSize = size();
     QString widthAsString(QString::number(currentSize.width() * scaleFactor));
     QString heightAsString(QString::number(currentSize.height() * scaleFactor));
@@ -894,26 +893,26 @@ void MandelbrotWidget::updateCoordInfo(const MandelBrotRenderer::CoordValue& cen
         int precision = i.second;
 
         //try to generate a numeric variable to ensure the numeric format is valid
-        MandelBrotRenderer::DoubleResult centerX_float = generateFloatFromString(centerX);
-        if (centerX_float.second) {
+        MandelBrotRenderer::DoubleResult originX_float = generateFloatFromString(originX);
+        if (originX_float.second) {
             if (precision > 0) {
-                centerX_s.setNum(centerX_float.first, 'g', precision);
+                originX_s.setNum(originX_float.first, 'g', precision);
             } else {
-                centerX_s = centerX;
+                originX_s = originX;
             }
         }
-        MandelBrotRenderer::DoubleResult centerY_float = generateFloatFromString(centerY);
-        if (centerY_float.second) {
+        MandelBrotRenderer::DoubleResult originY_float = generateFloatFromString(originY);
+        if (originY_float.second) {
             if (precision > 0) {
-                centerY_s.setNum(centerY_float.first, 'g', precision);
+                originY_s.setNum(originY_float.first, 'g', precision);
             } else {
-                centerY_s = centerY;
+                originY_s = originY;
             }
         }
 
-        (i.first)->updateCoordData(centerX_s, centerY_s, widthAsString, heightAsString);
-        centerX_s.clear();
-        centerY_s.clear();
+        (i.first)->updateCoordData(originX_s, originY_s, widthAsString, heightAsString);
+        originX_s.clear();
+        originY_s.clear();
     }
 }
 
@@ -1050,15 +1049,15 @@ void MandelbrotWidget::executeRender(bool hideProgress)
     }
 
 #if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
-    if (preciseCenterX == undefinedFloatString || preciseCenterY == undefinedFloatString) {
-        preciseCenterX = centerX;
-        preciseCenterY = centerY;
+    if (preciseOriginX == undefinedFloatString || preciseOriginY == undefinedFloatString) {
+        preciseOriginX = originX;
+        preciseOriginY = originY;
     }
 #endif
 
-    thread.render(centerX, centerY,
+    thread.render(originX, originY,
 #if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
-                preciseCenterX, preciseCenterY,
+                preciseOriginX, preciseOriginY,
 #endif
                   curScale, size());
 }
@@ -1103,20 +1102,20 @@ QString MandelbrotWidget::computeDeltaWithHigherPrecision(QString& value, int de
 void MandelbrotWidget::scroll(int deltaX, int deltaY)
 {
 #if (USE_BOOST_MULTIPRECISION == 1 || defined(__GNUC__))
-    preciseCenterX = computeDeltaWithHigherPrecision(centerX, deltaX, curScale);
-    preciseCenterY = computeDeltaWithHigherPrecision(centerY, deltaY, curScale);
-    centerX = preciseCenterX;
-    centerY = preciseCenterY;
+    preciseOriginX = computeDeltaWithHigherPrecision(originX, deltaX, curScale);
+    preciseOriginY = computeDeltaWithHigherPrecision(originY, deltaY, curScale);
+    originX = preciseOriginX;
+    originY = preciseOriginY;
 #else
-    auto parsedCenterX = generateFloatFromString(centerX);
-    double centerX_origin = parsedCenterX.second ? parsedCenterX.first : 0.0;
-    double currentCenterX = centerX_origin + deltaX * curScale;
+    auto parsedOriginX = generateFloatFromString(originX);
+    double originX_origin = parsedOriginX.second ? parsedOriginX.first : 0.0;
+    double currentOriginX = originX_origin + deltaX * curScale;
 
-    auto parsedCenterY = generateFloatFromString(centerY);
-    double centerY_origin = parsedCenterY.second ? parsedCenterY.first : 0.0;
-    double currentCenterY = centerY_origin + deltaY * curScale;
-    centerX = MandelBrotRenderer::generateDoubleAsString(currentCenterX);
-    centerY = MandelBrotRenderer::generateDoubleAsString(currentCenterY);
+    auto parsedOriginY = generateFloatFromString(originY);
+    double originY_origin = parsedOriginY.second ? parsedOriginY.first : 0.0;
+    double currentOriginY = originY_origin + deltaY * curScale;
+    originX = MandelBrotRenderer::generateDoubleAsString(currentOriginX);
+    originY = MandelBrotRenderer::generateDoubleAsString(currentOriginY);
 #endif
     update();
     executeRender();

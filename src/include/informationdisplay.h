@@ -20,7 +20,7 @@ public:
     explicit InformationDisplay(MandelbrotWidget& mainWidget, SettingsHandler& applicationSettingsHandler);
     void prepareTimerInfo();
 
-    void updateCoordData(const QString& centerX, const QString& centerY,
+    void updateCoordData(const QString& originX, const QString& originY,
                          const QString& width, const QString& height) override;
     void updateProgress(uint progressInPercent);
     void setThreadsInfo(int numThreads);

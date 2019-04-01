@@ -23,11 +23,11 @@ public:
     explicit RenderParametersWidget(RenderThread *masterThread,
                                     MandelbrotWidget& mainWidget, SettingsHandler& settingsHandler);
 
-    void updateCoordData(const QString& centerX, const QString& centerY,
+    void updateCoordData(const QString& originX, const QString& originY,
                          const QString& width, const QString& height) override;
 
 public slots:
-    void processSettingUpdate(QSettings& settings) override;
+    void processSettingUpdate(QSettings&) override;
     void updateAndShow();
     void refresh();
     void processNewRegionParameters();

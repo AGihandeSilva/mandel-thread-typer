@@ -150,8 +150,8 @@ using PreciseFloatResult = std::pair<Float128, bool>;
             QPoint pos;
 
         /* RenderParameters settings */
-            CoordValue centerX;
-            CoordValue centerY;
+            CoordValue originX;
+            CoordValue originY;
             double curScale;
             double pixmapScale;
 
@@ -178,7 +178,7 @@ using PreciseFloatResult = std::pair<Float128, bool>;
     public:
         CoordinateListener() = default;
         virtual ~CoordinateListener() = default;
-        virtual void updateCoordData(const QString& centerX, const QString& centerY,
+        virtual void updateCoordData(const QString& originX, const QString& originY,
                                      const QString& width, const QString& height) = 0;
         CoordinateListener(const CoordinateListener&) = delete;
         CoordinateListener(CoordinateListener&&) = delete;

@@ -21,6 +21,8 @@ public:
 
     void reset();
 
+    void getXYSettingsData(QString& Xvalue, QString& Yvalue);
+
 private:
     void notifyUsersSettingsUpdated();
     static constexpr enum QSettings::Format settingsFormat = QSettings::IniFormat;
