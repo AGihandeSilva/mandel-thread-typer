@@ -38,8 +38,8 @@ ToolsOptionsWidget::ToolsOptionsWidget(RenderThread *masterThread, MandelbrotWid
       applicationSettingsHandler(settingsHandler),
       numPassValue(masterThread != nullptr ? masterThread->getRunningNumPasses() : MandelBrotRenderer::defaultNumPassesValue),
       numWorkerThreads(masterThread != nullptr ? masterThread->getNumWorkerThreads() : RenderThread::calculateInitialNumThreads()),
-      threadMediatorEnabled(false),
-      colorMapSize(MandelBrotRenderer::DefaultColormapSize),
+      m_threadMediatorEnabled(false),
+      m_colorMapSize(MandelBrotRenderer::DefaultColormapSize),
       displayDetailedInfo(true)
 {
     processSettingUpdate(settingsHandler.getSettings());
@@ -95,9 +95,9 @@ void ToolsOptionsWidget::processSettingUpdate(QSettings& settings)
     numWorkerThreads = settings.value("numWorkerThreads", masterThread->getNumWorkerThreads()).toInt();
     numPassValue = settings.value("currentNumPassValue", masterThread->getRunningNumPasses()).toInt();
 
-    threadMediatorEnabled = settings.value("threadMediatorEnabled", masterThread->getThreadMediator().getEnabled()).toBool();
+    m_threadMediatorEnabled = settings.value("threadMediatorEnabled", masterThread->getThreadMediator().getEnabled()).toBool();
 
-    colorMapSize = settings.value("colourMapSize", MandelBrotRenderer::DefaultColormapSize).toInt();
+    m_colorMapSize = settings.value("colourMapSize", MandelBrotRenderer::DefaultColormapSize).toInt();
 
     settings.endGroup();
 
@@ -180,7 +180,7 @@ QButtonGroup *ToolsOptionsWidget::addNumPassesArea()
 
 void ToolsOptionsWidget::setAlgorithmInGUI()
 {
-    const threadAlgorithm currentAlgorithm = threadMediatorEnabled ?
+    const threadAlgorithm currentAlgorithm = m_threadMediatorEnabled ?
                 threadAlgorithm::dynamic_algorithm : threadAlgorithm::uniform_algorithm;
 
     threadAlgorithmButtons->buttons()[MandelBrotRenderer::toUnderlyingType(currentAlgorithm)]->setChecked(true);
@@ -193,8 +193,8 @@ void ToolsOptionsWidget::setNumPassesInGUI()
 
 void ToolsOptionsWidget::setColorMapSizeinGUI()
 {
-    masterThread->setColormapSize(colorMapSize);
-    colorMapSizeSetting->setValue(colorMapSize);
+    masterThread->setColormapSize(m_colorMapSize);
+    colorMapSizeSetting->setValue(m_colorMapSize);
 }
 
 void ToolsOptionsWidget::setDetailedInfoInGUI()
@@ -205,7 +205,7 @@ void ToolsOptionsWidget::setDetailedInfoInGUI()
 void ToolsOptionsWidget::setNumericTypeInGUI()
 {
     const MandelBrotRenderer::RendererData&  renderSettings = masterThread->getRendererData();
-    numericTypeSelection->setCurrentIndex(toUnderlyingType(renderSettings.numericType));
+    numericTypeSelection->setCurrentIndex(toUnderlyingType(renderSettings.m_numericType));
 }
 
 
@@ -310,11 +310,11 @@ void ToolsOptionsWidget::addColorMapSizeField()
     colorMapSizeSetting->setToolTip(tr("Press RETURN to re-render the image with the new color map setting"));
 
     Q_ASSERT(colorMapSizeSetting != nullptr);
-    Q_ASSERT(colorMapSize >= colorMapSizeSetting->minimum() &&
-             colorMapSize <= colorMapSizeSetting->maximum());
+    Q_ASSERT(m_colorMapSize >= colorMapSizeSetting->minimum() &&
+             m_colorMapSize <= colorMapSizeSetting->maximum());
     setColorMapSizeinGUI();
 
-    colorMapSizeSetting->setValue(colorMapSize);
+    colorMapSizeSetting->setValue(m_colorMapSize);
 
     connect(colorMapSizeSetting, SIGNAL(valueChanged(int)), masterThread, SLOT(setColormapSize(int)));
     connect(colorMapSizeSetting, SIGNAL(valueChanged(int)), mainWidget, SLOT(displayColorMapSizeInfo(int)));
@@ -327,7 +327,7 @@ void ToolsOptionsWidget::addColorMapSizeField()
     toolsOptionsLayout->addWidget(colorMapTitle);
     toolsOptionsLayout->addWidget(colorMapSizeSetting);
 
-    mainWidget->displayColorMapSizeInfo(colorMapSize);
+    mainWidget->displayColorMapSizeInfo(m_colorMapSize);
 }
 
 void ToolsOptionsWidget::enforceChosenDataType(int index)
@@ -343,7 +343,7 @@ void ToolsOptionsWidget::initializeChosenDataType()
      Q_ASSERT(numericTypeSelection != nullptr);
 
      //TODO: find a better way to do this - we are tying renderThread and ComboBox orderings here
-     numericTypeSelection->setCurrentIndex(toUnderlyingType(renderSettings.numericType));
+     numericTypeSelection->setCurrentIndex(toUnderlyingType(renderSettings.m_numericType));
 }
 
 RenderThread::typeNameUser  ToolsOptionsWidget::AddNumericTypeToSelector() const
@@ -380,7 +380,7 @@ void ToolsOptionsWidget::addNumericTypeSelector()
     initializeChosenDataType();
 
     connect(numericTypeSelection, QOverload<int>::of(&QComboBox::currentIndexChanged),
-        [=](int index){ enforceChosenDataType(index); });
+        [this](int index){ enforceChosenDataType(index); });
 
     toolsOptionsLayout->addWidget(numericTypeTitle);
     toolsOptionsLayout->addWidget(numericTypeSelection);
@@ -391,8 +391,7 @@ void ToolsOptionsWidget::addInfoControlButton()
     showInfoButton = new QCheckBox("Show Detailed Information");
     showInfoButton->setEnabled(true);
 
-
-    connect(showInfoButton, SIGNAL(stateChanged(int)), mainWidget->getInfoDisplayer(), SLOT(setEnabledByButtonState(int)));
+    connect(showInfoButton, SIGNAL(checkStateChanged(Qt::CheckState)), &mainWidget->getInfoDisplayer(), SLOT(setEnabledByButtonState(Qt::CheckState)));
 
     toolsOptionsLayout->addWidget(showInfoButton);
     setDetailedInfoInGUI();

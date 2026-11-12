@@ -11,10 +11,10 @@ using MandelBrotRenderer::DoubleResult;
 
 RendererConfig::RendererConfig(bool detailedDisplayEnabled,
                    QSize size, QPoint pos, const MandelBrotRenderer::CoordValue& originX, const MandelBrotRenderer::CoordValue& originY, double curScale, double pixmapScale,
-                   bool threadMediatorEnabled, int colorMapSize, MandelBrotRenderer::internalDataType dataType) :
+                   bool threadMediatorEnabled, int m_colorMapSize, MandelBrotRenderer::internalDataType dataType) :
 
     state { detailedDisplayEnabled, size, pos, originX, originY, curScale,
-            pixmapScale, threadMediatorEnabled, colorMapSize, dataType} {}
+            pixmapScale, threadMediatorEnabled, m_colorMapSize, dataType} {}
 
 RendererConfig::RendererConfig(MandelBrotRenderer::RenderState&& state) : state(std::move(state)){}
 
@@ -87,32 +87,32 @@ bool RendererConfig::sizeIsInvalid(const QSize &size) const
 
 bool RendererConfig::getThreadMediatorEnabled() const
 {
-    return state.threadMediatorEnabled;
+    return state.m_threadMediatorEnabled;
 }
 
 bool RendererConfig::getColorMapSize() const
 {
-    return state.colorMapSize;
+    return state.m_colorMapSize;
 }
 
 MandelBrotRenderer::internalDataType RendererConfig::getInternalDataType() const
 {
-    return state.numericType;
+    return state.m_numericType;
 }
 
 double RendererConfig::getPixmapScale() const
 {
-    return state.pixmapScale;
+    return state.m_pixmapScale;
 }
 
 double RendererConfig::getCurScale() const
 {
-    return state.curScale;
+    return state.m_curScale;
 }
 
 double RendererConfig::getOriginY() const
 {
-    DoubleResult originY_float = MandelBrotRenderer::generateFloatFromString(state.originY);
+    DoubleResult originY_float = MandelBrotRenderer::generateFloatFromString(state.m_originY);
     Q_ASSERT(originY_float.second);
     return originY_float.first;
 }
@@ -120,38 +120,38 @@ double RendererConfig::getOriginY() const
 #if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
 const QString& RendererConfig::getPreciseOriginX() const
 {
-    return state.originX;
+    return state.m_originX;
 }
 
 const QString& RendererConfig::getPreciseOriginY() const
 {
-    return state.originY;
+    return state.m_originY;
 }
 #endif
 
 double RendererConfig::getOriginX() const
 {
-    DoubleResult originX_float = MandelBrotRenderer::generateFloatFromString(state.originX);
+    DoubleResult originX_float = MandelBrotRenderer::generateFloatFromString(state.m_originX);
     Q_ASSERT(originX_float.second);
     return originX_float.first;
 }
 
 QPoint RendererConfig::getPos() const
 {
-    return state.pos;
+    return state.m_pos;
 }
 
 QSize RendererConfig::getSize() const
 {
-    return state.size;
+    return state.m_size;
 }
 
 bool RendererConfig::getDetailedDisplayEnabled() const
 {
-    return state.detailedDisplayEnabled;
+    return state.m_detailedDisplayEnabled;
 }
 
 bool RendererConfig::checkLegality() const
 {
-    return !(sizeIsInvalid(state.size));
+    return !(sizeIsInvalid(state.m_size));
 }

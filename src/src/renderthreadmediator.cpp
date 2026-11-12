@@ -12,26 +12,26 @@
  *
  ************************************************/
 
-using MandelBrotRenderer::nonExistentThreadIndex;
+using MandelBrotRenderer::nonExistentSegmentIndex;
 
 RenderThreadMediator::RenderThreadMediator(MandelBrotRenderer::RendererData& rendererData) :
     rendererData(rendererData),
     allocationUnderway(false), requestUnderway(false),
-    readyThreadIndex(nonExistentThreadIndex), busyThreadCount(0),  waitingThreadCount(0), sharedSegmentCount(0)
+    readyThreadIndex{}, busyThreadCount(0), waitingThreadCount(0), sharedSegmentCount(0)
 {
-    waitingThreads.fill(nonExistentThreadIndex);
+    waitingThreads.fill({});
     doneThreads.fill(false);
 }
 
 
 bool RenderThreadMediator::getEnabled() const
 {
-    return rendererData.threadMediatorEnabled;
+    return rendererData.m_threadMediatorEnabled;
 }
 
 void RenderThreadMediator::setEnabled(bool value)
 {
-    rendererData.threadMediatorEnabled = value;
+    rendererData.m_threadMediatorEnabled = value;
 }
 
 void RenderThreadMediator::addThreadToWaitingQueue(uint threadIndex)
@@ -43,12 +43,16 @@ void RenderThreadMediator::addThreadToWaitingQueue(uint threadIndex)
 
 void RenderThreadMediator::removeThreadFromWaitingQueue(uint threadIndex)
 {
-    waitingThreads.at(threadIndex) = nonExistentThreadIndex;
+    waitingThreads.at(threadIndex).reset();
 }
 
 
 bool RenderThreadMediator::threadIsInWaitingQueue(uint threadIndex) const
 {
+    if (!waitingThreads.at(threadIndex).has_value())
+    {
+        return false;
+    }
     return (waitingThreads.at(threadIndex) == static_cast<int>(threadIndex));
 }
 
@@ -61,16 +65,13 @@ bool RenderThreadMediator::threadsAreWaiting() const
 
 void RenderThreadMediator::resetThreadMediator()
 {
-
-    for (auto& i : waitingThreads) {
-        i = nonExistentThreadIndex;
-    }
+    waitingThreads.fill({});
 
     for (auto& i : doneThreads) {
         i = false;
     }
 
-    readyThreadIndex.store(nonExistentThreadIndex);
+    readyThreadIndex.store({});
 
     clearNewTaskSegment();
 
@@ -84,7 +85,7 @@ void RenderThreadMediator::processThreadGoesIdle(int threadIndex)
 {
     if (threadIndex == readyThreadIndex.load())
     {
-        readyThreadIndex.store(nonExistentThreadIndex);
+        readyThreadIndex.store({});
     }
 }
 
@@ -138,8 +139,8 @@ bool RenderThreadMediator::requestNewTask(RenderWorker* workerThread)
             QMutexLocker locker(&mutex);
             int workerThreadIndex = workerThread->getThreadIndex();
 
-            if (readyThreadIndex.load() == nonExistentThreadIndex ||
-                    (doneThreads.at(static_cast<size_t>(readyThreadIndex.load())) &&
+            if (!readyThreadIndex.load().has_value() ||
+                    (doneThreads.at(static_cast<size_t>(readyThreadIndex.load().value())) &&
                      !doneThreads.at(static_cast<size_t>(workerThreadIndex))))
             {
                 addThreadToWaitingQueue(static_cast<uint>(workerThread->getThreadIndex()));
@@ -159,7 +160,7 @@ bool RenderThreadMediator::requestNewTask(RenderWorker* workerThread)
                     newTaskReceived.store(true);
                     removeThreadFromWaitingQueue(static_cast<uint>(workerThread->getThreadIndex()));
                     waitingThreadCount.store(0);
-                    readyThreadIndex.store(nonExistentThreadIndex);
+                    readyThreadIndex.store({});
                     setAllocationUnderway(false);
                 }
             }
@@ -192,7 +193,7 @@ bool RenderThreadMediator::shareTask(RenderWorker *workerThread)
 
 void RenderThreadMediator::cacheComputeSegmentForSharing(const ComputedDataSegment& newTaskSegment)
 {
-    Q_ASSERT(segmentsForSharing.getSegmentIndex() == nonExistentThreadIndex);
+    Q_ASSERT(segmentsForSharing.getSegmentIndex() == nonExistentSegmentIndex);
 
     segmentsForSharing = newTaskSegment;
     sharedSegmentCount.store(1);
@@ -206,7 +207,7 @@ bool RenderThreadMediator::computeSegmentsAreReadyForSharing() const
 ComputedDataSegment &RenderThreadMediator::getNewTaskSegment()
 {
     Q_ASSERT(computeSegmentsAreReadyForSharing());
-    Q_ASSERT(segmentsForSharing.getSegmentIndex() != nonExistentThreadIndex);
+    Q_ASSERT(segmentsForSharing.getSegmentIndex() != nonExistentSegmentIndex);
 
     return segmentsForSharing;
 }

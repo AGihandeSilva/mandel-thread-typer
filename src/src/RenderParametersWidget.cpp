@@ -116,20 +116,20 @@ void RenderParametersWidget::initializeFieldsAndValidators()
     const double minSize = 1.0E-70;
 
     xValidator = new RevertingDoubleValidator(xValue);
-    xValidator->setBottom(parameterBoundaryValues.xMin);
-    xValidator->setTop(parameterBoundaryValues.xMax);
+    xValidator->setBottom(parameterBoundaryValues.m_xMin);
+    xValidator->setTop(parameterBoundaryValues.m_xMax);
 
     yValidator = new RevertingDoubleValidator(yValue);
-    yValidator->setBottom(parameterBoundaryValues.yMin);
-    yValidator->setTop(parameterBoundaryValues.yMax);
+    yValidator->setBottom(parameterBoundaryValues.m_yMin);
+    yValidator->setTop(parameterBoundaryValues.m_yMax);
 
     widthValidator = new RevertingDoubleValidator(widthValue);
     widthValidator->setBottom(minSize);
-    widthValidator->setTop(parameterBoundaryValues.xMax - parameterBoundaryValues.xMin);
+    widthValidator->setTop(parameterBoundaryValues.m_xMax - parameterBoundaryValues.m_xMin);
 
     heightValidator = new RevertingDoubleValidator(heightValue);
     heightValidator->setBottom(minSize);
-    heightValidator->setTop(parameterBoundaryValues.yMax - parameterBoundaryValues.yMin);
+    heightValidator->setTop(parameterBoundaryValues.m_yMax - parameterBoundaryValues.m_yMin);
 }
 
 
@@ -190,7 +190,8 @@ void RenderParametersWidget::processNewRegionParameters()
 
     if (!accepted)
     {
-        mainWidget.writeTransientStatusMessage("Input Parameters were invalid, reverting to last good set", true);
+        mainWidget.writeTransientStatusMessage("Input Parameters were invalid, reverting to last good set", 
+            InformationDisplay::renderState::idle, true);
         revertParameters();
     }
 }

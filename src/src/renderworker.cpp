@@ -10,6 +10,7 @@
 #include <stdexcept>
 #include <future>
 #include <functional>
+#include <type_traits>
 
 #ifdef __GNUC__
 #include <quadmath.h>
@@ -52,7 +53,7 @@ RenderWorker::RenderWorker(RenderThread* parentThread,
       cleanedUp(false),
       computationCompleted(false),
       setToGenerate(setType::mandelbrot),
-      owner(owner),
+      m_ownerWidget(owner),
       abortChecker{std::move(abortChecker)}
 {
     ++count;
@@ -65,10 +66,9 @@ RenderWorker::RenderWorker(RenderThread* parentThread,
 
     connect(parentThread, SIGNAL(sendRestart(bool)), this, SLOT(setRestart(bool)));
 
-    connect(this, SIGNAL(writeToLog(QString,bool)), owner, SLOT(outputToLog(QString,bool)));
+    connect(this, SIGNAL(writeToLog(QString,bool)), m_ownerWidget, SLOT(outputToLog(QString,bool)));
 
-    this->result = std::async(std::launch::async, &RenderWorker::getComputeResult, this);
-    //this->result = std::async(&RenderWorker::getComputeResult, this);
+    this->m_computeResult = std::async(std::launch::async, &RenderWorker::getComputeResult, this);
 }
 
 void RenderWorker::setRestart(bool restart)
@@ -207,10 +207,50 @@ bool RenderWorker::execute(const computeFunction& computeTask)
  *
  */
 
+#ifdef MANDELBROT_USE_SFINAE
 template <typename T>
+typename std::enable_if <!std::is_same<T, MandelBrotRenderer::Int128>::value &&
+                    MandelParams::needs_scale_shift<T>::value, bool>::type
+RenderWorker::executeTask()
+#else
+template <typename T> requires NeedsScaleShift<T>
 bool RenderWorker::executeTask()
+#endif
 {
-    ComputeTaskGenerator<T> taskGenerator(*this);
+    //shift required for fixed-point arithmetic
+    constexpr auto scalingShift = static_cast<int>((((sizeof(T) * CHAR_BIT) / 2) - (MAGNITUDE_BITS * 2)));
+
+    ComputeTaskGenerator<T, scalingShift> taskGenerator(*this );
+    RenderWorker::computeFunction computeTask = taskGenerator.generateComputeTask();
+    return (execute(computeTask));
+}
+
+#ifdef MANDELBROT_USE_SFINAE
+template <typename T, int Scaling>
+typename std::enable_if<!MandelParams::needs_scale_shift<T>::value&&
+    MandelParams::multiply_by_float_supported<T>::value, bool>::type
+    RenderWorker::executeTask()
+#else
+template <typename T, int Scaling> requires IsFloatLikeType<T>
+bool RenderWorker::executeTask()
+#endif
+{
+    ComputeTaskGenerator<T, Scaling> taskGenerator(*this);
+    RenderWorker::computeFunction computeTask = taskGenerator.generateComputeTask();
+    return (execute(computeTask));
+}
+
+#ifdef MANDELBROT_USE_SFINAE
+template <typename T>
+typename std::enable_if<std::is_same<T, MandelBrotRenderer::Int128>::value, bool>::type
+RenderWorker::executeTask()
+#else
+template <>
+bool RenderWorker::executeTask<MandelBrotRenderer::Int128>()
+#endif
+{
+    constexpr int scalingShift = 56;
+    ComputeTaskGenerator<MandelBrotRenderer::Int128, scalingShift> taskGenerator(*this);
     RenderWorker::computeFunction computeTask = taskGenerator.generateComputeTask();
     return (execute(computeTask));
 }
@@ -232,30 +272,30 @@ bool RenderWorker::getComputeResult()
      * Generate a task object encapsulating the computations to be done with the
      * specified type
      */
-    if (parentThread->getRendererData().numericType == internalDataType::singlePrecisionFloat)
+    if (parentThread->getRendererData().m_numericType == internalDataType::singlePrecisionFloat)
     {
         result = executeTask<float>();
-    } else if (parentThread->getRendererData().numericType == internalDataType::int32) {
+    } else if (parentThread->getRendererData().m_numericType == internalDataType::int32) {
         result = executeTask<int32_t>();
-    } else if (parentThread->getRendererData().numericType == internalDataType::int64) {
+    } else if (parentThread->getRendererData().m_numericType == internalDataType::int64) {
         result = executeTask<int64_t>();
 #if (USE_BOOST_MULTIPRECISION == 1)
-    }else if (parentThread->getRendererData().numericType == internalDataType::customFloat20) {
+    }else if (parentThread->getRendererData().m_numericType == internalDataType::customFloat20) {
         result = executeTask<CustomFloat>();
-    }else if (parentThread->getRendererData().numericType == internalDataType::float20dd) {
+    }else if (parentThread->getRendererData().m_numericType == internalDataType::float20dd) {
         result = executeTask<Float20dd>();
-    }else if (parentThread->getRendererData().numericType == internalDataType::float30dd) {
+    }else if (parentThread->getRendererData().m_numericType == internalDataType::float30dd) {
         result = executeTask<Float30dd>();
-    }else if (parentThread->getRendererData().numericType == internalDataType::float50dd) {
+    }else if (parentThread->getRendererData().m_numericType == internalDataType::float50dd) {
         result = executeTask<Float50dd>();
 #endif
 
 #if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
-    } else if (parentThread->getRendererData().numericType == internalDataType::float80) {
+    } else if (parentThread->getRendererData().m_numericType == internalDataType::float80) {
         result = executeTask<Float80>();
-    } else if (parentThread->getRendererData().numericType == internalDataType::float128) {
+    } else if (parentThread->getRendererData().m_numericType == internalDataType::float128) {
         result = executeTask<Float128>();
-    } else if (parentThread->getRendererData().numericType == internalDataType::int128) {
+    } else if (parentThread->getRendererData().m_numericType == internalDataType::int128) {
         result = executeTask<Int128>();
 #endif
     } else  {

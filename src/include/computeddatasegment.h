@@ -51,13 +51,13 @@ public:
     QImage * getImage() const { return image; }
     int getFullHeight() const { return attributes.getFullHeight(); }
     MandelBrotRenderer::ComputeTaskResults& getFullResultData() { return taskResults; }
-    MandelBrotRenderer::MQuintVector& getRawResultData() { return rawResultData; }
-    MandelBrotRenderer::MQuintVector&& extractRawResultData() { consumed = true; return std::move(rawResultData); }
+    MandelBrotRenderer::MQuintVector& getRawResultData() { return m_rawResultData; }
+    MandelBrotRenderer::MQuintVector&& extractRawResultData() { consumed = true; return std::move(m_rawResultData); }
     void clearRawData();
 
     int getSegmentIndex() const { return segmentIndex; }
     bool hasBeenUsed() const { return consumed; }
-    void clearSegmentIndex() { segmentIndex = MandelBrotRenderer::nonExistentThreadIndex; }
+    void clearSegmentIndex() { segmentIndex = MandelBrotRenderer::nonExistentSegmentIndex; }
 
     const RegionAttributes& getAttributes() const;
 
@@ -68,7 +68,7 @@ private:
 
     QImage *image;
     int rawDataSize;
-    MandelBrotRenderer::MQuintVector rawResultData;
+    MandelBrotRenderer::MQuintVector m_rawResultData;
     MandelBrotRenderer::ComputeTaskResults taskResults;
     int segmentIndex;
     bool consumed;

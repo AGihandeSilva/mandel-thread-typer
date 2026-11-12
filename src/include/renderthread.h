@@ -92,7 +92,7 @@ struct RendererData
     int pendingNumWorkerThreads;
     int currentNumPassValue;
     int nextNumPassValue;
-    bool threadMediatorEnabled;
+    bool m_threadMediatorEnabled;
 };
 
 //! [0]
@@ -102,7 +102,7 @@ class RenderThread : public QThread, public SettingsUser, public ButtonUser
 
 public:
     explicit RenderThread(SettingsHandler& settingsHandler, QObject *parent = nullptr);
-    ~RenderThread() override { --count; wait(); }
+    ~RenderThread() override { --count; quit();  wait(); }
 
     void render(const MandelBrotRenderer::CoordValue& originX, const MandelBrotRenderer::CoordValue& originY,
 #if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
@@ -117,7 +117,7 @@ public:
 
     const MandelBrotRenderer::MQintVector& getPossiblePassValues() const { return possiblePassValues; }
 
-    int  getRunningNumPasses() const { return rendererData.currentNumPassValue; }
+    int  getRunningNumPasses() const { return rendererData.m_currentNumPassValue; }
     void setOwnerOnce(MandelbrotWidget * owner);
     void setThreadConfigurer(QAbstractSlider *configurer);
     void setThreadInfoDisplayer(WindowThreadInfo* displayer);
@@ -140,7 +140,7 @@ public:
     using typeNameUser = std::function<void (const QString&, bool) >;
 
 public slots:
-    void publishCoordinates() const;
+    void publishCoordinates();
     void cleanup();
     void drawPreComputedData(ComputedDataSegment& data);
     void markThreadProgressComplete();
@@ -175,7 +175,14 @@ signals:
     void numThreadsUpdate();
     void numPassesUpdate();
     void sendStatusMessage(const QString& message, bool isWarning = false, int timeout = 0);
-    void sendTransientStatusMessage(const QString& message, bool isWarning = false);
+    void sendTransientStatusMessage(const QString& message, InformationDisplay::renderState renderState, bool isWarning = false);
+    void displayDynamicTasksInfo(bool dynamicTasksEnabled);
+    void setIterationCount(qint64 iterationCount);
+    void workerThreadCountChanged(int);
+    void displayInternalDataType(QString);
+    void updateCoordInfo(const MandelBrotRenderer::CoordValue&, const MandelBrotRenderer::CoordValue& ,double scaleFactor);
+    void setIterationSumCount(qint64 iterationSum);
+    void displayPassesInfo(int numPasses);
 
     void writeToLog(const QString& outputString, bool show = false) const;
 
@@ -185,6 +192,7 @@ private slots:
 private:
     void run() override;
     void connectUpOwner();
+    void handleAllThreadsDone();
     void halt(bool quitApplication);
     void createChecksum(bool forcedToStop) const;
     void adjustWorkerThreadCount();
@@ -198,8 +206,8 @@ private:
     qint64 elapsedTimeLastRun;
     QElapsedTimer timer;
     int passesDone;
-    MandelbrotWidget* owner;
-    std::atomic<bool> quitIsPending;
+    MandelbrotWidget* m_mandelbrotWidgetThreadOwner;
+    std::atomic<bool> m_quitIsPending;
     bool finishTheLoop;
     int currentPass;
     mutable qint64 checksum;
@@ -252,7 +260,7 @@ private:
     bool abort;
     const QImage * currentImage;
     int computationChunksDone;
-    int colorMapSize;
+    int m_colorMapSize;
 
     QTimer timerInSeconds;
 

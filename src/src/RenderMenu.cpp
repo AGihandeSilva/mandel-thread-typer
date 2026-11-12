@@ -7,8 +7,8 @@
 RenderMenu::RenderMenu(MandelbrotWidget* plotHandler) : plotHandler(plotHandler)
 {
     setTitle("Render");
-    addAction("Execute Render", this, SLOT(refresh()), Qt::Key_F5);
-    addAction("Halt computations", this, SLOT(halt()), tr("Ctrl+H"));
+    addAction("Execute Render", Qt::Key_F5, this, SLOT(refresh()));
+    addAction("Halt computations", tr("Ctrl+H"), this, SLOT(halt()));
 }
 
 void RenderMenu::halt()

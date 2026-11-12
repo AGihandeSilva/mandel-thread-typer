@@ -84,16 +84,16 @@ using PreciseFloatResult = std::pair<Float128, bool>;
 
     constexpr double    notYetInitializedDouble = -1.0;
     constexpr int       notYetInitializedInt    = -1;
-    constexpr int64_t   notYetInitializedInt64  = -1;
+    constexpr qint64   notYetInitializedInt64  = -1;
 
     constexpr int       detailedValueStringLength = 100;
 
-    static constexpr int nonExistentThreadIndex = -1;
+    static constexpr int nonExistentSegmentIndex = -1;
     static constexpr int nonExistentPixelLinePosition = -1;
     static constexpr int notYetInitializedValue = 0x0BADCAFE;
     static constexpr int MIN_NUM_UNUSED_THREADS = 2;
     static constexpr int MIN_NUM_WORKER_THREADS = 1;
-    static constexpr int MAX_NUM_WORKER_THREADS = 10;
+    static constexpr int MAX_NUM_WORKER_THREADS = 32;
     static constexpr int MAX_PASSES = 8;
     static constexpr int defaultNumPassesValue = MAX_PASSES - 2;
     static constexpr int TRANSIENT_MESSAGE_DURATION_IN_MS = 1500;
@@ -131,40 +131,40 @@ using PreciseFloatResult = std::pair<Float128, bool>;
 
     struct RendererData
     {
-        int pendingNumWorkerThreads;
-        int currentNumPassValue;
-        int nextNumPassValue;
-        bool threadMediatorEnabled;
-        int colorMapSize;
-        internalDataType numericType;
-        int64_t iterationSumCount;
+        int m_pendingNumWorkerThreads;
+        int m_currentNumPassValue;
+        int m_nextNumPassValue;
+        bool m_threadMediatorEnabled;
+        int m_colorMapSize;
+        internalDataType m_numericType;
+        qint64 m_iterationSumCount;
     };
 
     struct RenderState
     {
         /* InformationDisplay settings */
-            bool detailedDisplayEnabled;
+            bool m_detailedDisplayEnabled;
 
         /* MainWindow settings */
-            QSize size;
-            QPoint pos;
+            QSize m_size;
+            QPoint m_pos;
 
         /* RenderParameters settings */
-            CoordValue originX;
-            CoordValue originY;
-            double curScale;
-            double pixmapScale;
+            CoordValue m_originX;
+            CoordValue m_originY;
+            double m_curScale;
+            double m_pixmapScale;
 
         /* Renderer settings */
-            bool threadMediatorEnabled;
-            int colorMapSize;
-            internalDataType numericType;
+            bool m_threadMediatorEnabled;
+            int m_colorMapSize;
+            internalDataType m_numericType;
     };
 
     struct ComputeTaskResults
     {
-        MQuintVector*   rawResultData;
-        int64_t         iterationSum;
+        MQuintVector*   m_rawResultData;
+        qint64         m_iterationSum;
     };
 
     QDataStream& operator << (QDataStream &outputStream, const RenderState& state);
@@ -191,12 +191,12 @@ using PreciseFloatResult = std::pair<Float128, bool>;
 
     struct RegionLimits
     {
-        explicit RegionLimits(double xMin, double xMax, double yMin, double yMax) : xMin(xMin), xMax(xMax), yMin(yMin), yMax(yMax) {}
+        explicit RegionLimits(double xMin, double xMax, double yMin, double yMax) : m_xMin(xMin), m_xMax(xMax), m_yMin(yMin), m_yMax(yMax) {}
 
-        const double xMin;
-        const double xMax;
-        const double yMin;
-        const double yMax;
+        const double m_xMin;
+        const double m_xMax;
+        const double m_yMin;
+        const double m_yMax;
     };
 
 }

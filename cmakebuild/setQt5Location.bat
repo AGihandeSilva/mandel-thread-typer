@@ -1,1 +1,0 @@
-set Qt5_DIR=C:\Qt\5.10.1\msvc2017_64\lib\cmake\Qt5

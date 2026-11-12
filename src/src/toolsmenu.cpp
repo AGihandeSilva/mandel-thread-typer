@@ -10,7 +10,7 @@ ToolsMenu::ToolsMenu(QMenuBar* parent, MandelbrotWidget* mainWidget,
     : QMenu(parent), mainWidget(mainWidget), masterThread(masterThread)
 {
     setTitle("Tools");
-    addAction("Options", this, SLOT(setOptions()), tr("Ctrl+O"));
+    addAction("Options", tr("Ctrl+O"), this, SLOT(setOptions()));
     toolsOptions = new ToolsOptionsWidget(masterThread, mainWidget, settingsHandler);
 
     addAction("Restore Defaults", mainWidget, SLOT(restoreDefaults()));

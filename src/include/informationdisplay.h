@@ -8,6 +8,7 @@
 
 #include "settingsuser.h"
 #include "mandelbrotrenderer.h"
+#include <optional>
 
 class SettingsHandler;
 class MandelbrotWidget;
@@ -26,9 +27,9 @@ public:
     void setThreadsInfo(int numThreads);
     void setPassesInfo(int numPasses);
     void setDynamicTasksInfo(bool dynamicTasksEnabled);
-    void setColorMapSize(int colorMapSize);
+    void setColorMapSize(int m_colorMapSize);
     void displayInternalDataType(QString description);
-    void setIterationSumCount(int64_t iterationSum);
+    void setIterationSumCount(qint64 iterationSum);
     void setIterationsPerPixel(double iterationsPerPixel);
     void resetElapsedTimeInfo();
     void incrementTimeInfo();
@@ -39,14 +40,16 @@ public:
 
     void processSettingUpdate(QSettings& settings) override;
 
-    enum class renderState { idle = 0, running = 1, paused = 2, aborted = 3, unknown = 4 };
+    enum class renderState : int { idle = 0, running = 1, paused = 2, aborted = 3, unknown = 4 };
+
+    Q_ENUM(renderState);
 
     void setRenderState(renderState newState);
 
 public slots:
-    void stopProgress() { inProgress = false; }
-    void startProgress() { inProgress = true; }
-    void setEnabledByButtonState(int buttonState);
+    void stopProgress() { m_inProgress = false; }
+    void startProgress() { m_inProgress = true; }
+    void setEnabledByButtonState(Qt::CheckState buttonState);
     void setEnabled(bool newEnabledState);
     void writeSettings();
     void updatePixmapSizeInfo(QSize size);
@@ -72,59 +75,60 @@ public:
     };
 private:
     void prepareRenderStateLabels();
-    static bool shouldBeEnabled(int buttonState);
+    static bool shouldBeEnabled(Qt::CheckState buttonState);
 
-    QGridLayout informationDisplayLayout;
+    QGridLayout m_informationDisplayLayout;
 
-    InformationLabel timeTakenLabel;
-    InformationLabel timeTakenInfo;
+    InformationLabel m_timeTakenLabel;
+    InformationLabel m_timeTakenInfo;
 
-    InformationLabel percentageDoneLabel;
-    InformationLabel percentageDone;
+    InformationLabel m_percentageDoneLabel;
+    InformationLabel m_percentageDone;
 
-    InformationLabel currentStateLabel;
-    InformationLabel currentStateDescription;
+    InformationLabel m_currentStateLabel;
+    InformationLabel m_currentStateDescription;
 
-    InformationLabel numThreadsLabel;
-    InformationLabel numThreadsInfo;
+    InformationLabel m_numThreadsLabel;
+    InformationLabel m_numThreadsInfo;
 
-    InformationLabel numPassesLabel;
-    InformationLabel numPassesInfo;
+    InformationLabel m_numPassesLabel;
+    InformationLabel m_numPassesInfo;
 
-    InformationLabel dynamicTasksLabel;
-    InformationLabel dynamicTasksInfo;
+    InformationLabel m_dynamicTasksLabel;
+    InformationLabel m_dynamicTasksInfo;
 
-    InformationLabel xLabel;
-    InformationLabel yLabel;
-    InformationLabel widthLabel;
-    InformationLabel heightLabel;
+    InformationLabel m_xLabel;
+    InformationLabel m_yLabel;
+    InformationLabel m_widthLabel;
+    InformationLabel m_heightLabel;
 
-    InformationLabel leftBottomXInfo;
-    InformationLabel leftBottomYInfo;
-    InformationLabel widthInfo;
-    InformationLabel heightInfo;
+    InformationLabel m_leftBottomXInfo;
+    InformationLabel m_leftBottomYInfo;
+    InformationLabel m_widthInfo;
+    InformationLabel m_heightInfo;
 
-    InformationLabel colorMapSizeLabel;
-    InformationLabel colorMapSizeInfo;
+    InformationLabel m_colorMapSizeLabel;
+    InformationLabel m_colorMapSizeInfo;
 
-    InformationLabel numericTypeLabel;
-    InformationLabel numericTypeInfo;
+    InformationLabel m_numericTypeLabel;
+    InformationLabel m_numericTypeInfo;
 
-    InformationLabel pixmapSizeLabel;
-    InformationLabel pixmapSizeInfo;
+    InformationLabel m_pixmapSizeLabel;
+    InformationLabel m_pixmapSizeInfo;
 
-    InformationLabel iterationSumLabel;
-    InformationLabel iterationSumInfo;
+    InformationLabel m_iterationSumLabel;
+    InformationLabel m_iterationSumInfo;
 
-    InformationLabel iterationsPerPixelLabel;
-    InformationLabel iterationsPerPixelInfo;
+    InformationLabel m_iterationsPerPixelLabel;
+    InformationLabel m_iterationsPerPixelInfo;
 
-    uint elapsedTime;
+    std::atomic<std::optional<uint>> m_elapsedTime;
+    std::atomic<bool> m_TimeReset = false;
 
-    renderState currentState;
+    renderState m_currentState;
 
-    bool inProgress;
-    bool detailedDisplayEnabled;
+    bool m_inProgress;
+    bool m_detailedDisplayEnabled;
 
     static constexpr uint TIMER_TICKS_PER_SECOND = 100;
     static constexpr bool detailedDisplayEnabledByDefault = true;

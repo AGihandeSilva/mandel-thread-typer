@@ -71,8 +71,8 @@ signals:
 
     int numPassValue;
     int numWorkerThreads;
-    bool threadMediatorEnabled;
-    int colorMapSize;
+    bool m_threadMediatorEnabled;
+    int m_colorMapSize;
     bool displayDetailedInfo;
 
     static constexpr int UNSELECTED_BUTTON = -1;

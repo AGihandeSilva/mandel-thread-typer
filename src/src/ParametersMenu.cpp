@@ -11,7 +11,7 @@ ParametersMenu::ParametersMenu(QMenuBar *parent, MandelbrotWidget *mainWidget,
     mainWidget(mainWidget), masterThread(masterThread)
 {
     setTitle("Parameters");
-    addAction("Render Parameters", this, SLOT(setParameters()), tr("Ctrl+P"));
+    addAction("Render Parameters", tr("Ctrl+P"), this, SLOT(setParameters()));
 
     connect(masterThread, SIGNAL(renderStarting()), this, SLOT(disableRenderParameters()));
     connect(masterThread, SIGNAL(allDone()), this, SLOT(enableRenderParameters()));

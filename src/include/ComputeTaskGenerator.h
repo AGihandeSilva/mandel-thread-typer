@@ -15,7 +15,7 @@
  * to execute the task given the type used.
  *
  */
-template <typename T>
+template <typename T, int64_t SCALE_SHIFT = 0>
 class ComputeTaskGenerator
 {
 public:

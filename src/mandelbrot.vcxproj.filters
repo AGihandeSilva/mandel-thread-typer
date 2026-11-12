@@ -1,347 +1,262 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Generated Files">
-      <UniqueIdentifier>{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}</UniqueIdentifier>
-      <Extensions>cpp;c;cxx;moc;h;def;odl;idl;res;</Extensions>
-    </Filter>
-    <Filter Include="Generated Files">
-      <UniqueIdentifier>{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}</UniqueIdentifier>
-      <Extensions>cpp;c;cxx;moc;h;def;odl;idl;res;</Extensions>
+    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\mandelbrot_autogen\mocs_compilation_Debug.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\computeddatasegment.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\EditMenu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\filemenu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\informationdisplay.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\MandelbrotGuiTools.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\mandelbrotrenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\mandelbrotwidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\ParametersMenu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\PrecisionHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\radiointegerbutton.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\regionattributes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\RendererConfig.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\RenderHistory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\RenderMenu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\RenderParametersWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\renderthread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\renderthreadmediator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\renderworker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\settingshandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\threadiconmap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\toolsmenu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\toolsoptionswidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\windowmenu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\windowthreadinfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\windowthreadinfokey.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\workerthreaddata.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\mandelbrot_autogen\EWIEGA46WW\qrc_mandelbrotresources_Debug.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\mandelbrot_autogen\mocs_compilation_Release.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\mandelbrot_autogen\EWIEGA46WW\qrc_mandelbrotresources_Release.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\mandelbrot_autogen\mocs_compilation_MinSizeRel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\mandelbrot_autogen\EWIEGA46WW\qrc_mandelbrotresources_MinSizeRel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\mandelbrot_autogen\mocs_compilation_RelWithDebInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\mandelbrot_autogen\EWIEGA46WW\qrc_mandelbrotresources_RelWithDebInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\ApiDependencies.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\ComputeTaskGenerator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\EditMenu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\GRPCHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\HTTPServer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\MandelParams.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\MandelbrotGuiTools.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\ParameterMaker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\ParametersMenu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\PrecisionHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\RPCHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\RenderHistory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\RenderMenu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\RenderParametersWidget.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\RendererConfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\SynchronizedData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\buttonuser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\computeddatasegment.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\filemenu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\informationdisplay.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\mandelbrotrenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\mandelbrotwidget.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\radiointegerbutton.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\regionattributes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\renderthread.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\renderthreadmediator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\renderworker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\restAPI\BitmapEndpoint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\restAPI\RESTEndpoint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\restAPI\RootEndpoint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\settingshandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\settingsuser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\threadiconmap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\toolsmenu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\toolsoptionswidget.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\windowmenu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\windowthreadinfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\windowthreadinfokey.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\workerthreaddata.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="F:\data\coding\mandelbrot_v2_python\src\CMakeFiles\57d1936282cc04ea041d1fd4d4a5434c\qrc_mandelbrotresources_(CONFIG).cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="F:\data\coding\mandelbrot_v2_python\src\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="F:\data\coding\mandelbrot_v2_python\src\_deps\boost-src\libs\assert\extra\boost_assert.natvis" />
+    <Natvis Include="F:\data\coding\mandelbrot_v2_python\src\_deps\boost-src\libs\unordered\extra\boost_unordered.natvis" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="F:\data\coding\mandelbrot_v2_python\src\mandelbrotresources.qrc" />
+    <None Include="F:\data\coding\mandelbrot_v2_python\src\timestamp_Debug" />
+    <None Include="F:\data\coding\mandelbrot_v2_python\src\timestamp_Release" />
+    <None Include="F:\data\coding\mandelbrot_v2_python\src\timestamp_MinSizeRel" />
+    <None Include="F:\data\coding\mandelbrot_v2_python\src\timestamp_RelWithDebInfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="F:\data\coding\mandelbrot_v2_python\src\mandelbrot.rc">
+      <Filter>Source Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{EC017465-F2E0-339C-B0D9-E1703F8E5E89}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{D9D6E242-F8AF-46E4-B9FD-80ECBC20BA3E}</UniqueIdentifier>
-      <Extensions>qrc;*</Extensions>
-      <ParseFiles>false</ParseFiles>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{D9D6E242-F8AF-46E4-B9FD-80ECBC20BA3E}</UniqueIdentifier>
-      <Extensions>qrc;*</Extensions>
-      <ParseFiles>false</ParseFiles>
+      <UniqueIdentifier>{37CA3419-AB58-3C75-AA4B-E540B8303DB0}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+      <UniqueIdentifier>{9115150C-328B-3499-8869-01B60A7A9A7F}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="src\EditMenu.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\MandelbrotGuiTools.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ParametersMenu.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\PrecisionHandler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\RenderHistory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\RenderMenu.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\RenderParametersWidget.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\RendererConfig.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\computeddatasegment.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\filemenu.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\informationdisplay.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\mandelbrotrenderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\mandelbrotwidget.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\radiointegerbutton.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\regionattributes.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\renderthread.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\renderthreadmediator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\renderworker.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\settingshandler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\threadiconmap.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\toolsmenu.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\toolsoptionswidget.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\windowmenu.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\windowthreadinfo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\windowthreadinfokey.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\workerthreaddata.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="include\ComputeTaskGenerator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <CustomBuild Include="include\EditMenu.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <ClInclude Include="include\MandelbrotGuiTools.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\ParameterMaker.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <CustomBuild Include="include\ParametersMenu.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="include\PrecisionHandler.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="include\RenderHistory.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="include\RenderMenu.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="include\RenderParametersWidget.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <ClInclude Include="include\RendererConfig.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\buttonuser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\computeddatasegment.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <CustomBuild Include="include\filemenu.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="include\informationdisplay.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <ClInclude Include="include\mandelbrotrenderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <CustomBuild Include="include\mandelbrotwidget.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="include\radiointegerbutton.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <ClInclude Include="include\regionattributes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <CustomBuild Include="include\renderthread.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="include\renderthreadmediator.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="include\renderworker.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <ClInclude Include="include\settingshandler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\settingsuser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\threadiconmap.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <CustomBuild Include="include\toolsmenu.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <ClInclude Include="include\toolsoptionswidget.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <CustomBuild Include="include\windowmenu.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="include\windowthreadinfo.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <ClInclude Include="include\windowthreadinfokey.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <CustomBuild Include="include\workerthreaddata.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="debug\moc_EditMenu.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="release\moc_EditMenu.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="debug\moc_ParametersMenu.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="release\moc_ParametersMenu.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="debug\moc_PrecisionHandler.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="release\moc_PrecisionHandler.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="debug\moc_RenderHistory.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="release\moc_RenderHistory.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="debug\moc_RenderMenu.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="release\moc_RenderMenu.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="debug\moc_RenderParametersWidget.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="release\moc_RenderParametersWidget.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="debug\moc_filemenu.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="release\moc_filemenu.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="debug\moc_informationdisplay.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="release\moc_informationdisplay.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="debug\moc_mandelbrotwidget.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="release\moc_mandelbrotwidget.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <CustomBuild Include="debug\moc_predefs.h.cbt">
-      <Filter>Generated Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="release\moc_predefs.h.cbt">
-      <Filter>Generated Files</Filter>
-    </CustomBuild>
-    <ClCompile Include="debug\moc_radiointegerbutton.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="release\moc_radiointegerbutton.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="debug\moc_renderthread.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="release\moc_renderthread.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="debug\moc_renderthreadmediator.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="release\moc_renderthreadmediator.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="debug\moc_renderworker.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="release\moc_renderworker.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="debug\moc_toolsmenu.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="release\moc_toolsmenu.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="debug\moc_windowmenu.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="release\moc_windowmenu.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="debug\moc_windowthreadinfo.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="release\moc_windowthreadinfo.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="debug\moc_workerthreaddata.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="release\moc_workerthreaddata.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="debug\qrc_mandelbrotresources.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="release\qrc_mandelbrotresources.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="mandelbrotresources.qrc">
-      <Filter>Resource Files</Filter>
-    </CustomBuild>
-    <None Include="pause.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="play.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="stop.png">
-      <Filter>Resource Files</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="D:\data\coding\Qt\mandelbrot\mandelbrot_resource.rc" />
   </ItemGroup>
 </Project>

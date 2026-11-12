@@ -11,18 +11,18 @@ namespace MandelBrotRenderer
 {
 bool operator==(const RenderState &lhs, const RenderState &rhs)
 {
-    DoubleResult originX_float_l = generateFloatFromString(lhs.originX);
-    DoubleResult originX_float_r = generateFloatFromString(rhs.originX);
-    DoubleResult originY_float_l = generateFloatFromString(lhs.originY);
-    DoubleResult originY_float_r = generateFloatFromString(rhs.originY);
-    return(lhs.size == rhs.size &&
-        lhs.pos == rhs.pos &&
+    DoubleResult originX_float_l = generateFloatFromString(lhs.m_originX);
+    DoubleResult originX_float_r = generateFloatFromString(rhs.m_originX);
+    DoubleResult originY_float_l = generateFloatFromString(lhs.m_originY);
+    DoubleResult originY_float_r = generateFloatFromString(rhs.m_originY);
+    return(lhs.m_size == rhs.m_size &&
+        lhs.m_pos == rhs.m_pos &&
         originX_float_l.second && originX_float_r.second &&
         comparefloatingPointValues(originX_float_l.first, originX_float_r.first) &&
         originY_float_l.second && originY_float_r.second &&
         comparefloatingPointValues(originY_float_l.first, originY_float_r.first) &&
-        comparefloatingPointValues(lhs.curScale, rhs.curScale) &&
-        comparefloatingPointValues(lhs.pixmapScale, rhs.pixmapScale));
+        comparefloatingPointValues(lhs.m_curScale, rhs.m_curScale) &&
+        comparefloatingPointValues(lhs.m_pixmapScale, rhs.m_pixmapScale));
 }
 
 bool operator!=(const RenderState &lhs, const RenderState &rhs)

@@ -10,64 +10,46 @@
  * be spent in code here
  **********************************************/
 
-/*
- * Miscellaneous functions associated with the compute task kernel
- *
- */
-
-template <typename T, MandelBrotRenderer::enable_if_t<std::is_floating_point<T>::value>* = nullptr>
-            bool checkEndCondition(const T& value, const T& limit) noexcept { return value > limit; }
-
-template <typename T, MandelBrotRenderer::enable_if_t<std::is_integral<T>::value>* = nullptr>
-            bool checkEndCondition(const T& value, const T& limit) noexcept { return value > limit || value < 0; }
-
-template <typename T, MandelBrotRenderer::enable_if_t<std::is_floating_point<T>::value>* = nullptr>
-                        void normalize(T&, const int64_t&) noexcept {}
-
-template <typename T, MandelBrotRenderer::enable_if_t<std::is_integral<T>::value>* = nullptr>
-        void normalize(T& t, const int64_t& scalingShift) noexcept { t = static_cast<T>(t >> scalingShift); }
-
+template<typename T>
+concept UsesIntegerRepresentation = std::integral<T>
 #if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
-bool checkEndCondition(const MandelBrotRenderer::Int128& value,
-    const MandelBrotRenderer::Int128& limit) noexcept { return value > limit || value < 0; }
+|| std::same_as<T, MandelBrotRenderer::Int128>
+#endif
+;
 
-void normalize(MandelBrotRenderer::Int128& t, const int64_t& scalingShift) noexcept
-                        { t = static_cast<MandelBrotRenderer::Int128>(t >> scalingShift); }
-
-bool checkEndCondition(const MandelBrotRenderer::Float128& value,
-    const MandelBrotRenderer::Float128& limit) noexcept { return value > limit; }
-
-void normalize(const MandelBrotRenderer::Float128&, const int64_t&) noexcept {}
-
-bool checkEndCondition(const MandelBrotRenderer::Float80& value,
-    const MandelBrotRenderer::Float80& limit) noexcept { return value > limit; }
-
-void normalize(const MandelBrotRenderer::Float80&, const int64_t&) noexcept {}
-#endif //(USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
-
+template<typename T>
+      concept UsesFloatingPointRepresentation = std::floating_point<T>
+#if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
+    || std::same_as<T, MandelBrotRenderer::Float80>
+    || std::same_as<T, MandelBrotRenderer::Float128>
 #if (USE_BOOST_MULTIPRECISION == 1)
-bool checkEndCondition(const MandelBrotRenderer::CustomFloat& value,
-    const MandelBrotRenderer::CustomFloat& limit) noexcept { return value > limit; }
+    || std::same_as<T, MandelBrotRenderer::CustomFloat>
+    || std::same_as<T, MandelBrotRenderer::Float20dd>
+    || std::same_as<T, MandelBrotRenderer::Float30dd>
+    || std::same_as<T, MandelBrotRenderer::Float50dd>
+#endif //USE_BOOST_MULTIPRECISION == 1
+#endif //(USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
+;
 
-void normalize(const MandelBrotRenderer::CustomFloat&, const int64_t&) noexcept {}
+template <UsesIntegerRepresentation T, int64_t SCALING_SHIFT>
+T normalize(T t) noexcept
+{
+    return (t >> SCALING_SHIFT);
+}
 
+template<UsesIntegerRepresentation T>
+bool checkEndCondition(const T& value,
+    const T& limit) noexcept {
+    return value > limit || value < 0;
+}
 
-bool checkEndCondition(const MandelBrotRenderer::Float20dd& value,
-    const MandelBrotRenderer::Float20dd& limit) noexcept { return value > limit; }
+template<UsesFloatingPointRepresentation T, int64_t >
+T normalize(const T t) noexcept { return t; }
 
-void normalize(const MandelBrotRenderer::Float20dd&, const int64_t&) noexcept {}
-
-bool checkEndCondition(const MandelBrotRenderer::Float30dd& value,
-    const MandelBrotRenderer::Float30dd& limit) noexcept { return value > limit; }
-
-void normalize(const MandelBrotRenderer::Float30dd&, const int64_t&) noexcept {}
-
-bool checkEndCondition(const MandelBrotRenderer::Float50dd& value,
-    const MandelBrotRenderer::Float50dd& limit) noexcept { return value > limit; }
-
-void normalize(const MandelBrotRenderer::Float50dd&, const int64_t&) noexcept {}
-#endif //(USE_BOOST_MULTIPRECISION == 1)
-
+template<UsesFloatingPointRepresentation T>
+bool checkEndCondition(const T& value, const T& limit) noexcept {
+    return value > limit;
+}
 /*
  * This templated class represents
  * the compute kernel task as executed with a given numeric type
@@ -78,79 +60,85 @@ void normalize(const MandelBrotRenderer::Float50dd&, const int64_t&) noexcept {}
  *
  */
 
-template <typename T>
-ComputeTaskGenerator<T>::ComputeTaskGenerator(RenderWorker& workerOwner) : workerOwner(workerOwner){}
+template <typename T, int64_t SCALE_SHIFT>
+ComputeTaskGenerator<T, SCALE_SHIFT>::ComputeTaskGenerator(RenderWorker& workerOwner) : workerOwner(workerOwner){}
 
-template <typename T>
-RenderWorker::computeFunction ComputeTaskGenerator<T>::generateComputeTask()
+template <typename T, int64_t SCALE_SHIFT>
+RenderWorker::computeFunction ComputeTaskGenerator<T, SCALE_SHIFT>::generateComputeTask()
 {
-        return ([&] (const ComputedDataSegment& segment, const bool& abort, int& currentPixelIndex, MandelBrotRenderer::ComputeTaskResults& resultData, int y)
+        return ([this] (const ComputedDataSegment& segment, const bool& abort, int& currentPixelIndex, MandelBrotRenderer::ComputeTaskResults& resultData, int y)
                 {
                     const uint pass = workerOwner.getPassValue();
                     const uint MaxIterations = RenderWorker::calcMaxIterations(pass);
 
-                    const T limit = 4;
+                    const auto limit = static_cast<T>(4);
 
                     //generate parameters appropriate to the task and chosen numeric type
-                    const ParameterMaker<T> newParams(segment, limit);
+                    const ParameterMaker<T> newParams(segment, limit, static_cast<T>(1LL << SCALE_SHIFT));
+                    const T scaledYOrigin = static_cast<T>(newParams.m_originY + (y * newParams.m_scaleFactor));
 
                     const MandelBrotRenderer::setType setToGenerate =  workerOwner.getSetToGenerate();
-                    const T ay = static_cast<T>((setToGenerate == MandelBrotRenderer::setType::mandelbrot) ? newParams.originY + (y * newParams.scaleFactor) :
-                                                                         newParams.originY);
+                    const T ay = static_cast<T>((setToGenerate == MandelBrotRenderer::setType::mandelbrot) ? scaledYOrigin : newParams.m_originY);
 
                     const MandelBrotRenderer::colorMapStore& colormap = workerOwner.getColormap();
                     const T iterationColourScale =  static_cast<T>(workerOwner.getIterationColourScale());
 
-                for (int x = newParams.minX; x < newParams.maxX && !abort; ++x) {
-                    const T ax = static_cast<T>((setToGenerate == MandelBrotRenderer::setType::mandelbrot) ? newParams.originX + (x * newParams.scaleFactor):
-                                                                   newParams.originX);
-                    T a1 = static_cast<T>((setToGenerate == MandelBrotRenderer::setType::mandelbrot) ? ax : newParams.originX + (x * newParams.scaleFactor));
-                    T b1 = static_cast<T>((setToGenerate == MandelBrotRenderer::setType::mandelbrot) ? ay : newParams.originY + (y * newParams.scaleFactor));
+                for (int x = newParams.m_minX; x < newParams.m_maxX && !abort; ++x) {
+                    const T ax = static_cast<T>((setToGenerate == MandelBrotRenderer::setType::mandelbrot) ? newParams.m_originX + (x * newParams.m_scaleFactor):
+                                                                   newParams.m_originX);
+
+                    T a1 = static_cast<T>((setToGenerate == MandelBrotRenderer::setType::mandelbrot) ? ax : newParams.m_originX + (x * newParams.m_scaleFactor));
+
+                    T b1 = static_cast<T>((setToGenerate == MandelBrotRenderer::setType::mandelbrot) ? ay : scaledYOrigin);
                     uint numIterations = 0;
 
 //TODO: consider optimizations of the normalization scheme
 
-                    /**************************************
+                     /**************************************
                      *
                      * mandelbrot (julia) set calculations
                      *
                      **************************************/
                     do {
-                        ++numIterations;
+                        if (++numIterations >= MaxIterations)
+                            break;
+
                         T a2 = (a1 * a1) - (b1 * b1);
-                        normalize(a2, newParams.scalingShift);
+                        a2 = normalize <T, SCALE_SHIFT >(a2);
                         a2 += ax;
 
                         T b2 = (2 * a1 * b1);
-                        normalize(b2, newParams.scalingShift);
+                        b2 = normalize <T, SCALE_SHIFT >(b2);
                         b2 += ay;
 
                         const T mod2Sq = (a2 * a2) + (b2 * b2);
-                        if (checkEndCondition(mod2Sq, newParams.limit))
+                        if (checkEndCondition(mod2Sq, newParams.m_limit))
                             break;
 
-                        ++numIterations;
+                        if (++numIterations >= MaxIterations)
+                            break;
                         a1 = (a2 * a2) - (b2 * b2);
-                        normalize(a1, newParams.scalingShift);
+                        a1 = normalize <T, SCALE_SHIFT >(a1);
                         a1 += ax;
 
                         b1 = (2 * a2 * b2);
-                        normalize(b1, newParams.scalingShift);
+                        b1 = normalize <T, SCALE_SHIFT >(b1);
                         b1 += ay;
 
                         const T mod1Sq = (a1 * a1) + (b1 * b1);
-                        if (checkEndCondition(mod1Sq, newParams.limit))
+                        if (checkEndCondition(mod1Sq, newParams.m_limit))
                             break;
 
-                    } while (numIterations < MaxIterations);
+                    }
+                    while (true);
 
                     if (numIterations < MaxIterations) {
-                        (*(resultData.rawResultData))[currentPixelIndex] = colormap[static_cast<uint>(static_cast<T>(numIterations) * iterationColourScale)
+                        (*(resultData.m_rawResultData))[currentPixelIndex] = colormap[static_cast<uint>(static_cast<T>(numIterations) * iterationColourScale)
                                                                        % colormap.size()];
 
                         //TODO : maintain a raw numIterations result for filter use (if filtering is enabled)
                     }
-                    resultData.iterationSum += numIterations;
+                    resultData.m_iterationSum += numIterations;
                     ++currentPixelIndex;
                 }
         });

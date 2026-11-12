@@ -6,6 +6,7 @@
 #include <QSizePolicy>
 #include <QCloseEvent>
 #include <QSettings>
+#include <QLayout>
 
 using namespace MandelBrotRenderer;
 
@@ -19,6 +20,7 @@ WindowThreadInfo::WindowThreadInfo(RenderThread* masterThread, int numberOfThrea
     masterThread->setThreadInfoDisplayer(this);
     threadInfoLayout = new QGridLayout();
     initialiseIndicators();
+    setFixedSize(250, 200);
 
     settingsHandler.registerSettingsUser(this);
 }
@@ -79,13 +81,14 @@ void WindowThreadInfo::initialiseIndicators()
 
     QLabel* threadLabel = new QLabel("Thread");
     QLabel* stateLabel = new QLabel("State");
-    threadInfoLayout->addWidget(threadLabel, currentRow, 0, alignment);
-    threadInfoLayout->addWidget(stateLabel, currentRow, 1, alignment);
+    constexpr int maxColumnHeight = 8;
     ++currentRow;
+
+    int index = 0;
 
     for (auto& indicator : threadStateIndicators) {
             QLabel* aStateText (new QLabel());
-            aStateText->setText(QString::number(currentRow++));
+            aStateText->setText(QString::number(index + 1));
             QLabel* aStateIndicator (new QLabel());
             aStateIndicator->setPixmap(threadIcons->getThreadBitmaps().at(toUnderlyingType(threadState::idle)));
 
@@ -93,8 +96,11 @@ void WindowThreadInfo::initialiseIndicators()
             aStateIndicator->setLineWidth(ThreadIndicatorFrameWidth);
 
             indicator = aStateIndicator;
-            threadInfoLayout->addWidget(aStateText, currentRow, 0, alignment);
-            threadInfoLayout->addWidget(indicator, currentRow, 1, alignment);
+            const int indicatorRow = index / maxColumnHeight;
+            const int indicatorColumn = index % maxColumnHeight;
+            threadInfoLayout->addWidget(indicator, indicatorRow, indicatorColumn, alignment);
+            threadInfoLayout->addWidget(aStateText, indicatorRow, indicatorColumn, alignment);
+            ++index;
     }
     threadInfoLayout->setSizeConstraint(QLayout::SetMaximumSize);
 

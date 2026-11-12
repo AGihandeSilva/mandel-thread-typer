@@ -4,8 +4,8 @@
 EditMenu::EditMenu(MandelbrotWidget* historyOwner) : historyOwner(historyOwner)
 {
     setTitle("Edit");
-    undo = addAction("Undo", historyOwner, SLOT(undo()), tr("Ctrl+Z"));
-    redo = addAction("Redo", historyOwner, SLOT(redo()), tr("Ctrl+Y"));
+    undo = addAction("Undo", tr("Ctrl+Z"), historyOwner, SLOT(undo()));
+    redo = addAction("Redo", tr("Ctrl+Y"), historyOwner, SLOT(redo()));
 }
 
 void EditMenu::setUndoEnabled(bool enabled)

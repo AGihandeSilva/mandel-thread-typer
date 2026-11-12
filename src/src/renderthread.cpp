@@ -90,8 +90,8 @@ using namespace MandelBrotRenderer;
 int RenderThread::count  = 0;
 
 RenderThread::RenderThread(SettingsHandler&settingsHandler, QObject *parent)
-    : QThread{ parent }, elapsedTimeLastRun(-1), passesDone(0), owner(nullptr),
-      quitIsPending(false),
+    : QThread{ parent }, elapsedTimeLastRun(-1), passesDone(0), m_mandelbrotWidgetThreadOwner(nullptr),
+      m_quitIsPending(false),
       finishTheLoop(false), currentPass(0),
       checksum(1),
       possiblePassValues{MAX_PASSES / 2, defaultNumPassesValue, MAX_PASSES - 1, MAX_PASSES},
@@ -100,14 +100,14 @@ RenderThread::RenderThread(SettingsHandler&settingsHandler, QObject *parent)
       applicationSettingsHandler(settingsHandler),
       bufferedResults(MAX_NUM_WORKER_THREADS, MQuintVector(0)),
       bufferedAttributes(MAX_NUM_WORKER_THREADS, RegionAttributes()),
-      originX(MandelbrotWidget::unInitializedFloatString),  //TODO improve this, check for the lifetime of this static value
-      originY(MandelbrotWidget::unInitializedFloatString),
+      originX(MandelbrotWidget::s_unInitializedFloatString),  //TODO improve this, check for the lifetime of this static value
+      originY(MandelbrotWidget::s_unInitializedFloatString),
       scaleFactor(notYetInitializedDouble),
-      abort(false), currentImage(nullptr), computationChunksDone(0), colorMapSize(MandelBrotRenderer::DefaultColormapSize),
+      abort(false), currentImage(nullptr), computationChunksDone(0), m_colorMapSize(MandelBrotRenderer::DefaultColormapSize),
       timerInSeconds(this),
       numWorkerThreads(calculateInitialNumThreads()),
       sem(nullptr),
-      rendererData { numWorkerThreads, possiblePassValues[1], possiblePassValues[1], threadReallocationDefaultEnabled, colorMapSize,
+      rendererData { numWorkerThreads, possiblePassValues[1], possiblePassValues[1], threadReallocationDefaultEnabled, m_colorMapSize,
                         internalDataType::unknownType, MandelBrotRenderer::notYetInitializedInt64},
       threadMediator(rendererData),
       displayer(nullptr)
@@ -122,28 +122,26 @@ RenderThread::RenderThread(SettingsHandler&settingsHandler, QObject *parent)
 
 void RenderThread::populateColorMap()
 {
-    colormap.resize(static_cast<std::size_t>(colorMapSize));
+    colormap.resize(static_cast<std::size_t>(m_colorMapSize));
     uint count = 0;
     for (auto&  i : colormap)
-        i = MandelBrotRenderer::rgbFromWaveLength(380.0 + ((count++) * 400.0 / colorMapSize));
+        i = MandelBrotRenderer::rgbFromWaveLength(380.0 + ((count++) * 400.0 / m_colorMapSize));
 }
 
 void RenderThread::publishDynamicTasksEnabled()
 {
-    if (owner != nullptr) {
-        this->owner->displayDynamicTasksInfo(dynamicThreadAllocationEnabled());
-    }
+    emit displayDynamicTasksInfo(dynamicThreadAllocationEnabled());
     writeSettings();
 }
 
 
 void RenderThread::setOwnerOnce(MandelbrotWidget * owner)
 {
-    if (this->owner == nullptr) {
-        this->owner = owner;
+    if (this->m_mandelbrotWidgetThreadOwner == nullptr) {
+        this->m_mandelbrotWidgetThreadOwner = owner;
         connectUpOwner();
-        owner->displayThreadsInfo(numWorkerThreads);
-        owner->displayPassesInfo(rendererData.currentNumPassValue);
+        emit workerThreadCountChanged(numWorkerThreads);
+        emit displayPassesInfo(rendererData.m_currentNumPassValue);
         publishDynamicTasksEnabled();
     }
 }
@@ -168,7 +166,7 @@ void RenderThread::render(const MandelBrotRenderer::CoordValue& originX, const M
 
     this->resultSize = resultSize;
 
-    owner->displayDynamicTasksInfo(threadMediator.getEnabled());
+    emit displayDynamicTasksInfo(threadMediator.getEnabled());
 
     passesDone = 0;
 
@@ -182,7 +180,7 @@ void RenderThread::render(const MandelBrotRenderer::CoordValue& originX, const M
 
 internalDataType RenderThread::getInternalDataType() const
 {
-    return rendererData.numericType;
+    return rendererData.m_numericType;
 }
 
 void RenderThread::startTimer()
@@ -215,12 +213,12 @@ void RenderThread::setNumberOfThreads(int value)
         throw std::out_of_range("Specified number of threads is unsupported");
     }
 
-    rendererData.pendingNumWorkerThreads = value;
+    rendererData.m_pendingNumWorkerThreads = value;
 }
 
 void RenderThread::setNumberOfPasses(int value)
 {
-    rendererData.nextNumPassValue = value;
+    rendererData.m_nextNumPassValue = value;
 }
 
 void RenderThread::cleanup()
@@ -256,13 +254,18 @@ void RenderThread::cleanup()
     }
 
     emit writeToLog("sem available: " + QString::number(sem->available()));
+    handleAllThreadsDone();
+}
+
+void RenderThread::handleAllThreadsDone()
+{
     if (sem->available() == numWorkerThreads)
     {
         std::cout << "All done" << std::endl;
 
         displayer->configureThreadInfo(numWorkerThreads);
 
-        if (!quitIsPending) {
+        if (!m_quitIsPending) {
             emit renderedImage(currentImage, scaleFactor);
         }
         threadMediator.resetThreadMediator();
@@ -272,25 +275,34 @@ void RenderThread::cleanup()
 void RenderThread::connectUpOwner()
 {
     //use exceptions instead?
-    Q_ASSERT(owner != nullptr);
+    Q_ASSERT(m_mandelbrotWidgetThreadOwner != nullptr);
 
-    connect(this, SIGNAL(chunkDone(int)), owner, SLOT(progressMade(int)));
+    connect(this, SIGNAL(chunkDone(int)), m_mandelbrotWidgetThreadOwner, SLOT(progressMade(int)));
 
-    connect(this, SIGNAL(renderStarting()), owner, SLOT(handleRenderStarting()));
+    connect(this, SIGNAL(renderStarting()), m_mandelbrotWidgetThreadOwner, SLOT(handleRenderStarting()));
     //TODO reduce the number of connections
-    connect(this, SIGNAL(renderStarting()), owner, SLOT(resetElapsedTime()));
-    connect(this, SIGNAL(renderStarting()), owner, SLOT(disableOptions()));
+    connect(this, SIGNAL(renderStarting()), m_mandelbrotWidgetThreadOwner, SLOT(disableOptions()));
     connect(this, SIGNAL(renderStarting()), this, SLOT(startTimer()));
 
-    connect(this, SIGNAL(allDone()), owner, SLOT(handleAllDone()));
+    connect(this, SIGNAL(workerThreadCountChanged(int)), m_mandelbrotWidgetThreadOwner, SLOT(displayThreadsInfo(int)));
+    connect(this, SIGNAL(displayInternalDataType(QString)), m_mandelbrotWidgetThreadOwner, SLOT(displayInternalDataType(QString)));
+    connect(this, SIGNAL(updateCoordInfo(const MandelBrotRenderer::CoordValue&, const MandelBrotRenderer::CoordValue&,double)), 
+        m_mandelbrotWidgetThreadOwner, SLOT(updateCoordInfo(const MandelBrotRenderer::CoordValue&, const MandelBrotRenderer::CoordValue&, double)));
+
+    connect(this, SIGNAL(allDone()), m_mandelbrotWidgetThreadOwner, SLOT(handleAllDone()));
     connect(this, SIGNAL(allDone()), this, SLOT(stopTimer()));
 
-    connect(&timerInSeconds, SIGNAL(timeout()), owner, SLOT(incrementElapsedTime()));
+    connect(&timerInSeconds, SIGNAL(timeout()), m_mandelbrotWidgetThreadOwner, SLOT(incrementElapsedTime()));
 
     connect(this, SIGNAL(signalThreadState(uint,int)), displayer, SLOT(setThreadState(uint,int)));
 
-    connect(this, SIGNAL(sendStatusMessage(QString,bool,int)), owner, SLOT(writeStatusMessage(QString,bool,int)));
-    connect(this, SIGNAL(sendTransientStatusMessage(QString,bool)), owner, SLOT(writeTransientStatusMessage(QString,bool)));
+    connect(this, SIGNAL(sendStatusMessage(QString,bool,int)), m_mandelbrotWidgetThreadOwner, SLOT(writeStatusMessage(QString,bool,int)));
+    connect(this, SIGNAL(sendTransientStatusMessage(QString, InformationDisplay::renderState, bool)), 
+        m_mandelbrotWidgetThreadOwner, SLOT(writeTransientStatusMessage(QString, InformationDisplay::renderState, bool)));
+    connect(this, SIGNAL(displayDynamicTasksInfo(bool)), m_mandelbrotWidgetThreadOwner, SLOT(HandleDisplayDynamicTasksInfo(bool)));
+    connect(this, SIGNAL(setIterationCount(qint64)), m_mandelbrotWidgetThreadOwner, SLOT(UpdateIterationCount(qint64)));
+    connect(this, SIGNAL(setIterationSumCount(qint64)), m_mandelbrotWidgetThreadOwner, SLOT(setIterationSumCount(qint64)));
+    connect(this, SIGNAL(displayPassesInfo(int)), m_mandelbrotWidgetThreadOwner, SLOT(displayPassesInfo(int)));
 }
 
 void RenderThread::halt(const bool quitApplication)
@@ -298,7 +310,7 @@ void RenderThread::halt(const bool quitApplication)
     std::cout << "In " << static_cast<const char*>(__FUNCTION__) << std::endl;
     abort = true;
 
-    quitIsPending = quitApplication;
+    m_quitIsPending = quitApplication;
 }
 
 #ifdef DEBUG_RAW_RESULTS
@@ -359,19 +371,19 @@ void RenderThread::createChecksum(bool forcedToStop) const
         checksum += i;
     }
 
-    auto elapsedTime = static_cast<double>(owner->getElapsedTimeDisplayed());
+    auto elapsedTime = static_cast<double>(m_mandelbrotWidgetThreadOwner->getElapsedTimeDisplayed());
 
     bool dynamicAlgorithmActive = threadMediator.getEnabled();
 
     emit writeToLog("Threads: " + QString::number(numWorkerThreads) +
-                       ", Passes: " + QString::number(rendererData.currentNumPassValue) +
+                       ", Passes: " + QString::number(rendererData.m_currentNumPassValue) +
                        ", PixelCount: " + QString::number(pixelCount) +
                        ", Checksum: " + QString::number(checksum) +
                        ", Dynamic Task Allocation: " + getBoolValueAsString(dynamicAlgorithmActive) +
                        ", Truncated: " + getBoolValueAsString(forcedToStop, boolDescriptionMode::true_false) +
-                       ", ColourMapSize: " + QString::number(rendererData.colorMapSize) +
-                       ", Internal Data Type: " + QString::number(toUnderlyingType(rendererData.numericType)) +
-                       ", Iteration Sum: " + QString::number(rendererData.iterationSumCount) +
+                       ", ColourMapSize: " + QString::number(rendererData.m_colorMapSize) +
+                       ", Internal Data Type: " + QString::number(toUnderlyingType(rendererData.m_numericType)) +
+                       ", Iteration Sum: " + QString::number(rendererData.m_iterationSumCount) +
                        ", Time: " + QString::number(elapsedTime),
                        true);
 #ifdef DEBUG_RAW_RESULTS
@@ -406,9 +418,9 @@ bool RenderThread::dynamicThreadAllocationEnabled()
 
 void RenderThread::adjustWorkerThreadCount()
 {
-    if (numWorkerThreads != rendererData.pendingNumWorkerThreads) {
-        numWorkerThreads = rendererData.pendingNumWorkerThreads;
-        owner->displayThreadsInfo(numWorkerThreads);
+    if (numWorkerThreads != rendererData.m_pendingNumWorkerThreads) {
+        numWorkerThreads = rendererData.m_pendingNumWorkerThreads;
+        emit workerThreadCountChanged(numWorkerThreads);
         for (size_t i = 0; i < static_cast<size_t>(numWorkerThreads); ++i) {
             bufferedResults.at(i).clear();
         }
@@ -422,13 +434,13 @@ void RenderThread::adjustWorkerThreadCount()
 
 int RenderThread::adjustNumPasses()
 {
-    const int NumPasses = rendererData.nextNumPassValue;
+    const int NumPasses = rendererData.m_nextNumPassValue;
 
-    if (rendererData.currentNumPassValue != NumPasses) {
-        rendererData.currentNumPassValue = NumPasses;
+    if (rendererData.m_currentNumPassValue != NumPasses) {
+        rendererData.m_currentNumPassValue = NumPasses;
     }
 
-    owner->displayPassesInfo(rendererData.currentNumPassValue);
+    emit displayPassesInfo(rendererData.m_currentNumPassValue);
     emit numPassesUpdate();
 
     return NumPasses;
@@ -533,9 +545,9 @@ void RenderThread::initializeSupportedTypesTable(typeNameUser& nameUser)
 void RenderThread::setColormapSize(int value)
 {
     //TODO: throw exception if required memory is lacking?
-    colorMapSize = value;
+    m_colorMapSize = value;
     //TODO remove the duplication
-    rendererData.colorMapSize = colorMapSize;
+    rendererData.m_colorMapSize = m_colorMapSize;
     populateColorMap();
 }
 
@@ -545,7 +557,7 @@ QString RenderThread::getDataTypeName()
     //TODO change this if the number of types starts to grow
     for (const auto& i : descriptionToTypeMap) {
 
-        if (i.second.type == rendererData.numericType) {
+        if (i.second.type == rendererData.m_numericType) {
             result = i.first;
             break;
         }
@@ -565,10 +577,10 @@ void RenderThread::setInternalDataType(const QString& description)
 
     if(findResult != descriptionToTypeMap.end() && typeIsSupported){
         result = (*findResult).second.type;
-        owner->displayInternalDataType(description);
+        emit displayInternalDataType(description);
     }
 
-    rendererData.numericType = result;
+    rendererData.m_numericType = result;
 }
 
 const MandelBrotRenderer::RendererData& RenderThread::getRendererData() const
@@ -578,20 +590,22 @@ const MandelBrotRenderer::RendererData& RenderThread::getRendererData() const
 
 int RenderThread::calculateInitialNumThreads()
 {
+    const int threadCountLimit = QThread::idealThreadCount();
+
     return (std::min<int>(MAX_NUM_WORKER_THREADS,
-             MIN_NUM_UNUSED_THREADS < QThread::idealThreadCount() ? QThread::idealThreadCount() - MIN_NUM_UNUSED_THREADS : 1 ));
+             MIN_NUM_UNUSED_THREADS < threadCountLimit ? threadCountLimit - MIN_NUM_UNUSED_THREADS : 1 ));
 }
 
 void RenderThread::writeSettings()
 {
     applicationSettingsHandler.getSettings().beginGroup("Renderer");
 
-    applicationSettingsHandler.getSettings().setValue("numWorkerThreads", rendererData.pendingNumWorkerThreads);
-    applicationSettingsHandler.getSettings().setValue("currentNumPassValue", rendererData.currentNumPassValue);
-    applicationSettingsHandler.getSettings().setValue("nextNumPassValue", rendererData.nextNumPassValue);
+    applicationSettingsHandler.getSettings().setValue("numWorkerThreads", rendererData.m_pendingNumWorkerThreads);
+    applicationSettingsHandler.getSettings().setValue("currentNumPassValue", rendererData.m_currentNumPassValue);
+    applicationSettingsHandler.getSettings().setValue("nextNumPassValue", rendererData.m_nextNumPassValue);
     applicationSettingsHandler.getSettings().setValue("threadMediatorEnabled", threadMediator.getEnabled());
-    applicationSettingsHandler.getSettings().setValue("colourMapSize", rendererData.colorMapSize);
-    applicationSettingsHandler.getSettings().setValue("internalNumericType", toUnderlyingType(rendererData.numericType));
+    applicationSettingsHandler.getSettings().setValue("colourMapSize", rendererData.m_colorMapSize);
+    applicationSettingsHandler.getSettings().setValue("internalNumericType", toUnderlyingType(rendererData.m_numericType));
     applicationSettingsHandler.getSettings().endGroup();
     applicationSettingsHandler.getSettings().sync();
 }
@@ -601,11 +615,11 @@ void RenderThread::processSettingUpdate(QSettings &settings)
     settings.beginGroup("Renderer");
 
     numWorkerThreads = settings.value("numWorkerThreads", calculateInitialNumThreads()).toInt();
-    rendererData.pendingNumWorkerThreads = numWorkerThreads;
-    rendererData.currentNumPassValue = settings.value("currentNumPassValue", possiblePassValues[1]).toInt();
-    rendererData.nextNumPassValue = rendererData.currentNumPassValue;
-    rendererData.colorMapSize = settings.value("colourMapSize", MandelBrotRenderer::DefaultColormapSize).toInt();
-    rendererData.numericType = static_cast<internalDataType>(settings.value("internalNumericType",
+    rendererData.m_pendingNumWorkerThreads = numWorkerThreads;
+    rendererData.m_currentNumPassValue = settings.value("currentNumPassValue", possiblePassValues[1]).toInt();
+    rendererData.m_nextNumPassValue = rendererData.m_currentNumPassValue;
+    rendererData.m_colorMapSize = settings.value("colourMapSize", MandelBrotRenderer::DefaultColormapSize).toInt();
+    rendererData.m_numericType = static_cast<internalDataType>(settings.value("internalNumericType",
                                                                             static_cast<int>(internalDataType::doublePrecisionFloat)).toInt());
 
     threadMediator.setEnabled(settings.value("threadMediatorEnabled", threadReallocationDefaultEnabled).toBool());
@@ -615,8 +629,8 @@ void RenderThread::processSettingUpdate(QSettings &settings)
 
 void RenderThread::InitializeDynamicValuesInGUI()
 {
-    owner->displayInternalDataType(getDataTypeName());
-    owner->setIterationSumCount(rendererData.iterationSumCount);
+    emit displayInternalDataType(getDataTypeName());
+    emit setIterationSumCount(rendererData.m_iterationSumCount);
 }
 
 void RenderThread::prepareForNewTasks()
@@ -625,13 +639,13 @@ void RenderThread::prepareForNewTasks()
     displayer->configureThreadInfo(numWorkerThreads, threadState::starting);
     threadMediator.resetThreadMediator();
     populateColorMap();
-    rendererData.iterationSumCount = 0;
+    rendererData.m_iterationSumCount = 0;
 }
 
 void RenderThread::run()
 {
     bool endThisRun = false;
-    owner->displayDynamicTasksInfo(dynamicThreadAllocationEnabled());
+    emit displayDynamicTasksInfo(dynamicThreadAllocationEnabled());
 
     std::vector <RenderWorker *> helpers(static_cast<std::size_t>(numWorkerThreads));
 
@@ -663,7 +677,7 @@ void RenderThread::run()
         currentImage = &image;
 
         int pass = 0;
-        if (!quitIsPending) {
+        if (!m_quitIsPending) {
             //quit flow skips signalling to dependent GUI elements in order to simplify its appearance
             emit(sendStatusMessage("Rendering in progress"));
             emit(renderStarting());
@@ -705,7 +719,7 @@ void RenderThread::run()
 
             threadMediator.resetBusyThreadCount();
 
-            if (quitIsPending) {
+            if (m_quitIsPending) {
                 pass = NumPasses;
                 sem->release(numWorkerThreads);
                 mutex.unlock();
@@ -719,7 +733,7 @@ void RenderThread::run()
 
             emit renderedImage(currentImage, scaleFactor);
 
-            rendererData.iterationSumCount = 0;
+            rendererData.m_iterationSumCount = 0;
 
             double currentHeight = -halfHeight;
 
@@ -730,7 +744,7 @@ void RenderThread::run()
                 /* launch worker tasks in new threads to start computing immediately */
                 helpers.emplace_back
                         (new RenderWorker(this,
-                                                owner,
+                            m_mandelbrotWidgetThreadOwner,
                                                  static_cast<uint>(pass),
                                                  static_cast<uint>(NumPasses),
                                                  colormap,
@@ -756,7 +770,7 @@ void RenderThread::run()
                                                  haltChecker([&]{
                                                         return abort;
                                                         }),
-                                                    *owner->getMutex(static_cast<std::size_t>(i))
+                                                    *m_mandelbrotWidgetThreadOwner->getMutex(static_cast<std::size_t>(i))
                                                  )
                         );
                 currentHeight += heightStep;
@@ -793,7 +807,7 @@ void RenderThread::run()
             emit chunkDone(numWorkerThreads * NumPasses);
             msleep(PROGRESS_BAR_WAIT_IN_MS);
 
-            owner->setIterationSumCount(rendererData.iterationSumCount);
+            emit setIterationCount(rendererData.m_iterationSumCount);
 
             sem->release(numWorkerThreads);
 
@@ -806,11 +820,11 @@ void RenderThread::run()
 
         releaseHelpers(helpers);
         createChecksum(forcedToStop);
-        emit(sendTransientStatusMessage("Rendering completed"));
-        owner->getInfoDisplayer()->setRenderState(
-            forcedToStop ? InformationDisplay::renderState::aborted : InformationDisplay::renderState::idle);
+        const InformationDisplay::renderState renderState = forcedToStop ? 
+            InformationDisplay::renderState::aborted : InformationDisplay::renderState::idle;
+        emit(sendTransientStatusMessage("Rendering completed", renderState));
 
-        if (!quitIsPending) {
+        if (!m_quitIsPending) {
             mutex.lock();
             if (!restart && !abort) {
                 condition.wait(&mutex);
@@ -834,12 +848,12 @@ void RenderThread::processIntegerValueFromButtonPress(int value)
     setNumberOfPasses(value);
 }
 
-void RenderThread::publishCoordinates() const
+void RenderThread::publishCoordinates()
 {
 #if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
-    owner->updateCoordInfo(preciseOriginX, preciseOriginY, scaleFactor);
+    emit updateCoordInfo(preciseOriginX, preciseOriginY, scaleFactor);
 #else
-    owner->updateCoordInfo(originX, originY, scaleFactor);
+    emit updateCoordInfo(originX, originY, scaleFactor);
 #endif
 }
 
@@ -861,8 +875,8 @@ void RenderThread::publishCoordinates() const
         return;
     }
 
-    rendererData.iterationSumCount += data.getFullResultData().iterationSum;
-    owner->setIterationSumCount(rendererData.iterationSumCount);
+    rendererData.m_iterationSumCount += data.getFullResultData().m_iterationSum;
+    emit setIterationSumCount(rendererData.m_iterationSumCount);
 
     QImage *image = data.getImage();
 
@@ -891,7 +905,7 @@ void RenderThread::publishCoordinates() const
         {
 
             *scanLine++ = rawResultData[i++];
-            //*scanLine++ = rawResultData.at(i++);
+            //*scanLine++ = m_rawResultData.at(i++);
         }
     }
 

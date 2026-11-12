@@ -90,36 +90,35 @@ public:
 
     void outputToLog(const QString& outputString, logMode outputMode, bool show = false);
     void executeRender(bool hideProgress = false);
-    void updateCoordInfo(const MandelBrotRenderer::CoordValue& originX, const MandelBrotRenderer::CoordValue& originY,
-                         double scaleFactor);
-    void displayThreadsInfo(int numThreads);
-    void displayPassesInfo(int numPasses);
-    void displayDynamicTasksInfo(bool dynamicTasksEnabled);
-    void setIterationSumCount(int64_t iterationSum);
-    float getElapsedTimeDisplayed() const;
+    float getElapsedTimeDisplayed();
 
-    InformationDisplay *getInfoDisplayer() const;
-    const QPixmap& getPixmap() {return pixmap; }
+    const QPixmap& getPixmap() {return m_pixmap; }
 
     RendererConfig generateConfigData();
     void enforceConfigData(RendererConfig& newConfigData);
 
-    QMutex* getMutex(std::size_t index) { return pauseMutexes[index]; }
-    bool getUnsavedChangesExist() const { return unsavedChangesExist; }
+    QMutex* getMutex(std::size_t index) { return m_pauseMutexes[index]; }
+    bool getUnsavedChangesExist() const { return m_unsavedChangesExist; }
 
-    void setUnsavedChangesExist(bool value) { unsavedChangesExist = value; }
+    void setUnsavedChangesExist(bool value) { m_unsavedChangesExist = value; }
 
-    MandelBrotRenderer::internalDataType getNumericType() const { return numericType; }
+    MandelBrotRenderer::internalDataType getNumericType() const { return m_numericType; }
 
     QString computeDeltaWithHigherPrecision(QString& value, int deltaPixels, double currentScale);
 
     /*
      * Get the edge values of the permitted region for manually entered parameters
      */
-    MandelBrotRenderer::RegionLimits getParameterSpace() const { return parameterSpace; }
+    MandelBrotRenderer::RegionLimits getParameterSpace() const { return m_parameterSpace; }
 
 public slots:
-    void displayColorMapSizeInfo(int colorMapSize);
+    InformationDisplay& getInfoDisplayer();
+    void updateCoordInfo(const MandelBrotRenderer::CoordValue& originX, const MandelBrotRenderer::CoordValue& originY,
+        double scaleFactor);
+    void displayThreadsInfo(int numThreads);
+    void displayPassesInfo(int numPasses);
+    void setIterationSumCount(qint64 iterationSum);
+    void displayColorMapSizeInfo(int m_colorMapSize);
     void displayInternalDataType(const QString& description);
     void initiateQuit();
     void accomplishQuit();
@@ -136,7 +135,10 @@ public slots:
     void disableFileMenu();
     void enableFileMenu();
     void writeStatusMessage(const QString& message, bool isWarning = false, int timeout = 0);
-    void writeTransientStatusMessage(const QString& message, bool isWarning = false);
+    void writeTransientStatusMessage(const QString& message, 
+        InformationDisplay::renderState renderState = InformationDisplay::renderState::idle, bool isWarning = false);
+    void HandleDisplayDynamicTasksInfo(bool dynamicTasksEnabled);
+    void UpdateIterationCount(qint64 iterationCount);
 
     void outputToLog(const QString& outputString, bool show = false);
 
@@ -146,8 +148,8 @@ public slots:
     void redo();
     void setUndoEnabled(bool enabled);
     void setRedoEnabled(bool enabled);
-    void setUsingUndoRedo() { usingUndoRedo = true; }
-    void clearUsingUndoRedo() { usingUndoRedo = false; }
+    void setUsingUndoRedo() { m_usingUndoRedo = true; }
+    void clearUsingUndoRedo() { m_usingUndoRedo = false; }
     void registerCoordinateUser(MandelBrotRenderer::CoordinateListener* listener,
                                 MandelBrotRenderer::CoordinateListenerConfig config);
     bool changeRegionParameters(const QString &originXvalue,
@@ -180,6 +182,7 @@ private slots:
     void disableOptions();
     void showProgress();
     void hideProgress();
+    void handleHalt();
 
 private:
     void setInternalDataType(MandelBrotRenderer::internalDataType);
@@ -188,65 +191,67 @@ private:
     void writeSettings();
     void closeEvent(QCloseEvent* event) override;
     void zoomToSelectedRectangle(QMouseEvent *event);
-    void displayIterationsPerPixel(int64_t iterationSum);
+    void displayIterationsPerPixel(qint64 iterationSum);
     void processWindowSize();
+    void prepareProgressBar();
 
     template <typename T>
     bool validateRegion(T originX, T originY, T width, T height);
 
-    InformationDisplay* infoDisplayer;
-    QTextEdit* logger;
-    QTextEdit* miscLogger;
-    QVBoxLayout* mandelbrotWidgetLayout;
-    QMutex mutex;
-    QProgressBar* progressBar;
-    ToolsMenu* toolsMenu;
-    EditMenu* editMenu;
-    FileMenu* fileMenu;
-    ParametersMenu* parametersMenu;
-    RenderMenu* renderMenu;
-    WindowMenu* windowMenu;
-    SettingsHandler settingsHandler;
+    QTextEdit* m_logger;
+    QTextEdit* m_miscLogger;
+    QVBoxLayout* m_mandelbrotWidgetLayout;
+    QMutex m_mutex;
+    QProgressBar* m_progressBar;
+    ToolsMenu* m_toolsMenu;
+    EditMenu* m_editMenu;
+    FileMenu* m_fileMenu;
+    ParametersMenu* m_parametersMenu;
+    RenderMenu* m_renderMenu;
+    WindowMenu* m_windowMenu;
+    SettingsHandler m_settingsHandler;
+    InformationDisplay m_infoDisplayer;
 
-    QWidget* centralPlotArea;
-    QStatusBar* messageBar;
-    QRubberBand* newSelectionArea;
-    QPoint newSelectionOrigin;
+    QWidget* m_centralPlotArea;
+    QStatusBar* m_messageBar;
+    QRubberBand* m_newSelectionArea;
+    QPoint m_newSelectionOrigin;
 
-    RenderThread thread;
-    QPixmap pixmap;
-    QPoint pixmapOffset;
-    QPoint lastDragPos;
-    MandelBrotRenderer::CoordValue originX;
-    MandelBrotRenderer::CoordValue originY;
+    RenderThread m_thread;
+    QPixmap m_pixmap;
+    QPoint m_pixmapOffset;
+    QPoint m_lastDragPos;
+    MandelBrotRenderer::CoordValue m_originX;
+    MandelBrotRenderer::CoordValue m_originY;
 #if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
-    QString preciseOriginX;
-    QString preciseOriginY;
+    QString m_preciseOriginX;
+    QString m_preciseOriginY;
 #endif
-    double pixmapScale;
-    double curScale;
-    double perPixelCoeff;
-    void prepareProgressBar();
-    bool scaleHasChanged;
-    bool renderInProgress;
-    bool usingUndoRedo;
-    MandelBrotRenderer::internalDataType numericType;
-    MandelBrotRenderer::ListenerGroup coordinateUsers;
+    double m_pixmapScale;
+    double m_curScale;
+    double m_perPixelCoeff;
+    bool m_scaleHasChanged;
+    bool m_renderInProgress;
+    bool m_usingUndoRedo;
+    MandelBrotRenderer::internalDataType m_numericType;
+    MandelBrotRenderer::ListenerGroup m_coordinateUsers;
 
-    std::vector<QMutex*> pauseMutexes;
-    std::atomic<bool> paused;
+    std::vector<QMutex*> m_pauseMutexes;
+    std::atomic<bool> m_paused;
 
-    std::unique_ptr<RenderHistory> historyLog;
-    bool unsavedChangesExist;
+    QRecursiveMutex m_infoDisplayMutex;
 
-    const MandelBrotRenderer::RegionLimits parameterSpace;
+    std::unique_ptr<RenderHistory> m_historyLog;
+    bool m_unsavedChangesExist;
+
+    const MandelBrotRenderer::RegionLimits m_parameterSpace;
 
     static const int kInitialWidth = 550;
     static const int kInitialHeight = 500;
     static const int kInitialPosCoord = 400;
 
-    static QString DefaultOriginX;
-    static QString DefaultOriginY;
+    static QString m_DefaultOriginX;
+    static QString m_DefaultOriginY;
 
     void connectToComponents();
     void prepareMenuBar();
@@ -257,10 +262,10 @@ private:
     void preparePauseLocks();
 
 public:
-    static QString undefinedFloatString;
-    static QString unInitializedFloatString;
-    static QString getDefaultOriginX() { return DefaultOriginX; }
-    static QString getDefaultOriginY() { return DefaultOriginY; }
+    static QString s_undefinedFloatString;
+    static QString s_unInitializedFloatString;
+    static QString getDefaultOriginX() { return m_DefaultOriginX; }
+    static QString getDefaultOriginY() { return m_DefaultOriginY; }
 };
 //! [0]
 

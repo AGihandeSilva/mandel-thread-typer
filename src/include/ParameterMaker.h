@@ -3,6 +3,7 @@
 
 #include "computeddatasegment.h"
 #include "PrecisionHandler.h"
+#include "MandelParams.h"
 
 /*
  * Parameter helper class and related operations
@@ -11,84 +12,54 @@
  * scaling for fixed-point arithmetic flows is carried out here
  */
 
-namespace MandelParams
-{
-    template <typename T>
-    struct needs_scale_shift {
-        static const bool value = false;
-    };
-
-    template <typename T>
-    struct multiply_by_float_supported {
-        static const bool value = true;
-    };
-
-    #if (USE_BOOST_MULTIPRECISION == 1 || defined(__GNUC__))
-    template <>
-    struct needs_scale_shift<MandelBrotRenderer::Int128> {
-        static const bool value = true;
-    };
-
-    //boost multiprecision integer types don't support multiply by floating point values
-    #if !defined(__GNUC__)
-    template <>
-    struct multiply_by_float_supported<MandelBrotRenderer::Int128> {
-        static const bool value = false;
-    };
-    #endif //!__GNUC__
-    #endif //USE_BOOST_MULTIPRECISION == 1 || defined(__GNUC__)
-
-    template <>
-    struct needs_scale_shift<int32_t> {
-        static const bool value = true;
-    };
-
-    template <>
-    struct needs_scale_shift<int64_t> {
-        static const bool value = true;
-    };
-}
-
 /*
  * Constructor for float types
  */
 template <typename T>
 struct ParameterMaker
 {
-
+#ifdef MANDELBROT_USE_SFINAE
     template <typename TT, typename U = ComputedDataSegment>
     explicit ParameterMaker(typename std::enable_if<!MandelParams::needs_scale_shift<TT>::value &&
-                                        MandelParams::multiply_by_float_supported<TT>::value, U>::type dataSegment, TT limitValue) :
-        scalingShift(0),
-        scaling(1),
-        minX(dataSegment.getMinX()),
-        maxX(dataSegment.getMaxX()),
-#if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
-        originX(MandelBrotRenderer::generateFloatFromPreciseString(dataSegment.getPreciseOriginX()).first),
-        originY(MandelBrotRenderer::generateFloatFromPreciseString(dataSegment.getPreciseOriginY()).first),
+                                        MandelParams::multiply_by_float_supported<TT>::value, U>::type dataSegment, TT limitValue, TT) :
 #else
-        originX(static_cast<T>(dataSegment.getOriginX())),
-        originY(static_cast<T>(dataSegment.getOriginY())),
+    template <typename TT, typename U = ComputedDataSegment> requires IsFloatLikeType<TT>
+    explicit ParameterMaker(U dataSegment, TT limitValue, TT) :
 #endif
-        scaleFactor(static_cast<T>(dataSegment.getScaleFactor())),
-        limit(limitValue)
+        m_scaling(1),
+        m_minX(dataSegment.getMinX()),
+        m_maxX(dataSegment.getMaxX()),
+#if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
+        m_originX(MandelBrotRenderer::generateFloatFromPreciseString(dataSegment.getPreciseOriginX()).first),
+        m_originY(MandelBrotRenderer::generateFloatFromPreciseString(dataSegment.getPreciseOriginY()).first),
+#else
+        m_originX(static_cast<T>(dataSegment.getOriginX())),
+        m_originY(static_cast<T>(dataSegment.getOriginY())),
+#endif
+        m_scaleFactor(static_cast<T>(dataSegment.getScaleFactor())),
+        m_limit(limitValue)
     {}
 
 
 /*
  * Constructor for 'Normal' integer types
  */
+    
+#ifdef MANDELBROT_USE_SFINAE
     template <typename TT, typename U = ComputedDataSegment>
     explicit ParameterMaker(typename std::enable_if<MandelParams::needs_scale_shift<TT>::value &&
-                                            MandelParams::multiply_by_float_supported<TT>::value, U>::type dataSegment, TT limitValue) :
-    scalingShift(((sizeof(T) * CHAR_BIT) / 2) - (MAGNITUDE_BITS * 2)),
-    scaling(static_cast<int64_t>(1LL << scalingShift)),
-    minX(dataSegment.getMinX()),
-    maxX( dataSegment.getMaxX()),
-    originX(static_cast<T>(scaling * dataSegment.getOriginX())),
-    originY(static_cast<T>(scaling * dataSegment.getOriginY())),
-    scaleFactor(static_cast<T>(scaling * dataSegment.getScaleFactor())),
-    limit(static_cast<T>(scaling * scaling * limitValue))
+                                            MandelParams::multiply_by_float_supported<TT>::value, U>::type dataSegment, TT limitValue, TT scaling) :
+#else
+    template <typename TT, typename U = ComputedDataSegment> requires IsIntegerLikeType<TT>
+    explicit ParameterMaker(U dataSegment, TT limitValue, TT scaling) :
+#endif
+    m_scaling(static_cast<int64_t>(scaling)),
+    m_minX(dataSegment.getMinX()),
+    m_maxX( dataSegment.getMaxX()),
+    m_originX(static_cast<T>(m_scaling * dataSegment.getOriginX())),
+    m_originY(static_cast<T>(m_scaling * dataSegment.getOriginY())),
+    m_scaleFactor(static_cast<T>(m_scaling * dataSegment.getScaleFactor())),
+    m_limit(static_cast<T>(m_scaling * m_scaling * limitValue))
 {}
 
 
@@ -97,16 +68,15 @@ struct ParameterMaker
  * Constructor for Boost multiprecision integer types
  */
     template <typename U = ComputedDataSegment>
-    explicit ParameterMaker(ComputedDataSegment dataSegment, MandelBrotRenderer::Int128 limitValue) :
-        scalingShift(doubleToIntShift),
-        scaling((1LL << scalingShift)),
-        minX(dataSegment.getMinX()),
-        maxX(dataSegment.getMaxX()),
+    explicit ParameterMaker(ComputedDataSegment dataSegment, MandelBrotRenderer::Int128 limitValue, MandelBrotRenderer::Int128 scaling) :
+        m_scaling(scaling),
+        m_minX(dataSegment.getMinX()),
+        m_maxX(dataSegment.getMaxX()),
         //multiplication by floating point types is not supported for this boost type, convert scaling factor to a fixed point value
-        originX((scaling * static_cast<int64_t>(dataSegment.getOriginX() * doubleToIntScaling)) >> doubleToIntShift),
-        originY((scaling * static_cast<int64_t>(dataSegment.getOriginY() * doubleToIntScaling)) >> doubleToIntShift),
-        scaleFactor((scaling * static_cast<int64_t>(dataSegment.getScaleFactor() * doubleToIntScaling)) >> doubleToIntShift),
-        limit(scaling * scaling * limitValue)
+        m_originX((m_scaling * static_cast<int64_t>(dataSegment.getOriginX() * doubleToIntScaling)) >> doubleToIntShift),
+        m_originY((m_scaling * static_cast<int64_t>(dataSegment.getOriginY() * doubleToIntScaling)) >> doubleToIntShift),
+        m_scaleFactor((m_scaling * static_cast<int64_t>(dataSegment.getScaleFactor() * doubleToIntScaling)) >> doubleToIntShift),
+        m_limit(m_scaling * m_scaling * limitValue)
     {}
 
 
@@ -116,15 +86,14 @@ struct ParameterMaker
 
 #endif //(USE_BOOST_MULTIPRECISION == 1 && !defined(__GNUC__))
 
-    const int64_t scalingShift; //shift for fixed-point arithmetic
-    const T scaling;
-    const int minX;
-    const int maxX;
+    const T m_scaling;
+    const int m_minX;
+    const int m_maxX;
 
-    const T originX;
-    const T originY;
-    const T scaleFactor;
-    const T limit;              // the end value at which kernel iterations stop
+    const T m_originX;
+    const T m_originY;
+    const T m_scaleFactor;
+    const T m_limit;              // the end value at which kernel iterations stop
 
     static constexpr int MAGNITUDE_BITS = 3;
 };

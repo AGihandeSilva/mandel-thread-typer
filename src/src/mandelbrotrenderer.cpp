@@ -60,40 +60,40 @@ const QString & getBoolValueAsString(bool value, boolDescriptionMode mode)
 
 QDataStream &operator <<(QDataStream &outputStream, const MandelBrotRenderer::RenderState& state)
 {
-    outputStream << state.detailedDisplayEnabled << static_cast<qint32>(state.size.width());
-    outputStream << static_cast<qint32>(state.size.height());
-    outputStream << static_cast<qint32>(state.pos.x()) << static_cast<qint32>(state.pos.y());
-    outputStream << state.originX << state.originY << state.curScale << state.pixmapScale << state.threadMediatorEnabled;
-    outputStream << static_cast<int>(state.numericType);
+    outputStream << state.m_detailedDisplayEnabled << static_cast<qint32>(state.m_size.width());
+    outputStream << static_cast<qint32>(state.m_size.height());
+    outputStream << static_cast<qint32>(state.m_pos.x()) << static_cast<qint32>(state.m_pos.y());
+    outputStream << state.m_originX << state.m_originY << state.m_curScale << state.m_pixmapScale << state.m_threadMediatorEnabled;
+    outputStream << static_cast<int>(state.m_numericType);
 
     return outputStream;
 }
 
 QDataStream &operator >>(QDataStream &inputStream, MandelBrotRenderer::RenderState &state)
 {
-    inputStream >> state.detailedDisplayEnabled;
+    inputStream >> state.m_detailedDisplayEnabled;
 
     qint32 sizeWidth;
     qint32 sizeHeight;
     inputStream >> sizeWidth;
     inputStream >> sizeHeight;
-    state.size = QSize(sizeWidth, sizeHeight);
+    state.m_size = QSize(sizeWidth, sizeHeight);
 
     qint32 x;
     qint32 y;
     inputStream >> x;
     inputStream >> y;
-    state.pos = QPoint(x, y);
+    state.m_pos = QPoint(x, y);
 
-    inputStream >> state.originX;
-    inputStream >> state.originY;
-    inputStream >> state.curScale;
-    inputStream >> state.pixmapScale;
-    inputStream >> state.threadMediatorEnabled;
+    inputStream >> state.m_originX;
+    inputStream >> state.m_originY;
+    inputStream >> state.m_curScale;
+    inputStream >> state.m_pixmapScale;
+    inputStream >> state.m_threadMediatorEnabled;
 
     int numericTypeAsInt;
     inputStream >> numericTypeAsInt;
-    state.numericType = static_cast<MandelBrotRenderer::internalDataType>(numericTypeAsInt);
+    state.m_numericType = static_cast<MandelBrotRenderer::internalDataType>(numericTypeAsInt);
 
     return inputStream;
 }

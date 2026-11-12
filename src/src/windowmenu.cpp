@@ -9,7 +9,7 @@ WindowMenu::WindowMenu(RenderThread* masterThread) : masterThread(masterThread)
     setTitle("Window");
     threadIcons = new ThreadIconMap();
     threadInfo = new WindowThreadInfo(masterThread, masterThread->getNumWorkerThreads(), threadIcons);
-    addAction("Thread Information", this, SLOT(showInfo()), tr("Ctrl+I"));
+    addAction("Thread Information", tr("Ctrl+I"), this, SLOT(showInfo()));
 
     threadStateKey =  new WindowThreadInfoKey(threadIcons);
     addAction("Thread State key", this, SLOT(showKey()));

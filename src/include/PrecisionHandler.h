@@ -1,6 +1,7 @@
 #ifndef PRECISIONHANDLER_H
 #define PRECISIONHANDLER_H
 
+#include <QObject>
 #include <QMutex>
 
 #include "mandelbrotrenderer.h"
@@ -28,7 +29,7 @@ class PrecisionHandler : public QObject
     Q_OBJECT
 public:
     static PrecisionHandler& getPreciseValuesHandler();
-    QMutex* getMutex() { return &mutex; }
+    QMutex* getMutex() { return &m_mutex; }
 
     PrecisionHandler(const PrecisionHandler&) = delete;
     PrecisionHandler(PrecisionHandler&&) = delete;
@@ -39,7 +40,7 @@ private:
     PrecisionHandler() = default;
     ~PrecisionHandler() override = default;
 
-    QMutex mutex;
+    QMutex m_mutex;
 };
 
 #endif // PRECISIONHANDLER_H

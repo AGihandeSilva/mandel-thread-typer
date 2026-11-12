@@ -7,7 +7,7 @@ using MandelBrotRenderer::notYetInitializedValue;
 
 ComputedDataSegment::ComputedDataSegment() :
         image(nullptr), rawDataSize(notYetInitializedValue), taskResults {nullptr, 0 },
-        segmentIndex(MandelBrotRenderer::nonExistentThreadIndex), consumed(false)
+        segmentIndex(MandelBrotRenderer::nonExistentSegmentIndex), consumed(false)
 {
     QMutexLocker locker(getMutex());
     ++count;
@@ -36,15 +36,15 @@ ComputedDataSegment::ComputedDataSegment(RegionAttributes attributes,
         attributes == bufferedAttributes)
     {
         //std::cout << "reusing raw results!" << std::endl;
-        rawResultData =  bufferedResultData;
+        m_rawResultData =  bufferedResultData;
     }
     else
     {
         //std::cout << "cannot reuse raw results!" << std::endl;
-        rawResultData = MandelBrotRenderer::MQuintVector(rawDataSize, qRgb(0, 0, 0));
+        m_rawResultData = MandelBrotRenderer::MQuintVector(rawDataSize, qRgb(0, 0, 0));
     }
 
-    taskResults.rawResultData = &rawResultData;
+    taskResults.m_rawResultData = &m_rawResultData;
 }
 
 ComputedDataSegment::~ComputedDataSegment()
@@ -54,14 +54,14 @@ ComputedDataSegment::~ComputedDataSegment()
     {
         std::cout << "data segment delete error!" << std::endl;
     }
-    rawResultData.clear();
+    m_rawResultData.clear();
 }
 
 ComputedDataSegment::ComputedDataSegment(ComputedDataSegment&& other) noexcept
     : image{ other.image },
     rawDataSize{ other.rawDataSize },
-      rawResultData {std::move(other.rawResultData)},
-      taskResults { &rawResultData, other.taskResults.iterationSum},
+      m_rawResultData {std::move(other.m_rawResultData)},
+      taskResults { &m_rawResultData, other.taskResults.m_iterationSum},
       segmentIndex(other.segmentIndex),
 
       consumed(other.consumed),
@@ -74,8 +74,8 @@ ComputedDataSegment::ComputedDataSegment(ComputedDataSegment&& other) noexcept
 ComputedDataSegment::ComputedDataSegment(const ComputedDataSegment& other)
     : image{ other.image },
     rawDataSize{ other.rawDataSize },
-      rawResultData(other.rawResultData),
-      taskResults { &rawResultData, other.taskResults.iterationSum},
+      m_rawResultData(other.m_rawResultData),
+      taskResults { &m_rawResultData, other.taskResults.m_iterationSum},
       segmentIndex(other.segmentIndex),
       consumed(other.consumed),
       attributes(other.attributes)
@@ -89,9 +89,9 @@ ComputedDataSegment& ComputedDataSegment::operator=(const ComputedDataSegment& o
     QMutexLocker locker(getMutex());
     image = other.image;
     rawDataSize = other.rawDataSize;
-    rawResultData = other.rawResultData;
-    taskResults.rawResultData = &rawResultData;
-    taskResults.iterationSum = other.taskResults.iterationSum;
+    m_rawResultData = other.m_rawResultData;
+    taskResults.m_rawResultData = &m_rawResultData;
+    taskResults.m_iterationSum = other.taskResults.m_iterationSum;
     segmentIndex = other.segmentIndex;
     consumed = other.consumed;
     attributes = other.attributes;
@@ -104,9 +104,9 @@ ComputedDataSegment& ComputedDataSegment::operator=(ComputedDataSegment&& other)
     QMutexLocker locker(getMutex());
     image = other.image;
     rawDataSize = other.rawDataSize;
-    rawResultData = MandelBrotRenderer::MQuintVector(std::move(other.rawResultData));
-    taskResults.rawResultData = &rawResultData;
-    taskResults.iterationSum = other.taskResults.iterationSum;
+    m_rawResultData = MandelBrotRenderer::MQuintVector(std::move(other.m_rawResultData));
+    taskResults.m_rawResultData = &m_rawResultData;
+    taskResults.m_iterationSum = other.taskResults.m_iterationSum;
     segmentIndex = other.segmentIndex;
     consumed = other.consumed;
     attributes = other.attributes;
@@ -124,8 +124,8 @@ QMutex* ComputedDataSegment::getMutex()
 void ComputedDataSegment::clearRawData()
 {
    QMutexLocker locker(getMutex());
-   rawResultData.fill(qRgb(0, 0, 0));
-   taskResults.iterationSum = 0;
+   m_rawResultData.fill(qRgb(0, 0, 0));
+   taskResults.m_iterationSum = 0;
 }
 
 const RegionAttributes& ComputedDataSegment::getAttributes() const
@@ -138,7 +138,7 @@ void ComputedDataSegment::ChangeRegionAttributes(const RegionAttributes& newRegi
     QMutexLocker locker(getMutex());
     attributes = newRegionAttributes;
     rawDataSize =  newRegionAttributes.computeRawDataSize();
-    rawResultData.resize(rawDataSize);
-    taskResults.rawResultData = &rawResultData;
+    m_rawResultData.resize(rawDataSize);
+    taskResults.m_rawResultData = &m_rawResultData;
 }
 

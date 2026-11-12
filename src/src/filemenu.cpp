@@ -18,13 +18,13 @@ FileMenu::FileMenu(QMenuBar* parent, MandelbrotWidget* plotHandler, SettingsHand
     addSeparator();
     addAction("Load Parameters", this, SLOT(openParams()));
     addSeparator();
-    saveParamsAction = addAction("Save Parameters", this, SLOT(saveParams()), tr("Ctrl S"));
+    saveParamsAction = addAction("Save Parameters", tr("Ctrl S"), this, SLOT(saveParams()));
     addAction("Save Parameters As...", this, SLOT(saveParamsAs()));
     savePictureAction = addAction("Save Bitmap Image", this, SLOT(savePicture()));
     addAction("Save Bitmap Image As...", this, SLOT(savePictureAs()));
     addSeparator();
     addSeparator();
-    addAction("Exit", this, SLOT(quit()), tr("Ctrl+Q"));
+    addAction("Exit", tr("Ctrl+Q"), this, SLOT(quit()));
 
     saveParamsAction->setEnabled(false);
     savePictureAction->setEnabled(false);
@@ -45,8 +45,8 @@ void FileMenu::openParams()
 {
     dialog.setFileMode(QFileDialog::ExistingFile);
 
-    QFileInfo fileName = QFileDialog::getOpenFileName(this,
-        tr("Open Settings File"), fileMenuConfig.currentFilePath->filePath(), tr("Renderer Config Files (*.cfg)"));
+    QFileInfo fileName{ QFileDialog::getOpenFileName(this,
+        tr("Open Settings File"), fileMenuConfig.currentFilePath->filePath(), tr("Renderer Config Files (*.cfg)")) };
 
     if (readConfigFile(fileName))
     {
@@ -79,7 +79,7 @@ bool FileMenu::paramsPathExists()
 
 void FileMenu::showSuccessMessage()
 {
-    plotHandler->writeTransientStatusMessage("File operation successful", false);
+    plotHandler->writeTransientStatusMessage("File operation successful");
 }
 
 void FileMenu::showCancelledMessage()

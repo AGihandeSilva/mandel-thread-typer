@@ -10,83 +10,81 @@ using MandelBrotRenderer::generateFloatFromString;
 #endif
 
 InformationDisplay::InformationDisplay(MandelbrotWidget& mainWidget,SettingsHandler& applicationSettingsHandler)
-    : timeTakenLabel("Render Time (s):"), percentageDoneLabel("Progress: "), currentStateLabel("Current State: "),
-                numThreadsLabel("Threads:"), numPassesLabel("Passes:"), dynamicTasksLabel("Dynamic Tasks: "),
-                xLabel("X:") ,yLabel("Y:"),
-                widthLabel("Width:"), heightLabel("Height:"), colorMapSizeLabel("ColourMap Size:"), numericTypeLabel("Internal Data Type"),
-                pixmapSizeLabel("Image Size: "), iterationSumLabel("Iterations sum: "), iterationsPerPixelLabel("Iterations per pixel"),
-                elapsedTime(0),
-                currentState(renderState::idle),
-                inProgress(false),
-                detailedDisplayEnabled(detailedDisplayEnabledByDefault), //initialize this here for clarity (will be changed by settings code)
+    : m_timeTakenLabel("Render Time (s):"), m_percentageDoneLabel("Progress: "), m_currentStateLabel("Current State: "),
+                m_numThreadsLabel("Threads:"), m_numPassesLabel("Passes:"), m_dynamicTasksLabel("Dynamic Tasks: "),
+                m_xLabel("X:") ,m_yLabel("Y:"),
+                m_widthLabel("Width:"), m_heightLabel("Height:"), m_colorMapSizeLabel("ColourMap Size:"), m_numericTypeLabel("Internal Data Type"),
+                m_pixmapSizeLabel("Image Size: "), m_iterationSumLabel("Iterations sum: "), m_iterationsPerPixelLabel("Iterations per pixel"),
+                m_elapsedTime(std::optional<uint>{}),
+                m_currentState(renderState::idle),
+                m_inProgress(false),
+                m_detailedDisplayEnabled(detailedDisplayEnabledByDefault), //initialize this here for clarity (will be changed by settings code)
                 mainWidget(&mainWidget),
                 applicationSettingsHandler(applicationSettingsHandler)
 {
-    setVisible(detailedDisplayEnabled);
+    setVisible(m_detailedDisplayEnabled);
     prepareRenderStateLabels();
-    setRenderState(currentState);
+    setRenderState(m_currentState);
 
     QSizePolicy policyRetainSpace = sizePolicy();
     policyRetainSpace.setRetainSizeWhenHidden(true);
     setSizePolicy(policyRetainSpace);
 
-    informationDisplayLayout.setAlignment(Qt::AlignTop | Qt::AlignLeft);
+    m_informationDisplayLayout.setAlignment(Qt::AlignTop | Qt::AlignLeft);
     constexpr int spacingBetweenColumns = 1;
-    informationDisplayLayout.setHorizontalSpacing(spacingBetweenColumns);
+    m_informationDisplayLayout.setHorizontalSpacing(spacingBetweenColumns);
 
     int currentRow = 0;
-    informationDisplayLayout.addWidget(&timeTakenLabel, currentRow, 0);
-    informationDisplayLayout.addWidget(&timeTakenInfo, currentRow, 1);
+    m_informationDisplayLayout.addWidget(&m_timeTakenLabel, currentRow, 0);
+    m_informationDisplayLayout.addWidget(&m_timeTakenInfo, currentRow, 1);
 
     ++currentRow;
-    informationDisplayLayout.addWidget(&percentageDoneLabel, currentRow, 0);
-    informationDisplayLayout.addWidget(&percentageDone, currentRow, 1);
-    informationDisplayLayout.addWidget(&currentStateLabel, currentRow, 2);
-    informationDisplayLayout.addWidget(&currentStateDescription, currentRow, 3);
+    m_informationDisplayLayout.addWidget(&m_percentageDoneLabel, currentRow, 0);
+    m_informationDisplayLayout.addWidget(&m_percentageDone, currentRow, 1);
+    m_informationDisplayLayout.addWidget(&m_currentStateLabel, currentRow, 2);
+    m_informationDisplayLayout.addWidget(&m_currentStateDescription, currentRow, 3);
 
     ++currentRow;
-    informationDisplayLayout.addWidget(&numThreadsLabel, currentRow, 0);
-    informationDisplayLayout.addWidget(&numThreadsInfo, currentRow, 1);
+    m_informationDisplayLayout.addWidget(&m_numThreadsLabel, currentRow, 0);
+    m_informationDisplayLayout.addWidget(&m_numThreadsInfo, currentRow, 1);
 
-    informationDisplayLayout.addWidget(&numPassesLabel, currentRow, 2);
-    informationDisplayLayout.addWidget(&numPassesInfo, currentRow, 3);
+    m_informationDisplayLayout.addWidget(&m_numPassesLabel, currentRow, 2);
+    m_informationDisplayLayout.addWidget(&m_numPassesInfo, currentRow, 3);
     ++currentRow;
 
-    informationDisplayLayout.addWidget(&dynamicTasksLabel, currentRow, 0);
-    informationDisplayLayout.addWidget(&dynamicTasksInfo, currentRow, 1);
+    m_informationDisplayLayout.addWidget(&m_dynamicTasksLabel, currentRow, 0);
+    m_informationDisplayLayout.addWidget(&m_dynamicTasksInfo, currentRow, 1);
 
     ++currentRow;
-    informationDisplayLayout.addWidget(&xLabel, currentRow, 0);
-    informationDisplayLayout.addWidget(&leftBottomXInfo, currentRow, 1);
-    informationDisplayLayout.addWidget(&yLabel, currentRow, 2);
-    informationDisplayLayout.addWidget(&leftBottomYInfo, currentRow, 3);
+    m_informationDisplayLayout.addWidget(&m_xLabel, currentRow, 0);
+    m_informationDisplayLayout.addWidget(&m_leftBottomXInfo, currentRow, 1);
+    m_informationDisplayLayout.addWidget(&m_yLabel, currentRow, 2);
+    m_informationDisplayLayout.addWidget(&m_leftBottomYInfo, currentRow, 3);
 
     ++currentRow;
-    informationDisplayLayout.addWidget(&widthLabel, currentRow, 0);
-    informationDisplayLayout.addWidget(&widthInfo, currentRow, 1);
-    informationDisplayLayout.addWidget(&heightLabel, currentRow, 2);
-    informationDisplayLayout.addWidget(&heightInfo, currentRow, 3);
+    m_informationDisplayLayout.addWidget(&m_widthLabel, currentRow, 0);
+    m_informationDisplayLayout.addWidget(&m_widthInfo, currentRow, 1);
+    m_informationDisplayLayout.addWidget(&m_heightLabel, currentRow, 2);
+    m_informationDisplayLayout.addWidget(&m_heightInfo, currentRow, 3);
 
     ++currentRow;
-    informationDisplayLayout.addWidget(&colorMapSizeLabel, currentRow, 0);
-    informationDisplayLayout.addWidget(&colorMapSizeInfo, currentRow, 1);
-    informationDisplayLayout.addWidget(&numericTypeLabel, currentRow, 2);
-    informationDisplayLayout.addWidget(&numericTypeInfo, currentRow, 3);
+    m_informationDisplayLayout.addWidget(&m_colorMapSizeLabel, currentRow, 0);
+    m_informationDisplayLayout.addWidget(&m_colorMapSizeInfo, currentRow, 1);
+    m_informationDisplayLayout.addWidget(&m_numericTypeLabel, currentRow, 2);
+    m_informationDisplayLayout.addWidget(&m_numericTypeInfo, currentRow, 3);
 
     ++currentRow;
-    informationDisplayLayout.addWidget(&pixmapSizeLabel, currentRow, 0);
-    informationDisplayLayout.addWidget(&pixmapSizeInfo, currentRow, 1);
+    m_informationDisplayLayout.addWidget(&m_pixmapSizeLabel, currentRow, 0);
+    m_informationDisplayLayout.addWidget(&m_pixmapSizeInfo, currentRow, 1);
 
     ++currentRow;
-    informationDisplayLayout.addWidget(&iterationSumLabel, currentRow, 0);
-    informationDisplayLayout.addWidget(&iterationSumInfo, currentRow, 1);
-    informationDisplayLayout.addWidget(&iterationsPerPixelLabel, currentRow, 2);
-    informationDisplayLayout.addWidget(&iterationsPerPixelInfo, currentRow, 3);
+    m_informationDisplayLayout.addWidget(&m_iterationSumLabel, currentRow, 0);
+    m_informationDisplayLayout.addWidget(&m_iterationSumInfo, currentRow, 1);
+    m_informationDisplayLayout.addWidget(&m_iterationsPerPixelLabel, currentRow, 2);
+    m_informationDisplayLayout.addWidget(&m_iterationsPerPixelInfo, currentRow, 3);
 
-    setLayout(&informationDisplayLayout);
+    setLayout(&m_informationDisplayLayout);
     applicationSettingsHandler.registerSettingsUser(this);
-    static const int desiredPrecision = 6;
-    mainWidget.registerCoordinateUser(this, desiredPrecision);
 }
 
 void InformationDisplay::prepareRenderStateLabels()
@@ -100,29 +98,29 @@ void InformationDisplay::prepareRenderStateLabels()
 
 void InformationDisplay::prepareTimerInfo()
 {
-    timeTakenInfo.setText("\n0.00");
-    timeTakenInfo.setAlignment(Qt::AlignLeft | Qt::AlignTop);
-    timeTakenInfo.show();
+    m_timeTakenInfo.setText("\n0.00");
+    m_timeTakenInfo.setAlignment(Qt::AlignLeft | Qt::AlignTop);
+    m_timeTakenInfo.show();
 }
 
 void InformationDisplay::setThreadsInfo(int numThreads)
 {
-    numThreadsInfo.setText(QString::number(numThreads));
+    m_numThreadsInfo.setText(QString::number(numThreads));
 }
 
 void InformationDisplay::setPassesInfo(int numPasses)
 {
-    numPassesInfo.setText(QString::number(numPasses));
+    m_numPassesInfo.setText(QString::number(numPasses));
 }
 
 void InformationDisplay::setDynamicTasksInfo(bool dynamicTasksEnabled)
 {
-    dynamicTasksInfo.setText(MandelBrotRenderer::getBoolValueAsString(dynamicTasksEnabled));
+    m_dynamicTasksInfo.setText(MandelBrotRenderer::getBoolValueAsString(dynamicTasksEnabled));
 }
 
-void InformationDisplay::setColorMapSize(int colorMapSize)
+void InformationDisplay::setColorMapSize(int m_colorMapSize)
 {
-    colorMapSizeInfo.setText(QString::number(colorMapSize));
+    m_colorMapSizeInfo.setText(QString::number(m_colorMapSize));
 }
 
 void InformationDisplay::displayInternalDataType(QString description)
@@ -131,10 +129,10 @@ void InformationDisplay::displayInternalDataType(QString description)
     if (firstBracketPos != -1) {
         description.truncate(firstBracketPos);
     }
-    numericTypeInfo.setText(description);
+    m_numericTypeInfo.setText(description);
 }
 
-void InformationDisplay::setIterationSumCount(int64_t iterationSum)
+void InformationDisplay::setIterationSumCount(qint64 iterationSum)
 {
     QString result("-");
 
@@ -142,57 +140,65 @@ void InformationDisplay::setIterationSumCount(int64_t iterationSum)
         result = QString::number(iterationSum);
     }
 
-    iterationSumInfo.setText(result);
+    m_iterationSumInfo.setText(result);
 }
 
 void InformationDisplay::setIterationsPerPixel(double iterationsPerPixel)
 {
     QString result = iterationsPerPixel >= 0 ? QString::number(iterationsPerPixel) : "-";
-    iterationsPerPixelInfo.setText(result);
+    m_iterationsPerPixelInfo.setText(result);
 }
 
 void InformationDisplay::updateCoordData(const QString& originX, const QString& originY,
                      const QString& width, const QString& height)
 {
     if (!originX.isEmpty()) {
-        leftBottomXInfo.setText(originX);
+        m_leftBottomXInfo.setText(originX);
     }
     if (!originY.isEmpty()) {
-        leftBottomYInfo.setText(originY);
+        m_leftBottomYInfo.setText(originY);
     }
-    widthInfo.setText(width);
-    heightInfo.setText(height);
+    m_widthInfo.setText(width);
+    m_heightInfo.setText(height);
 }
 
 void InformationDisplay::updateProgress(uint progressInPercent)
 {
-    if (inProgress)
+    if (m_inProgress)
     {
-        percentageDone.setText(QString::number(progressInPercent) + "%");
+        m_percentageDone.setText(QString::number(progressInPercent) + "%");
     }
 }
 
 void InformationDisplay::resetElapsedTimeInfo()
 {
-    elapsedTime = 0;
-    timeTakenInfo.setText(QString::number(0));
+    if (!m_TimeReset &&
+        !m_elapsedTime.load().has_value() ||
+        m_elapsedTime.load().value() != 0)
+    {
+        m_TimeReset = true;
+        m_elapsedTime.store(0);
+    }
 }
 
 void InformationDisplay::incrementTimeInfo()
 {
-    ++elapsedTime;
-    timeTakenInfo.setText(QString::number(static_cast<double>(elapsedTime) / TIMER_TICKS_PER_SECOND ));
+    uint value = m_elapsedTime.load().value_or(0);
+    m_TimeReset = false;
+    m_elapsedTime.store(++value);
+    m_timeTakenInfo.setText(QString::number(static_cast<double>(m_elapsedTime.load().value()) / TIMER_TICKS_PER_SECOND));
 }
 
 float InformationDisplay::getElapsedTimeDisplayed() const
 {
-    return static_cast<float>(elapsedTime) / TIMER_TICKS_PER_SECOND;
+    const uint value = m_elapsedTime.load().value_or(0);
+    return static_cast<float>(value) / TIMER_TICKS_PER_SECOND;
 }
 
-void InformationDisplay::setEnabledByButtonState(int buttonState)
+void InformationDisplay::setEnabledByButtonState(Qt::CheckState buttonState)
 {
-    detailedDisplayEnabled = shouldBeEnabled(buttonState);
-    setEnabled(detailedDisplayEnabled);
+    m_detailedDisplayEnabled = shouldBeEnabled(buttonState);
+    setEnabled(m_detailedDisplayEnabled);
 }
 
 void InformationDisplay::setEnabled(bool newEnabledState)
@@ -205,39 +211,39 @@ void InformationDisplay::writeSettings()
 {
     applicationSettingsHandler.getSettings().beginGroup("InformationDisplay");
 
-    applicationSettingsHandler.getSettings().setValue("detailedDisplayEnabled", detailedDisplayEnabled);
+    applicationSettingsHandler.getSettings().setValue("detailedDisplayEnabled", m_detailedDisplayEnabled);
 
     applicationSettingsHandler.getSettings().endGroup();
 }
 
 void InformationDisplay::updatePixmapSizeInfo(QSize size)
 {
-    pixmapSizeInfo.setText(QString::number(size.width()) + " x " + QString::number(size.height()));
+    m_pixmapSizeInfo.setText(QString::number(size.width()) + " x " + QString::number(size.height()));
 }
 
-bool InformationDisplay::shouldBeEnabled(int buttonState)
+bool InformationDisplay::shouldBeEnabled(Qt::CheckState buttonState)
 {
-    return (static_cast<Qt::CheckState>(buttonState) == Qt::Checked);
+    return (buttonState == Qt::Checked);
 }
 
 bool InformationDisplay::getDetailedDisplayEnabled() const
 {
-    return detailedDisplayEnabled;
+    return m_detailedDisplayEnabled;
 }
 
 void InformationDisplay::processSettingUpdate(QSettings &settings)
 {
     settings.beginGroup("InformationDisplay");
 
-    detailedDisplayEnabled = settings.value("detailedDisplayEnabled", detailedDisplayEnabledByDefault).toBool();
-    setVisible(detailedDisplayEnabled);
+    m_detailedDisplayEnabled = settings.value("detailedDisplayEnabled", detailedDisplayEnabledByDefault).toBool();
+    setVisible(m_detailedDisplayEnabled);
 
     settings.endGroup();
 }
 
 void InformationDisplay::setRenderState(renderState newState)
 {
-    currentState = newState;
+    m_currentState = newState;
     auto result = renderStateDescriptions.find(newState);
 
     if (result == renderStateDescriptions.end())
@@ -245,5 +251,5 @@ void InformationDisplay::setRenderState(renderState newState)
         result = renderStateDescriptions.find(renderState::unknown);
         Q_ASSERT(result != renderStateDescriptions.end());
     }
-    currentStateDescription.setText((*result).second);
+    m_currentStateDescription.setText((*result).second);
 }

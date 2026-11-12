@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <array>
+#include <optional>
 
 class RenderWorker;
 
@@ -83,8 +84,8 @@ private:
 
     mutable QMutex mutex;
 
-    std::atomic<int> readyThreadIndex;
-    std::array<int, MandelBrotRenderer::MAX_NUM_WORKER_THREADS> waitingThreads {};
+    std::atomic<std::optional<int>> readyThreadIndex;
+    std::array<std::optional<int>, MandelBrotRenderer::MAX_NUM_WORKER_THREADS> waitingThreads {};
     std::array<bool, MandelBrotRenderer::MAX_NUM_WORKER_THREADS> doneThreads {};
 
     std::atomic<int> busyThreadCount;
