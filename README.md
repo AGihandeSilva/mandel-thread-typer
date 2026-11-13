@@ -11,7 +11,7 @@ ____
 
 <img src = "./snapshots/mandelbrot2_doubleInaccurate.jpg" width ="640" alt="region showing visible artefacts due to numerical inaccuracies"> <img src = "./snapshots/mandelbrot2_128bitWorksBetter.jpg" width ="640" alt="region with inaccuracies resolved by using a higher precision data type"> <img src = "./snapshots/SmallRegionParameters.jpg" width ="240" alt="region parameters">
 
-Images showing the same small region computed using i) 'standard' double precision floating point and ii) 128 bit integer values. Using the larger type for the right hand image resolves the artefacts seen in the left image, but the calculations take longer.
+Images showing the same small region computed using i) 'standard' double precision floating point and ii) 128 bit integer values. Using the larger type for the second image resolves the artefacts seen in the first one, but the calculations take longer.
 
 Why make yet another Mandelbrot demo?
 ==================================
