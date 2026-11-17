@@ -1,262 +1,262 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\mandelbrot_autogen\mocs_compilation_Debug.cpp">
+    <ClCompile Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\mandelbrot_autogen\mocs_compilation_Debug.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\computeddatasegment.cpp">
+    <ClCompile Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\src\computeddatasegment.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\EditMenu.cpp">
+    <ClCompile Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\src\EditMenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\filemenu.cpp">
+    <ClCompile Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\src\filemenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\informationdisplay.cpp">
+    <ClCompile Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\src\informationdisplay.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\main.cpp">
+    <ClCompile Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\MandelbrotGuiTools.cpp">
+    <ClCompile Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\src\MandelbrotGuiTools.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\mandelbrotrenderer.cpp">
+    <ClCompile Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\src\mandelbrotrenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\mandelbrotwidget.cpp">
+    <ClCompile Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\src\mandelbrotwidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\ParametersMenu.cpp">
+    <ClCompile Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\src\ParametersMenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\PrecisionHandler.cpp">
+    <ClCompile Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\src\PrecisionHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\radiointegerbutton.cpp">
+    <ClCompile Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\src\radiointegerbutton.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\regionattributes.cpp">
+    <ClCompile Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\src\regionattributes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\RendererConfig.cpp">
+    <ClCompile Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\src\RendererConfig.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\RenderHistory.cpp">
+    <ClCompile Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\src\RenderHistory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\RenderMenu.cpp">
+    <ClCompile Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\src\RenderMenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\RenderParametersWidget.cpp">
+    <ClCompile Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\src\RenderParametersWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\renderthread.cpp">
+    <ClCompile Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\src\renderthread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\renderthreadmediator.cpp">
+    <ClCompile Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\src\renderthreadmediator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\renderworker.cpp">
+    <ClCompile Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\src\renderworker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\settingshandler.cpp">
+    <ClCompile Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\src\settingshandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\threadiconmap.cpp">
+    <ClCompile Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\src\threadiconmap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\toolsmenu.cpp">
+    <ClCompile Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\src\toolsmenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\toolsoptionswidget.cpp">
+    <ClCompile Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\src\toolsoptionswidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\windowmenu.cpp">
+    <ClCompile Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\src\windowmenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\windowthreadinfo.cpp">
+    <ClCompile Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\src\windowthreadinfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\windowthreadinfokey.cpp">
+    <ClCompile Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\src\windowthreadinfokey.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\src\workerthreaddata.cpp">
+    <ClCompile Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\src\workerthreaddata.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\mandelbrot_autogen\EWIEGA46WW\qrc_mandelbrotresources_Debug.cpp">
+    <ClCompile Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\mandelbrot_autogen\EWIEGA46WW\qrc_mandelbrotresources_Debug.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\mandelbrot_autogen\mocs_compilation_Release.cpp">
+    <ClCompile Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\mandelbrot_autogen\mocs_compilation_Release.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\mandelbrot_autogen\EWIEGA46WW\qrc_mandelbrotresources_Release.cpp">
+    <ClCompile Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\mandelbrot_autogen\EWIEGA46WW\qrc_mandelbrotresources_Release.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\mandelbrot_autogen\mocs_compilation_MinSizeRel.cpp">
+    <ClCompile Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\mandelbrot_autogen\mocs_compilation_MinSizeRel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\mandelbrot_autogen\EWIEGA46WW\qrc_mandelbrotresources_MinSizeRel.cpp">
+    <ClCompile Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\mandelbrot_autogen\EWIEGA46WW\qrc_mandelbrotresources_MinSizeRel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\mandelbrot_autogen\mocs_compilation_RelWithDebInfo.cpp">
+    <ClCompile Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\mandelbrot_autogen\mocs_compilation_RelWithDebInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="F:\data\coding\mandelbrot_v2_python\src\mandelbrot_autogen\EWIEGA46WW\qrc_mandelbrotresources_RelWithDebInfo.cpp">
+    <ClCompile Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\mandelbrot_autogen\EWIEGA46WW\qrc_mandelbrotresources_RelWithDebInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\ApiDependencies.h">
+    <ClInclude Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\include\ApiDependencies.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\ComputeTaskGenerator.h">
+    <ClInclude Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\include\ComputeTaskGenerator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\EditMenu.h">
+    <ClInclude Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\include\EditMenu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\GRPCHandler.h">
+    <ClInclude Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\include\GRPCHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\HTTPServer.h">
+    <ClInclude Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\include\HTTPServer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\MandelParams.h">
+    <ClInclude Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\include\MandelParams.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\MandelbrotGuiTools.h">
+    <ClInclude Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\include\MandelbrotGuiTools.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\ParameterMaker.h">
+    <ClInclude Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\include\ParameterMaker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\ParametersMenu.h">
+    <ClInclude Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\include\ParametersMenu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\PrecisionHandler.h">
+    <ClInclude Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\include\PrecisionHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\RPCHandler.h">
+    <ClInclude Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\include\RPCHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\RenderHistory.h">
+    <ClInclude Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\include\RenderHistory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\RenderMenu.h">
+    <ClInclude Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\include\RenderMenu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\RenderParametersWidget.h">
+    <ClInclude Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\include\RenderParametersWidget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\RendererConfig.h">
+    <ClInclude Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\include\RendererConfig.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\SynchronizedData.h">
+    <ClInclude Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\include\SynchronizedData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\buttonuser.h">
+    <ClInclude Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\include\buttonuser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\computeddatasegment.h">
+    <ClInclude Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\include\computeddatasegment.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\filemenu.h">
+    <ClInclude Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\include\filemenu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\informationdisplay.h">
+    <ClInclude Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\include\informationdisplay.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\mandelbrotrenderer.h">
+    <ClInclude Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\include\mandelbrotrenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\mandelbrotwidget.h">
+    <ClInclude Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\include\mandelbrotwidget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\radiointegerbutton.h">
+    <ClInclude Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\include\radiointegerbutton.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\regionattributes.h">
+    <ClInclude Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\include\regionattributes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\renderthread.h">
+    <ClInclude Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\include\renderthread.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\renderthreadmediator.h">
+    <ClInclude Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\include\renderthreadmediator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\renderworker.h">
+    <ClInclude Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\include\renderworker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\restAPI\BitmapEndpoint.h">
+    <ClInclude Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\include\restAPI\BitmapEndpoint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\restAPI\RESTEndpoint.h">
+    <ClInclude Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\include\restAPI\RESTEndpoint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\restAPI\RootEndpoint.h">
+    <ClInclude Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\include\restAPI\RootEndpoint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\settingshandler.h">
+    <ClInclude Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\include\settingshandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\settingsuser.h">
+    <ClInclude Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\include\settingsuser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\threadiconmap.h">
+    <ClInclude Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\include\threadiconmap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\toolsmenu.h">
+    <ClInclude Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\include\toolsmenu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\toolsoptionswidget.h">
+    <ClInclude Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\include\toolsoptionswidget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\windowmenu.h">
+    <ClInclude Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\include\windowmenu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\windowthreadinfo.h">
+    <ClInclude Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\include\windowthreadinfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\windowthreadinfokey.h">
+    <ClInclude Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\include\windowthreadinfokey.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="F:\data\coding\mandelbrot_v2_python\src\include\workerthreaddata.h">
+    <ClInclude Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\include\workerthreaddata.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="F:\data\coding\mandelbrot_v2_python\src\CMakeFiles\57d1936282cc04ea041d1fd4d4a5434c\qrc_mandelbrotresources_(CONFIG).cpp.rule">
+    <CustomBuild Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\CMakeFiles\fa72976b2b8aa427c506043defdd99e5\qrc_mandelbrotresources_(CONFIG).cpp.rule">
       <Filter>CMake Rules</Filter>
     </CustomBuild>
-    <CustomBuild Include="F:\data\coding\mandelbrot_v2_python\src\CMakeLists.txt" />
+    <CustomBuild Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Natvis Include="F:\data\coding\mandelbrot_v2_python\src\_deps\boost-src\libs\assert\extra\boost_assert.natvis" />
-    <Natvis Include="F:\data\coding\mandelbrot_v2_python\src\_deps\boost-src\libs\unordered\extra\boost_unordered.natvis" />
+    <Natvis Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\_deps\boost-src\libs\assert\extra\boost_assert.natvis" />
+    <Natvis Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\_deps\boost-src\libs\unordered\extra\boost_unordered.natvis" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="F:\data\coding\mandelbrot_v2_python\src\mandelbrotresources.qrc" />
-    <None Include="F:\data\coding\mandelbrot_v2_python\src\timestamp_Debug" />
-    <None Include="F:\data\coding\mandelbrot_v2_python\src\timestamp_Release" />
-    <None Include="F:\data\coding\mandelbrot_v2_python\src\timestamp_MinSizeRel" />
-    <None Include="F:\data\coding\mandelbrot_v2_python\src\timestamp_RelWithDebInfo" />
+    <None Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\mandelbrotresources.qrc" />
+    <None Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\timestamp_Debug" />
+    <None Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\timestamp_Release" />
+    <None Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\timestamp_MinSizeRel" />
+    <None Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\timestamp_RelWithDebInfo" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="F:\data\coding\mandelbrot_v2_python\src\mandelbrot.rc">
+    <ResourceCompile Include="F:\data\githubCoding\mandelbrot\mandel-thread-typer\src\mandelbrot.rc">
       <Filter>Source Files</Filter>
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="CMake Rules">
-      <UniqueIdentifier>{EC017465-F2E0-339C-B0D9-E1703F8E5E89}</UniqueIdentifier>
+      <UniqueIdentifier>{A4D7490B-0F11-3826-9C64-D54275301DCE}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{37CA3419-AB58-3C75-AA4B-E540B8303DB0}</UniqueIdentifier>
+      <UniqueIdentifier>{0A6A1DBB-7310-377A-9050-06A5E3CDAB76}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{9115150C-328B-3499-8869-01B60A7A9A7F}</UniqueIdentifier>
+      <UniqueIdentifier>{EBE7809A-588F-3E13-B039-FA44CD69BA1A}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

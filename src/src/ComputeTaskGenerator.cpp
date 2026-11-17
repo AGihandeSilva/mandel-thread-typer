@@ -12,23 +12,17 @@
 
 template<typename T>
 concept UsesIntegerRepresentation = std::integral<T>
-#if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
 || std::same_as<T, MandelBrotRenderer::Int128>
-#endif
 ;
 
 template<typename T>
       concept UsesFloatingPointRepresentation = std::floating_point<T>
-#if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
     || std::same_as<T, MandelBrotRenderer::Float80>
     || std::same_as<T, MandelBrotRenderer::Float128>
-#if (USE_BOOST_MULTIPRECISION == 1)
     || std::same_as<T, MandelBrotRenderer::CustomFloat>
     || std::same_as<T, MandelBrotRenderer::Float20dd>
     || std::same_as<T, MandelBrotRenderer::Float30dd>
     || std::same_as<T, MandelBrotRenderer::Float50dd>
-#endif //USE_BOOST_MULTIPRECISION == 1
-#endif //(USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
 ;
 
 template <UsesIntegerRepresentation T, int64_t SCALING_SHIFT>

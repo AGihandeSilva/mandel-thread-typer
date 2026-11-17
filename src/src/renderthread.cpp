@@ -147,9 +147,7 @@ void RenderThread::setOwnerOnce(MandelbrotWidget * owner)
 }
 
 void RenderThread::render(const MandelBrotRenderer::CoordValue& originX, const MandelBrotRenderer::CoordValue& originY,
-#if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
                           const QString& preciseOriginX, const QString& preciseOriginY,
-#endif
                           double scaleFactor,
                           QSize resultSize)
 {
@@ -158,10 +156,8 @@ void RenderThread::render(const MandelBrotRenderer::CoordValue& originX, const M
     this->originX = originX;
     this->originY = originY;
     this->scaleFactor = scaleFactor;
-#if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
     this->preciseOriginX = preciseOriginX;
     this->preciseOriginY = preciseOriginY;
-#endif
     publishCoordinates();
 
     this->resultSize = resultSize;
@@ -517,17 +513,8 @@ void RenderThread::initializeSupportedTypesTable(typeNameUser& nameUser)
 {
     //TODO find a way to more safely link the enum value and combobox indices
 
-#if (USE_BOOST_MULTIPRECISION == 1)
     constexpr bool boostTypesUsed = true;
     constexpr bool gccLikeTypesUsed = true;
-#else
-    constexpr bool boostTypesUsed = false;
-#if defined(__GNUC__)
-    constexpr bool gccLikeTypesUsed = true;
-#else
-    constexpr bool gccLikeTypesUsed = false;
-#endif //__GNUC__
-#endif //USE_BOOST_MULTIPRECISION
 
     AddNumericTypeToSelector("float (single precision)", internalDataType::singlePrecisionFloat, nameUser);
     AddNumericTypeToSelector("double (double precision)", internalDataType::doublePrecisionFloat, nameUser);
@@ -663,10 +650,8 @@ void RenderThread::run()
         //TODO - fix this shadowing
         MandelBrotRenderer::CoordValue originX = this->originX;
         MandelBrotRenderer::CoordValue originY = this->originY;
-#if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
         QString preciseOriginX = this->preciseOriginX;
         QString preciseOriginY = this->preciseOriginY;
-#endif
         mutex.unlock();
 
         auto halfWidth = static_cast<double>(resultSize.width()) / 2.0;
@@ -753,10 +738,8 @@ void RenderThread::run()
                                                  i,
                                                 ComputedDataSegment( RegionAttributes(scaleFactor,
                                                                                       originX, originY,
-#if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
                                                                                       preciseOriginX,
                                                                                       preciseOriginY,
-#endif
                                                                                       static_cast<int>(-halfWidth),
                                                                                       static_cast<int>(halfWidth),
                                                                                       static_cast<int>(currentHeight),
@@ -850,11 +833,7 @@ void RenderThread::processIntegerValueFromButtonPress(int value)
 
 void RenderThread::publishCoordinates()
 {
-#if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
     emit updateCoordInfo(preciseOriginX, preciseOriginY, scaleFactor);
-#else
-    emit updateCoordInfo(originX, originY, scaleFactor);
-#endif
 }
 
  void RenderThread::drawPreComputedData(ComputedDataSegment& data)

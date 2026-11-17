@@ -87,9 +87,7 @@ QString MandelbrotWidget::m_DefaultOriginY("-0.0395159");
 QString MandelbrotWidget::s_undefinedFloatString = "NaN";
 QString MandelbrotWidget::s_unInitializedFloatString = "-1.0";
 
-#if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
 using MandelBrotRenderer::generateFloatFromPreciseString;
-#endif
 //! [0]
 
 //! [1]
@@ -99,9 +97,7 @@ using namespace MandelBrotRenderer;
 MandelbrotWidget::MandelbrotWidget(QWidget *parent)
     : QMainWindow(parent), m_settingsHandler(this), m_infoDisplayer(*this, m_settingsHandler), m_thread(m_settingsHandler, this),
       m_originX(s_unInitializedFloatString), m_originY(s_unInitializedFloatString),
-#if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
         m_preciseOriginX(s_undefinedFloatString), m_preciseOriginY(s_undefinedFloatString),
-#endif
       m_pixmapScale(notYetInitializedDouble),
       m_curScale(notYetInitializedDouble), m_perPixelCoeff(notYetInitializedDouble),
       m_scaleHasChanged(false), m_renderInProgress(false), m_usingUndoRedo(false), m_numericType(internalDataType::doublePrecisionFloat),
@@ -324,10 +320,8 @@ void MandelbrotWidget::enforceConfigData(RendererConfig &newConfigData)
     getInfoDisplayer().setEnabled(newConfigData.getDetailedDisplayEnabled());
     m_originX = QString::number(newConfigData.getOriginX());
     m_originY = QString::number(newConfigData.getOriginY());
-#if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
     m_preciseOriginX = newConfigData.getPreciseOriginX();
     m_preciseOriginY = newConfigData.getPreciseOriginY();
-#endif
     m_curScale = newConfigData.getCurScale();
     m_pixmapScale = newConfigData.getPixmapScale();
     m_thread.getThreadMediator().setEnabled(newConfigData.getThreadMediatorEnabled());
@@ -576,13 +570,8 @@ bool MandelbrotWidget::changeRegionParameters(const QString &originXvalue,
         return false;
     }
 
-#if (USE_BOOST_MULTIPRECISION == 1 || defined(__GNUC__))
     PreciseFloatResult originX_result = generateFloatFromPreciseString(originXvalue);
     PreciseFloatResult originY_result = generateFloatFromPreciseString(originYvalue);
-#else
-    auto originX_result  = generateFloatFromString(originXvalue);
-    auto originY_result  = generateFloatFromString(originYvalue);
-#endif
 
     auto width_result    = generateFloatFromString(widthValue);
     auto height_result   = generateFloatFromString(heightValue);
@@ -599,13 +588,9 @@ bool MandelbrotWidget::changeRegionParameters(const QString &originXvalue,
     bool regionOk= originX_result.second && originY_result.second &&
             width_result.second && height_result.second;
 
-#if (USE_BOOST_MULTIPRECISION == 1 || defined(__GNUC__))
     regionOk = regionOk && validateRegion<Float128>(originX_f, originY_f,
                                                     static_cast<Float128>(width_f),
                                                     static_cast<Float128>(height_f));
-#else
-    regionOk = regionOk && validateRegion<double>(originX_f, originY_f, width_f, height_f);
-#endif
 
     std::cout << "new Region OK:" << regionOk << std::endl;
 
@@ -646,10 +631,8 @@ bool MandelbrotWidget::changeRegionParameters(const QString &originXvalue,
 
                     m_originX = originXvalue;
                     m_originY = originYvalue;
-#if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
                     m_preciseOriginX = originXvalue;
                     m_preciseOriginY = originYvalue;
-#endif
 
                     m_curScale = newScale;
                     m_pixmapScale = newScale;
@@ -859,10 +842,8 @@ void MandelbrotWidget::processSettingUpdate(QSettings &settings)
 
     m_settingsHandler.getXYSettingsData(m_originX, m_originY);
     settings.beginGroup("RenderParameters");
-#if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
         m_preciseOriginX = m_originX;
         m_preciseOriginY = m_originY;
-#endif
         m_curScale = settings.value("curScale", DefaultScale).toDouble();
         m_pixmapScale = settings.value("pixmapScale", DefaultScale).toDouble();
     settings.endGroup();
@@ -1104,17 +1085,13 @@ void MandelbrotWidget::executeRender(bool hideProgress)
         m_unsavedChangesExist = true;
     }
 
-#if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
     if (m_preciseOriginX == s_undefinedFloatString || m_preciseOriginY == s_undefinedFloatString) {
         m_preciseOriginX = m_originX;
         m_preciseOriginY = m_originY;
     }
-#endif
 
     m_thread.render(m_originX, m_originY,
-#if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
                 m_preciseOriginX, m_preciseOriginY,
-#endif
                   m_curScale, size());
 }
 
@@ -1139,40 +1116,21 @@ void MandelbrotWidget::disableOptions()
 
 QString MandelbrotWidget::computeDeltaWithHigherPrecision(QString& value, int deltaPixels, double currentScale)
 {
-#if (USE_BOOST_MULTIPRECISION == 1 || defined(__GNUC__))
     Float128 preciseDelta = deltaPixels * static_cast<Float128>(currentScale);
     PreciseFloatResult floatValue = generateFloatFromPreciseString(value);
     Q_ASSERT(floatValue.second);
     Float128 preciseOrigin = floatValue.second ? floatValue.first : Float128(0.0);
     Float128 preciseValue = preciseOrigin + preciseDelta;
     return (MandelBrotRenderer::generatePreciseFloatingPointString(preciseValue));
-#else
-    auto floatValue = generateFloatFromString(value);
-    double originValue = floatValue.second ? floatValue.first : 0.0;
-    double preciseValue = originValue + deltaPixels * currentScale;
-    return (MandelBrotRenderer::generateDoubleAsString(preciseValue));
-#endif
 }
 
 //! [18]
 void MandelbrotWidget::scroll(int deltaX, int deltaY)
 {
-#if (USE_BOOST_MULTIPRECISION == 1 || defined(__GNUC__))
     m_preciseOriginX = computeDeltaWithHigherPrecision(m_originX, deltaX, m_curScale);
     m_preciseOriginY = computeDeltaWithHigherPrecision(m_originY, deltaY, m_curScale);
     m_originX = m_preciseOriginX;
     m_originY = m_preciseOriginY;
-#else
-    auto parsedOriginX = generateFloatFromString(m_originX);
-    double originX_origin = parsedOriginX.second ? parsedOriginX.first : 0.0;
-    double currentOriginX = originX_origin + deltaX * m_curScale;
-
-    auto parsedOriginY = generateFloatFromString(m_originY);
-    double originY_origin = parsedOriginY.second ? parsedOriginY.first : 0.0;
-    double currentOriginY = originY_origin + deltaY * m_curScale;
-    m_originX = MandelBrotRenderer::generateDoubleAsString(currentOriginX);
-    m_originY = MandelBrotRenderer::generateDoubleAsString(currentOriginY);
-#endif
     update();
     executeRender();
     outputToLog("New operation : scroll");

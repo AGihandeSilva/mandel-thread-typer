@@ -279,7 +279,6 @@ bool RenderWorker::getComputeResult()
         result = executeTask<int32_t>();
     } else if (parentThread->getRendererData().m_numericType == internalDataType::int64) {
         result = executeTask<int64_t>();
-#if (USE_BOOST_MULTIPRECISION == 1)
     }else if (parentThread->getRendererData().m_numericType == internalDataType::customFloat20) {
         result = executeTask<CustomFloat>();
     }else if (parentThread->getRendererData().m_numericType == internalDataType::float20dd) {
@@ -288,16 +287,12 @@ bool RenderWorker::getComputeResult()
         result = executeTask<Float30dd>();
     }else if (parentThread->getRendererData().m_numericType == internalDataType::float50dd) {
         result = executeTask<Float50dd>();
-#endif
-
-#if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
     } else if (parentThread->getRendererData().m_numericType == internalDataType::float80) {
         result = executeTask<Float80>();
     } else if (parentThread->getRendererData().m_numericType == internalDataType::float128) {
         result = executeTask<Float128>();
     } else if (parentThread->getRendererData().m_numericType == internalDataType::int128) {
         result = executeTask<Int128>();
-#endif
     } else  {
         result = executeTask<double>();
     }

@@ -19,7 +19,6 @@ namespace MandelParams
         static const bool value = true;
     };
 
-#if (USE_BOOST_MULTIPRECISION == 1 || defined(__GNUC__))
     template <>
     struct needs_scale_shift<MandelBrotRenderer::Int128> {
         static const bool value = true;
@@ -32,7 +31,6 @@ namespace MandelParams
         static const bool value = false;
     };
 #endif //!__GNUC__
-#endif //USE_BOOST_MULTIPRECISION == 1 || defined(__GNUC__)
 
     template <>
     struct needs_scale_shift<int32_t> {

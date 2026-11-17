@@ -48,11 +48,8 @@ void RenderParametersWidget::setUpFields()
     const int boxHeight = 20;
     const int otherCharacters = 3;
     const int characterWidth = otherCharacters + magnitude +
-#if (USE_BOOST_MULTIPRECISION == 1 || defined(__GNUC__))
             std::numeric_limits<MandelBrotRenderer::Float128>::max_digits10;
-#else
-            std::numeric_limits<double>::max_digits10;
-#endif
+
     const int extraMarginInPercent = 5;
     QString testString(characterWidth, '8');
     int pixelsWidth = ((100 + extraMarginInPercent) * metrics.size(Qt::TextSingleLine, testString).width()) / 100;

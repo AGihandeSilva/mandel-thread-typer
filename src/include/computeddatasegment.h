@@ -40,10 +40,8 @@ public:
     double getScaleFactor() const { return attributes.getScaleFactor(); }
     double getOriginX() const { return attributes.getOriginX(); }
     double getOriginY() const { return attributes.getOriginY(); }
-#if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
     QString getPreciseOriginX() const { return attributes.getPreciseOriginX(); }
     QString getPreciseOriginY() const { return attributes.getPreciseOriginY(); }
-#endif
     int getMinX() const { return attributes.getMinX(); }
     int getMaxX() const { return attributes.getMaxX(); }
     int getMinY() const { return attributes.getMinY(); }

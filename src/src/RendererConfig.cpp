@@ -4,9 +4,7 @@
 #include <QDataStream>
 #include "PrecisionHandler.h"
 
-#if (USE_BOOST_MULTIPRECISION == 1 || defined(__GNUC__))
 using MandelBrotRenderer::generateFloatFromPreciseString;
-#endif
 using MandelBrotRenderer::DoubleResult;
 
 RendererConfig::RendererConfig(bool detailedDisplayEnabled,
@@ -117,7 +115,6 @@ double RendererConfig::getOriginY() const
     return originY_float.first;
 }
 
-#if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
 const QString& RendererConfig::getPreciseOriginX() const
 {
     return state.m_originX;
@@ -127,7 +124,6 @@ const QString& RendererConfig::getPreciseOriginY() const
 {
     return state.m_originY;
 }
-#endif
 
 double RendererConfig::getOriginX() const
 {

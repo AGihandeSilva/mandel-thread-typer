@@ -223,10 +223,8 @@ private:
     QPoint m_lastDragPos;
     MandelBrotRenderer::CoordValue m_originX;
     MandelBrotRenderer::CoordValue m_originY;
-#if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
     QString m_preciseOriginX;
     QString m_preciseOriginY;
-#endif
     double m_pixmapScale;
     double m_curScale;
     double m_perPixelCoeff;

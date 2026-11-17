@@ -48,19 +48,18 @@ DoubleResult generateFloatFromString(const QString& floatString)
 
 
 
-#if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
 QString generatePreciseFloatingPointString(Float128 preciseValue)
 {
     QMutexLocker lock(PrecisionHandler::getPreciseValuesHandler().getMutex());
     std::stringstream ss;
     ss.precision(std::numeric_limits<Float128>::max_digits10);
     ss.flags(std::ios_base::fmtflags(std::ios_base::scientific));
-#if (USE_BOOST_MULTIPRECISION != 1)
+#if (PREFER_BOOST_MULTIPRECISION_FLOAT_128 != 1)
     //GCC __float128 doesn't seem to support this operation
     ss << static_cast<double>(preciseValue);
 #else
     ss << preciseValue;
-#endif //(USE_BOOST_MULTIPRECISION != 1)
+#endif //(PREFER_BOOST_MULTIPRECISION_FLOAT_128 != 1)
 
     return QString(ss.str().data());
 }
@@ -83,7 +82,7 @@ PreciseFloatResult generateFloatFromPreciseString(QString floatString, std::stre
     return std::make_pair(value, !ss.fail());
 }
 #endif //!defined(__GNUC__)
-#endif //(USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
+
 //TODO use templated functions to eliminate this code duplication
 QString generateDoubleAsString(double value)
 {

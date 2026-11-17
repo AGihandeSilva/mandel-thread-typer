@@ -5,9 +5,7 @@
 #include "PrecisionHandler.h"
 #include "mandelbrotwidget.h"
 
-#if (USE_BOOST_MULTIPRECISION == 1 || defined(__GNUC__))
 using MandelBrotRenderer::generateFloatFromString;
-#endif
 
 InformationDisplay::InformationDisplay(MandelbrotWidget& mainWidget,SettingsHandler& applicationSettingsHandler)
     : m_timeTakenLabel("Render Time (s):"), m_percentageDoneLabel("Progress: "), m_currentStateLabel("Current State: "),

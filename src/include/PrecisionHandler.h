@@ -13,11 +13,9 @@ bool operator!= (const RenderState& lhs, const RenderState& rhs);
 
 bool comparefloatingPointValues(double thisValue, double otherValue);
 
-#if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
 QString generatePreciseFloatingPointString(Float128 preciseValue);
 
 PreciseFloatResult generateFloatFromPreciseString(QString floatString, std::streamsize precision = std::numeric_limits<Float128>::max_digits10);
-#endif
 QString generateDoubleAsString(double value);
 
 DoubleResult generateFloatFromString(const QString& floatString);

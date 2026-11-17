@@ -105,9 +105,7 @@ public:
     ~RenderThread() override { --count; quit();  wait(); }
 
     void render(const MandelBrotRenderer::CoordValue& originX, const MandelBrotRenderer::CoordValue& originY,
-#if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
               const QString& preciseOriginX, const QString& preciseOriginY,
-#endif
                 double scaleFactor, QSize resultSize);
 
     qint64      getElapsedTimeLastRun() const { return elapsedTimeLastRun; }
@@ -249,10 +247,8 @@ private:
     QWaitCondition condition;
     MandelBrotRenderer::CoordValue originX;
     MandelBrotRenderer::CoordValue originY;
-#if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
     QString preciseOriginX;
     QString preciseOriginY;
-#endif
     double scaleFactor;
 
     QSize resultSize;

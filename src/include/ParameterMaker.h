@@ -29,13 +29,8 @@ struct ParameterMaker
         m_scaling(1),
         m_minX(dataSegment.getMinX()),
         m_maxX(dataSegment.getMaxX()),
-#if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
         m_originX(MandelBrotRenderer::generateFloatFromPreciseString(dataSegment.getPreciseOriginX()).first),
         m_originY(MandelBrotRenderer::generateFloatFromPreciseString(dataSegment.getPreciseOriginY()).first),
-#else
-        m_originX(static_cast<T>(dataSegment.getOriginX())),
-        m_originY(static_cast<T>(dataSegment.getOriginY())),
-#endif
         m_scaleFactor(static_cast<T>(dataSegment.getScaleFactor())),
         m_limit(limitValue)
     {}
@@ -63,7 +58,6 @@ struct ParameterMaker
 {}
 
 
-#if (USE_BOOST_MULTIPRECISION == 1 && !defined(__GNUC__))
 /*
  * Constructor for Boost multiprecision integer types
  */
@@ -82,9 +76,6 @@ struct ParameterMaker
 
     const int doubleToIntShift = 56;
     const int64_t doubleToIntScaling = 1LL << doubleToIntShift;
-
-
-#endif //(USE_BOOST_MULTIPRECISION == 1 && !defined(__GNUC__))
 
     const T m_scaling;
     const int m_minX;

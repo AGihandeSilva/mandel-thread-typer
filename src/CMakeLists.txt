@@ -333,9 +333,10 @@ endif (UNIX)
 #add the required boost header files with the 
 #parent 'boost' directory at the same level as this project directory
 #and edit the line below to enable/disable the use of these types
-set (USE_EXTENDED_TYPES 1)
-
-if (${USE_EXTENDED_TYPES})
+set (USE_BOOST_MULTIPRECISION_128_OVER_GCC_FLOAT_128 OFF)
 include_directories(../)
-add_definitions(-DUSE_BOOST_MULTIPRECISION=1)
+
+if (${USE_BOOST_MULTIPRECISION_128_OVER_GCC_FLOAT_128})
+
+add_definitions(-DPREFER_BOOST_MULTIPRECISION_FLOAT_128=1)
 endif()

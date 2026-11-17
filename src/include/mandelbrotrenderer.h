@@ -22,10 +22,8 @@
 #include <ios>
 #include <sstream>
 
-#if (USE_BOOST_MULTIPRECISION == 1)
 #include <boost/multiprecision/cpp_int.hpp>
 #include <boost/multiprecision/cpp_bin_float.hpp>
-#endif
 
 
 
@@ -50,35 +48,29 @@ namespace MandelBrotRenderer
     using MQuintVector  = QVector<uint>;
     using MQintVector   = QVector<int>;
 #if defined(_WIN32)
-#if (USE_BOOST_MULTIPRECISION == 1)
     using Int128    = boost::multiprecision::int128_t;
     using Float80   = boost::multiprecision::cpp_bin_float_double_extended;
     using Float128  = boost::multiprecision::cpp_bin_float_quad;
-#endif //USE_BOOST_MULTIPRECISION
 #else
     using Int128   = __int128_t;
     using Float80  = __float80;
-#if (USE_BOOST_MULTIPRECISION == 1)
+#if (PREFER_BOOST_MULTIPRECISION_FLOAT_128 == 1)
     using Float128 = boost::multiprecision::cpp_bin_float_quad;
 #else
     using Float128 = __float128;
-#endif
+#endif //PREFER_BOOST_MULTIPRECISION_FLOAT_128==1
 #endif //_WIN32
 
 using CoordValue = QString;
 
 using CoordResult = std::pair<QString, bool>;
 using DoubleResult = std::pair<double, bool>;
-#if (USE_BOOST_MULTIPRECISION == 1) || defined(__GNUC__)
 using PreciseFloatResult = std::pair<Float128, bool>;
-#endif
 
-#if (USE_BOOST_MULTIPRECISION == 1)
     using CustomFloat = boost::multiprecision::number<boost::multiprecision::cpp_bin_float<18, boost::multiprecision::backends::digit_base_10, void, boost::int16_t, -63, 64>>;
     using Float20dd = boost::multiprecision::number<boost::multiprecision::cpp_bin_float<20>>;
     using Float30dd = boost::multiprecision::number<boost::multiprecision::cpp_bin_float<30>>;
     using Float50dd = boost::multiprecision::cpp_bin_float_50;
-#endif //USE_BOOST_MULTIPRECISION
 
     using TypePrecisonMap = std::map<internalDataType, int>;
 
