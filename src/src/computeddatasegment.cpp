@@ -42,6 +42,9 @@ ComputedDataSegment::ComputedDataSegment(RegionAttributes attributes,
     {
         //std::cout << "cannot reuse raw results!" << std::endl;
         m_rawResultData = MandelBrotRenderer::MQuintVector(rawDataSize, qRgb(0, 0, 0));
+#if defined(DEBUG_RAW_DATA)
+        m_rawIterationsData = MandelBrotRenderer::MQuintVector(attributes.getMaxX() + 1 - attributes.getMinX(), 0);
+#endif
     }
 
     taskResults.m_rawResultData = &m_rawResultData;
@@ -61,7 +64,14 @@ ComputedDataSegment::ComputedDataSegment(ComputedDataSegment&& other) noexcept
     : image{ other.image },
     rawDataSize{ other.rawDataSize },
       m_rawResultData {std::move(other.m_rawResultData)},
-      taskResults { &m_rawResultData, other.taskResults.m_iterationSum},
+#if defined(DEBUG_RAW_DATA)
+    m_rawIterationsData{ std::move(other.m_rawIterationsData) },
+#endif
+      taskResults { &m_rawResultData, 
+#if defined(DEBUG_RAW_DATA)
+        &m_rawIterationsData,
+#endif   
+    other.taskResults.m_iterationSum},
       segmentIndex(other.segmentIndex),
 
       consumed(other.consumed),
@@ -75,7 +85,14 @@ ComputedDataSegment::ComputedDataSegment(const ComputedDataSegment& other)
     : image{ other.image },
     rawDataSize{ other.rawDataSize },
       m_rawResultData(other.m_rawResultData),
-      taskResults { &m_rawResultData, other.taskResults.m_iterationSum},
+#if defined(DEBUG_RAW_DATA)
+    m_rawIterationsData(other.m_rawIterationsData),
+#endif
+      taskResults { &m_rawResultData, 
+ #if defined(DEBUG_RAW_DATA)
+        &m_rawIterationsData,
+#endif
+        other.taskResults.m_iterationSum},
       segmentIndex(other.segmentIndex),
       consumed(other.consumed),
       attributes(other.attributes)

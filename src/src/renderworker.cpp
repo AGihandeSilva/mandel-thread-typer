@@ -20,6 +20,10 @@
 #include "computeddatasegment.h"
 #include "renderthreadmediator.h"
 #include "ComputeTaskGenerator.h"
+#if defined(DEBUG_RAW_DATA)
+#include <boost/math/statistics/univariate_statistics.hpp>
+#include <algorithm>
+#endif
 
 using namespace MandelBrotRenderer;
 
@@ -58,7 +62,7 @@ RenderWorker::RenderWorker(RenderThread* parentThread,
 {
     ++count;
 
-    connect(this, SIGNAL(renderedSubImage(const QImage*,double)), owner, SLOT(updatePixmap(const QImage*,double)));
+    connect(this, SIGNAL(renderedSubImage(const QImage*,QString)), owner, SLOT(updatePixmap(const QImage*,QString)));
 
     connect(this, SIGNAL(finished()), parentThread, SLOT(cleanup()));
     connect(this, SIGNAL(computationDone(ComputedDataSegment&)), parentThread, SLOT(drawPreComputedData(ComputedDataSegment&)));
@@ -180,6 +184,28 @@ bool RenderWorker::execute(const computeFunction& computeTask)
              * calculate the fractal pixel values! *
              ***************************************/
             computeTask(segment, abort, currentPixelIndex, fullResultData, y);
+
+#if defined(DEBUG_RAW_DATA)
+            //statistics for debugging purposes
+            if (y == 0 && fullResultData.m_rawIterationsData)
+            {
+                std::vector<uint> rawValues((fullResultData.m_rawIterationsData)->size());
+                rawValues.assign(fullResultData.m_rawIterationsData->begin(), fullResultData.m_rawIterationsData->end());
+
+
+                const double mean = boost::math::statistics::mean(rawValues.cbegin(), rawValues.cend());
+                const double sigma_sq = boost::math::statistics::variance(std::execution::seq, rawValues.cbegin(), rawValues.cend());
+                const auto minIter = std::min_element(rawValues.cbegin(), rawValues.cend());
+                const uint minValue = minIter != rawValues.cend() ? *minIter : 0;
+                const auto maxIter = std::max_element(rawValues.cbegin(), rawValues.cend());
+                const uint maxValue = maxIter != rawValues.cend() ? *maxIter : 0;
+                std::cout << "row 0 size: " << rawValues.size() << " mean:" << mean << " : " << "var : " << sigma_sq << " min: " << minValue << \
+                " max: " << maxValue << " : currentPixel : " << currentPixelIndex << std::endl;
+
+                //for (auto i : rawValues)
+                //    std::cout << i << std::endl;
+            }
+#endif
         }
         handleSegmentDone();
 

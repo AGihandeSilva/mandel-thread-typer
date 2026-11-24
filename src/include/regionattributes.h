@@ -10,7 +10,7 @@ class RegionAttributes
 public:
    RegionAttributes();
 
-   explicit RegionAttributes(double scaleFactor,
+   explicit RegionAttributes(MandelBrotRenderer::CoordValue& scaleFactor,
                      MandelBrotRenderer::CoordValue& originX,
                      MandelBrotRenderer::CoordValue& originY,
                      QString preciseOriginX,
@@ -30,9 +30,12 @@ public:
 
     bool operator==(const RegionAttributes& other);
 
-    double getScaleFactor() const;
-    double getOriginX() const;
-    double getOriginY() const;
+    MandelBrotRenderer::CoordValue getScaleFactor() const { return scaleFactor; }
+    MandelBrotRenderer::CoordValue getRawScaleFactor() const { return scaleFactor; }
+
+    MandelBrotRenderer::CoordValue  getOriginX() const { return originX; }
+    MandelBrotRenderer::CoordValue  getOriginY() const { return originY; }
+
     QString getPreciseOriginX() const;
     QString getPreciseOriginY() const;
     int getMinX() const;
@@ -44,7 +47,7 @@ public:
     void adjustYValues(int currentYPos, bool isLowerHalf);
 
 private:
-    double scaleFactor;
+    MandelBrotRenderer::CoordValue scaleFactor;
     MandelBrotRenderer::CoordValue originX;
     MandelBrotRenderer::CoordValue originY;
     QString preciseOriginX;

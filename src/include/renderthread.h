@@ -106,7 +106,8 @@ public:
 
     void render(const MandelBrotRenderer::CoordValue& originX, const MandelBrotRenderer::CoordValue& originY,
               const QString& preciseOriginX, const QString& preciseOriginY,
-                double scaleFactor, QSize resultSize);
+                const MandelBrotRenderer::CoordValue& scaleFactor,
+                QSize resultSize);
 
     qint64      getElapsedTimeLastRun() const { return elapsedTimeLastRun; }
     int         getPassesDone() const { return passesDone; }
@@ -159,7 +160,7 @@ public slots:
 
 
 signals:
-    void renderedImage(const QImage *image, double scaleFactor);
+    void renderedImage(const QImage* image, QString scaleFactorString);
     void signalThreadState(uint index, int stateAsInt);
 
     void stopThreads(bool);
@@ -178,7 +179,7 @@ signals:
     void setIterationCount(qint64 iterationCount);
     void workerThreadCountChanged(int);
     void displayInternalDataType(QString);
-    void updateCoordInfo(const MandelBrotRenderer::CoordValue&, const MandelBrotRenderer::CoordValue& ,double scaleFactor);
+    void updateCoordInfo(const MandelBrotRenderer::CoordValue&, const MandelBrotRenderer::CoordValue&, const MandelBrotRenderer::CoordValue&);
     void setIterationSumCount(qint64 iterationSum);
     void displayPassesInfo(int numPasses);
 
@@ -249,7 +250,7 @@ private:
     MandelBrotRenderer::CoordValue originY;
     QString preciseOriginX;
     QString preciseOriginY;
-    double scaleFactor;
+    MandelBrotRenderer::CoordValue scaleFactor;
 
     QSize resultSize;
     bool restart;

@@ -71,7 +71,7 @@ public slots:
     void setRestart(bool restart);
 
 signals:
-void renderedSubImage(const QImage *image, double scaleFactor);
+void renderedSubImage(const QImage *image, QString scaleFactor);
 void computationDone(ComputedDataSegment& data);
 void taskDone();
 void finished();

@@ -37,9 +37,11 @@ public:
 
     ComputedDataSegment& operator=(ComputedDataSegment&& other) noexcept;
 
-    double getScaleFactor() const { return attributes.getScaleFactor(); }
-    double getOriginX() const { return attributes.getOriginX(); }
-    double getOriginY() const { return attributes.getOriginY(); }
+    MandelBrotRenderer::CoordValue getScaleFactor() const { return attributes.getScaleFactor(); }
+    MandelBrotRenderer::CoordValue getOriginX() const { return attributes.getOriginX(); }
+    MandelBrotRenderer::CoordValue getOriginY() const { return attributes.getOriginY(); }
+
+
     QString getPreciseOriginX() const { return attributes.getPreciseOriginX(); }
     QString getPreciseOriginY() const { return attributes.getPreciseOriginY(); }
     int getMinX() const { return attributes.getMinX(); }
@@ -67,6 +69,9 @@ private:
     QImage *image;
     int rawDataSize;
     MandelBrotRenderer::MQuintVector m_rawResultData;
+#if defined(DEBUG_RAW_DATA)
+    MandelBrotRenderer::MQuintVector m_rawIterationsData;
+#endif
     MandelBrotRenderer::ComputeTaskResults taskResults;
     int segmentIndex;
     bool consumed;

@@ -102,7 +102,7 @@ RenderThread::RenderThread(SettingsHandler&settingsHandler, QObject *parent)
       bufferedAttributes(MAX_NUM_WORKER_THREADS, RegionAttributes()),
       originX(MandelbrotWidget::s_unInitializedFloatString),  //TODO improve this, check for the lifetime of this static value
       originY(MandelbrotWidget::s_unInitializedFloatString),
-      scaleFactor(notYetInitializedDouble),
+      scaleFactor(MandelbrotWidget::s_unInitializedFloatString),
       abort(false), currentImage(nullptr), computationChunksDone(0), m_colorMapSize(MandelBrotRenderer::DefaultColormapSize),
       timerInSeconds(this),
       numWorkerThreads(calculateInitialNumThreads()),
@@ -148,7 +148,7 @@ void RenderThread::setOwnerOnce(MandelbrotWidget * owner)
 
 void RenderThread::render(const MandelBrotRenderer::CoordValue& originX, const MandelBrotRenderer::CoordValue& originY,
                           const QString& preciseOriginX, const QString& preciseOriginY,
-                          double scaleFactor,
+                          const MandelBrotRenderer::CoordValue& scaleFactor,
                           QSize resultSize)
 {
     QMutexLocker locker(&mutex);
@@ -282,8 +282,9 @@ void RenderThread::connectUpOwner()
 
     connect(this, SIGNAL(workerThreadCountChanged(int)), m_mandelbrotWidgetThreadOwner, SLOT(displayThreadsInfo(int)));
     connect(this, SIGNAL(displayInternalDataType(QString)), m_mandelbrotWidgetThreadOwner, SLOT(displayInternalDataType(QString)));
-    connect(this, SIGNAL(updateCoordInfo(const MandelBrotRenderer::CoordValue&, const MandelBrotRenderer::CoordValue&,double)), 
-        m_mandelbrotWidgetThreadOwner, SLOT(updateCoordInfo(const MandelBrotRenderer::CoordValue&, const MandelBrotRenderer::CoordValue&, double)));
+
+    connect(this, SIGNAL(updateCoordInfo(const MandelBrotRenderer::CoordValue&, const MandelBrotRenderer::CoordValue&, const MandelBrotRenderer::CoordValue&)),
+        m_mandelbrotWidgetThreadOwner, SLOT(updateCoordInfo(const MandelBrotRenderer::CoordValue&, const MandelBrotRenderer::CoordValue&, const MandelBrotRenderer::CoordValue&)));
 
     connect(this, SIGNAL(allDone()), m_mandelbrotWidgetThreadOwner, SLOT(handleAllDone()));
     connect(this, SIGNAL(allDone()), this, SLOT(stopTimer()));
@@ -646,7 +647,7 @@ void RenderThread::run()
         elapsedTimeLastRun = 0;
 
         QSize resultSize = this->resultSize;
-        double scaleFactor = this->scaleFactor;
+        QString scaleFactorString = this->scaleFactor;
         //TODO - fix this shadowing
         MandelBrotRenderer::CoordValue originX = this->originX;
         MandelBrotRenderer::CoordValue originY = this->originY;
@@ -796,6 +797,7 @@ void RenderThread::run()
 
             std::cout << " <<<<<<<<<<<<<<<<<< ALL DONE >>>>>>>> " << "available: " << sem->available() << std::endl;
 
+            handleAllThreadsDone();
             emit(allDone());
             forcedToStop = abort;
             abort = false;

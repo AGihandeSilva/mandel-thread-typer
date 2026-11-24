@@ -7,6 +7,7 @@ set(USE_GRPC OFF)
 set(USE_TEST_DEFINES ON)
 set(MANDELBROT_USE_SFINAE OFF)
 set(MANDELBROT_ENABLE_HTTP_SERVER_CODE OFF)
+set(DEBUG_RAW_DATA OFF)
 
 if (USE_GRPC)
 include(../grpc_cmake/common.cmake)
@@ -20,6 +21,10 @@ endif(MANDELBROT_USE_SFINAE)
 if (MANDELBROT_ENABLE_HTTP_SERVER_CODE)
 add_definitions(-DMANDELBROT_ENABLE_HTTP_SERVER_CODE)
 endif(MANDELBROT_ENABLE_HTTP_SERVER_CODE)
+
+if (DEBUG_RAW_DATA)
+add_definitions(-DDEBUG_RAW_DATA)
+endif(DEBUG_RAW_DATA)
 
 
 set(cmake_include_path ${cmake_include_path})

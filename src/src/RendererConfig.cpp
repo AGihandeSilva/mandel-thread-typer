@@ -8,7 +8,8 @@ using MandelBrotRenderer::generateFloatFromPreciseString;
 using MandelBrotRenderer::DoubleResult;
 
 RendererConfig::RendererConfig(bool detailedDisplayEnabled,
-                   QSize size, QPoint pos, const MandelBrotRenderer::CoordValue& originX, const MandelBrotRenderer::CoordValue& originY, double curScale, double pixmapScale,
+                   QSize size, QPoint pos, const MandelBrotRenderer::CoordValue& originX, const MandelBrotRenderer::CoordValue& originY,
+                   const MandelBrotRenderer::CoordValue& curScale, const MandelBrotRenderer::CoordValue& pixmapScale,
                    bool threadMediatorEnabled, int m_colorMapSize, MandelBrotRenderer::internalDataType dataType) :
 
     state { detailedDisplayEnabled, size, pos, originX, originY, curScale,
@@ -100,12 +101,16 @@ MandelBrotRenderer::internalDataType RendererConfig::getInternalDataType() const
 
 double RendererConfig::getPixmapScale() const
 {
-    return state.m_pixmapScale;
+    DoubleResult pixmapScale_float = MandelBrotRenderer::generateFloatFromString(state.m_pixmapScale);
+    Q_ASSERT(pixmapScale_float.second);
+    return pixmapScale_float.second ? pixmapScale_float.first : 0.0;
 }
 
 double RendererConfig::getCurScale() const
 {
-    return state.m_curScale;
+    DoubleResult curScale_float = MandelBrotRenderer::generateFloatFromString(state.m_curScale);
+    Q_ASSERT(curScale_float.second);
+    return curScale_float.second ? curScale_float.first : 0.0;
 }
 
 double RendererConfig::getOriginY() const

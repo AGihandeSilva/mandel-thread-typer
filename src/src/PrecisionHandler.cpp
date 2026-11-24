@@ -15,14 +15,20 @@ bool operator==(const RenderState &lhs, const RenderState &rhs)
     DoubleResult originX_float_r = generateFloatFromString(rhs.m_originX);
     DoubleResult originY_float_l = generateFloatFromString(lhs.m_originY);
     DoubleResult originY_float_r = generateFloatFromString(rhs.m_originY);
+    DoubleResult curScale_float_l = generateFloatFromString(lhs.m_curScale);
+    DoubleResult curScale_float_r = generateFloatFromString(rhs.m_curScale);
+    DoubleResult pixmapScale_float_l = generateFloatFromString(lhs.m_pixmapScale);
+    DoubleResult pixmapScale_float_r = generateFloatFromString(rhs.m_pixmapScale);
     return(lhs.m_size == rhs.m_size &&
         lhs.m_pos == rhs.m_pos &&
         originX_float_l.second && originX_float_r.second &&
         comparefloatingPointValues(originX_float_l.first, originX_float_r.first) &&
         originY_float_l.second && originY_float_r.second &&
         comparefloatingPointValues(originY_float_l.first, originY_float_r.first) &&
-        comparefloatingPointValues(lhs.m_curScale, rhs.m_curScale) &&
-        comparefloatingPointValues(lhs.m_pixmapScale, rhs.m_pixmapScale));
+        curScale_float_l.second && curScale_float_r.second &&
+        comparefloatingPointValues(curScale_float_l.first, curScale_float_r.first) &&
+        pixmapScale_float_l.second && pixmapScale_float_r.second &&
+        comparefloatingPointValues(pixmapScale_float_l.first, pixmapScale_float_r.first));
 }
 
 bool operator!=(const RenderState &lhs, const RenderState &rhs)
@@ -73,13 +79,19 @@ PreciseFloatResult generateFloatFromPreciseString(QString floatString, std::stre
     ss.precision(precision);
     //ss.flags(std::ios_base::fmtflags(std::ios_base::scientific));
 
-    Q_ASSERT(!ss.bad());
+    if (ss.bad())
+    {
+        return std::make_pair(Float128{}, false);
+    }
 
     Float128 value;
     ss >> value;
-    Q_ASSERT (!ss.fail());
+    if (ss.fail())
+    {
+        return std::make_pair(Float128{}, false);
+    }
 
-    return std::make_pair(value, !ss.fail());
+    return std::make_pair(value, true);
 }
 #endif //!defined(__GNUC__)
 

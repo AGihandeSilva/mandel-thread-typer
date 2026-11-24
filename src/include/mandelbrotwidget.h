@@ -104,7 +104,7 @@ public:
 
     MandelBrotRenderer::internalDataType getNumericType() const { return m_numericType; }
 
-    QString computeDeltaWithHigherPrecision(QString& value, int deltaPixels, double currentScale);
+    QString computeDeltaWithHigherPrecision(QString& value, int deltaPixels, QString& currentScale);
 
     /*
      * Get the edge values of the permitted region for manually entered parameters
@@ -114,7 +114,7 @@ public:
 public slots:
     InformationDisplay& getInfoDisplayer();
     void updateCoordInfo(const MandelBrotRenderer::CoordValue& originX, const MandelBrotRenderer::CoordValue& originY,
-        double scaleFactor);
+        const MandelBrotRenderer::CoordValue& scaleFactor);
     void displayThreadsInfo(int numThreads);
     void displayPassesInfo(int numPasses);
     void setIterationSumCount(qint64 iterationSum);
@@ -176,7 +176,7 @@ private:
     bool confirmOperation(const QString& message, const QString& informative, bool suggestSave = false);
 
 private slots:
-    void updatePixmap(const QImage *image, double scaleFactor);
+    void updatePixmap(const QImage* image, QString scaleFactorString);
     void zoom(double zoomFactor);
     void enableOptions();
     void disableOptions();
@@ -225,8 +225,8 @@ private:
     MandelBrotRenderer::CoordValue m_originY;
     QString m_preciseOriginX;
     QString m_preciseOriginY;
-    double m_pixmapScale;
-    double m_curScale;
+    MandelBrotRenderer::CoordValue  m_pixmapScale;
+    MandelBrotRenderer::CoordValue  m_curScale;
     double m_perPixelCoeff;
     bool m_scaleHasChanged;
     bool m_renderInProgress;
@@ -264,6 +264,7 @@ public:
     static QString s_unInitializedFloatString;
     static QString getDefaultOriginX() { return m_DefaultOriginX; }
     static QString getDefaultOriginY() { return m_DefaultOriginY; }
+    static QString s_DefaultScaleFloatString;
 };
 //! [0]
 

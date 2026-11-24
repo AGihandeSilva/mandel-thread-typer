@@ -62,14 +62,20 @@ RenderWorker::computeFunction ComputeTaskGenerator<T, SCALE_SHIFT>::generateComp
 {
         return ([this] (const ComputedDataSegment& segment, const bool& abort, int& currentPixelIndex, MandelBrotRenderer::ComputeTaskResults& resultData, int y)
                 {
+#if defined(DEBUG_RAW_DATA)
+                    const bool isDebugRow = y == 0;
+#endif
+
                     const uint pass = workerOwner.getPassValue();
                     const uint MaxIterations = RenderWorker::calcMaxIterations(pass);
 
                     const auto limit = static_cast<T>(4);
 
                     //generate parameters appropriate to the task and chosen numeric type
-                    const ParameterMaker<T> newParams(segment, limit, static_cast<T>(1LL << SCALE_SHIFT));
-                    const T scaledYOrigin = static_cast<T>(newParams.m_originY + (y * newParams.m_scaleFactor));
+                    MandelBrotRenderer::Int128 fixedScaling{ 1 };
+                    fixedScaling <<= SCALE_SHIFT;
+                    const ParameterMaker<T> newParams(segment, limit, fixedScaling);
+                    const T scaledYOrigin = newParams.m_originY + (static_cast<T>(y) * newParams.m_scaleFactor);
 
                     const MandelBrotRenderer::setType setToGenerate =  workerOwner.getSetToGenerate();
                     const T ay = static_cast<T>((setToGenerate == MandelBrotRenderer::setType::mandelbrot) ? scaledYOrigin : newParams.m_originY);
@@ -78,10 +84,10 @@ RenderWorker::computeFunction ComputeTaskGenerator<T, SCALE_SHIFT>::generateComp
                     const T iterationColourScale =  static_cast<T>(workerOwner.getIterationColourScale());
 
                 for (int x = newParams.m_minX; x < newParams.m_maxX && !abort; ++x) {
-                    const T ax = static_cast<T>((setToGenerate == MandelBrotRenderer::setType::mandelbrot) ? newParams.m_originX + (x * newParams.m_scaleFactor):
-                                                                   newParams.m_originX);
+                    const T ax = (setToGenerate == MandelBrotRenderer::setType::mandelbrot) ? newParams.m_originX + (static_cast<T>(x) * newParams.m_scaleFactor) :
+                                                                   newParams.m_originX;
 
-                    T a1 = static_cast<T>((setToGenerate == MandelBrotRenderer::setType::mandelbrot) ? ax : newParams.m_originX + (x * newParams.m_scaleFactor));
+                    T a1 = (setToGenerate == MandelBrotRenderer::setType::mandelbrot) ? ax : newParams.m_originX + (static_cast<T>(x) * newParams.m_scaleFactor);
 
                     T b1 = static_cast<T>((setToGenerate == MandelBrotRenderer::setType::mandelbrot) ? ay : scaledYOrigin);
                     uint numIterations = 0;
@@ -130,8 +136,13 @@ RenderWorker::computeFunction ComputeTaskGenerator<T, SCALE_SHIFT>::generateComp
                         (*(resultData.m_rawResultData))[currentPixelIndex] = colormap[static_cast<uint>(static_cast<T>(numIterations) * iterationColourScale)
                                                                        % colormap.size()];
 
-                        //TODO : maintain a raw numIterations result for filter use (if filtering is enabled)
+
                     }
+#if defined(DEBUG_RAW_DATA)
+                    //Maintain a raw numIterations result for debug and possible filter use (if filtering is enabled)
+                    if (isDebugRow)
+                        (*(resultData.m_rawIterationsData))[x - newParams.m_minX] = numIterations;
+#endif
                     resultData.m_iterationSum += numIterations;
                     ++currentPixelIndex;
                 }

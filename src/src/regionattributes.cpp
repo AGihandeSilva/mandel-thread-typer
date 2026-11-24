@@ -11,14 +11,14 @@ using MandelBrotRenderer::generateFloatFromPreciseString;
 using MandelBrotRenderer::PreciseFloatResult;
 
 RegionAttributes::RegionAttributes()
-: scaleFactor(0.0), originX("0.0"), originY("0.0"),
+: scaleFactor("0.0"), originX("0.0"), originY("0.0"),
   preciseOriginX("0.0"), preciseOriginY("0.0"),
   minX(defaultDimension), maxX(defaultDimension), minY(defaultDimension), maxY(defaultDimension), fullHeight(defaultDimension)
 {
 
 }
 
-RegionAttributes::RegionAttributes(double scaleFactor, MandelBrotRenderer::CoordValue& originX, MandelBrotRenderer::CoordValue& originY,
+RegionAttributes::RegionAttributes(MandelBrotRenderer::CoordValue& scaleFactor, MandelBrotRenderer::CoordValue& originX, MandelBrotRenderer::CoordValue& originY,
                                    QString preciseOriginX,
                                    QString preciseOriginY,
                                    int minX, int maxX, int minY, int maxY, int fullHeight)
@@ -36,8 +36,11 @@ bool RegionAttributes::operator==(const RegionAttributes &other)
     DoubleResult originY_float_this = generateFloatFromString(originY);
     DoubleResult originX_float_other = generateFloatFromString(other.originX);
     DoubleResult originY_float_other = generateFloatFromString(other.originY);
+    DoubleResult scaleFactor_this = generateFloatFromString(scaleFactor);
+    DoubleResult scaleFactor_other = generateFloatFromString(other.scaleFactor);
     return (
-                comparefloatingPointValues(scaleFactor, other.scaleFactor) &&
+                scaleFactor_this.second && scaleFactor_other.second &&
+                comparefloatingPointValues(scaleFactor_this.first, scaleFactor_other.first) &&
                 originX_float_this.second && originX_float_other.second &&
                 comparefloatingPointValues(originX_float_this.first, originX_float_other.second) &&
                 originY_float_this.second && originY_float_other.second &&
@@ -50,11 +53,6 @@ bool RegionAttributes::operator==(const RegionAttributes &other)
                 maxY == other.maxY &&
                 fullHeight == other.fullHeight
                 );
-}
-
-double RegionAttributes::getScaleFactor() const
-{
-    return scaleFactor;
 }
 
 int RegionAttributes::getMinX() const
@@ -103,14 +101,6 @@ void RegionAttributes::adjustYValues(int currentYPos, bool isLowerHalf)
     }
 }
 
-double RegionAttributes::getOriginX() const
-{
-    std::streamsize XYprecision = 6;
-    PreciseFloatResult originX_float = generateFloatFromPreciseString(originX, XYprecision);
-    Q_ASSERT(originX_float.second);
-    return static_cast<double>(originX_float.first);
-}
-
 QString RegionAttributes::getPreciseOriginX() const
 {
     return preciseOriginX;
@@ -120,13 +110,4 @@ QString RegionAttributes::getPreciseOriginY() const
 {
     return preciseOriginY;
 }
-
-double RegionAttributes::getOriginY() const
-{
-    std::streamsize XYprecision = 6;
-    PreciseFloatResult originY_float = generateFloatFromPreciseString(originY, XYprecision);
-    Q_ASSERT(originY_float.second);
-    return static_cast<double>(originY_float.first);
-}
-
 

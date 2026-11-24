@@ -75,7 +75,7 @@
 
 
 //! [0]
-const double DefaultScale = 0.00403897;
+QString MandelbrotWidget::s_DefaultScaleFloatString = "0.00403897";
 
 const double ZoomInFactor = 0.8;
 const double ZoomOutFactor = 1 / ZoomInFactor;
@@ -98,8 +98,9 @@ MandelbrotWidget::MandelbrotWidget(QWidget *parent)
     : QMainWindow(parent), m_settingsHandler(this), m_infoDisplayer(*this, m_settingsHandler), m_thread(m_settingsHandler, this),
       m_originX(s_unInitializedFloatString), m_originY(s_unInitializedFloatString),
         m_preciseOriginX(s_undefinedFloatString), m_preciseOriginY(s_undefinedFloatString),
-      m_pixmapScale(notYetInitializedDouble),
-      m_curScale(notYetInitializedDouble), m_perPixelCoeff(notYetInitializedDouble),
+      m_pixmapScale(s_unInitializedFloatString),
+      m_curScale(s_unInitializedFloatString),
+      m_perPixelCoeff(notYetInitializedDouble),
       m_scaleHasChanged(false), m_renderInProgress(false), m_usingUndoRedo(false), m_numericType(internalDataType::doublePrecisionFloat),
       m_pauseMutexes(MAX_NUM_WORKER_THREADS, nullptr), m_paused(),
       m_historyLog(std::make_unique<RenderHistory>(this)), m_unsavedChangesExist(false),
@@ -156,7 +157,7 @@ void MandelbrotWidget::connectToComponents()
     m_settingsHandler.registerSettingsUser(this);
     m_thread.setOwnerOnce(this);
 
-    connect(&m_thread, SIGNAL(renderedImage(const QImage*,double)), this, SLOT(updatePixmap(const QImage*,double)));
+    connect(&m_thread, SIGNAL(renderedImage(const QImage*, QString)), this, SLOT(updatePixmap(const QImage*, QString)));
 
     connect(this, SIGNAL(quitAll()), &m_thread, SLOT(quitApplication()));
     connect(this, SIGNAL(halt()), &m_thread, SLOT(haltComputations()));
@@ -318,12 +319,15 @@ void MandelbrotWidget::enforceConfigData(RendererConfig &newConfigData)
 
     QMutexLocker locker(&m_infoDisplayMutex);
     getInfoDisplayer().setEnabled(newConfigData.getDetailedDisplayEnabled());
-    m_originX = QString::number(newConfigData.getOriginX());
-    m_originY = QString::number(newConfigData.getOriginY());
+
+    //maintain origin information in precise string representations to avoid truncationa artefacts
     m_preciseOriginX = newConfigData.getPreciseOriginX();
     m_preciseOriginY = newConfigData.getPreciseOriginY();
-    m_curScale = newConfigData.getCurScale();
-    m_pixmapScale = newConfigData.getPixmapScale();
+    m_originX = m_preciseOriginX;
+    m_originY = m_preciseOriginY;
+
+    m_curScale = QString::number(newConfigData.getCurScale());
+    m_pixmapScale = QString::number(newConfigData.getPixmapScale());
     m_thread.getThreadMediator().setEnabled(newConfigData.getThreadMediatorEnabled());
     setInternalDataType(newConfigData.getInternalDataType());
 
@@ -604,9 +608,12 @@ bool MandelbrotWidget::changeRegionParameters(const QString &originXvalue,
         constexpr int maximumPixelHeight = 2000;
         constexpr int maxPixelCount = maximumPixelWidth * maximumPixelHeight;
 
+        PreciseFloatResult curScale_result = generateFloatFromPreciseString(m_curScale);
+        Float128 curScale = curScale_result.second ? curScale_result.first : static_cast<Float128>(1.0);
+
         //compute the old and new sizes of the set parameter regions
         const auto originalPixelCount = m_pixmap.width() * m_pixmap.height();
-        const double regionSize = m_curScale * originalPixelCount * m_curScale;
+        const double regionSize = static_cast<double>((static_cast<double>(curScale) * originalPixelCount) * curScale);
 
         Q_ASSERT(regionSize > 0);
         if (regionSize > 0) {
@@ -617,7 +624,7 @@ bool MandelbrotWidget::changeRegionParameters(const QString &originXvalue,
             //auto newScale = m_curScale * sqrt(newRegionSize / regionSize);
 
             //preserve scale
-            auto newScale = m_curScale;
+            auto newScale = curScale;
 
             if (newScale > 0) {
                 //recompute the new widths
@@ -634,8 +641,8 @@ bool MandelbrotWidget::changeRegionParameters(const QString &originXvalue,
                     m_preciseOriginX = originXvalue;
                     m_preciseOriginY = originYvalue;
 
-                    m_curScale = newScale;
-                    m_pixmapScale = newScale;
+                    m_curScale = generatePreciseFloatingPointString(newScale);
+                    m_pixmapScale = generatePreciseFloatingPointString(newScale);
                     if (newWidth != pWidth ||
                         newHeight != pHeight) {
                         resize(static_cast<int>(newWidth), static_cast<int>(newHeight));
@@ -683,7 +690,13 @@ void MandelbrotWidget::paintEvent(QPaintEvent * /* event */)
 //! [6] //! [7]
     } else {
 //! [7] //! [8]
-        double scaleFactor = m_pixmapScale / m_curScale;
+//! 
+
+        PreciseFloatResult curScale_result = generateFloatFromPreciseString(m_curScale);
+        PreciseFloatResult pixmapScale_result = generateFloatFromPreciseString(m_pixmapScale);
+
+        double scaleFactor = curScale_result.second && pixmapScale_result.second  && curScale_result.first != 0 
+            ? static_cast<double>(pixmapScale_result.first / curScale_result.first) : 1.0;
         auto newWidth = int(m_pixmap.width() * scaleFactor);
         auto newHeight = int(m_pixmap.height() * scaleFactor);
         auto newX = m_pixmapOffset.x() + (m_pixmap.width() - newWidth) / 2;
@@ -844,8 +857,8 @@ void MandelbrotWidget::processSettingUpdate(QSettings &settings)
     settings.beginGroup("RenderParameters");
         m_preciseOriginX = m_originX;
         m_preciseOriginY = m_originY;
-        m_curScale = settings.value("curScale", DefaultScale).toDouble();
-        m_pixmapScale = settings.value("pixmapScale", DefaultScale).toDouble();
+        m_curScale = settings.value("curScale", s_DefaultScaleFloatString).toString();
+        m_pixmapScale = settings.value("pixmapScale", s_DefaultScaleFloatString).toString();
     settings.endGroup();
 }
 //! [15]
@@ -870,7 +883,7 @@ void MandelbrotWidget::processSettingUpdate(QSettings &settings)
  }
 
 //! [16]
-void MandelbrotWidget::updatePixmap(const QImage *image, double scaleFactor)
+ void MandelbrotWidget::updatePixmap(const QImage* image, QString scaleFactorString)
 {
     if (!m_lastDragPos.isNull())
         return;
@@ -878,21 +891,26 @@ void MandelbrotWidget::updatePixmap(const QImage *image, double scaleFactor)
     m_pixmap = QPixmap::fromImage(*image);
     m_pixmapOffset = QPoint();
     m_lastDragPos = QPoint();
-    m_pixmapScale = scaleFactor;
+    m_pixmapScale = scaleFactorString;
     update();
     outputToLog("update Pixmap!");
 }
 //! [16]
 //!
 
-void MandelbrotWidget::updateCoordInfo(const MandelBrotRenderer::CoordValue& originX, const MandelBrotRenderer::CoordValue& originY,
-                                       double scaleFactor)
+ void MandelbrotWidget::updateCoordInfo(const MandelBrotRenderer::CoordValue& originX, const MandelBrotRenderer::CoordValue& originY,
+     const MandelBrotRenderer::CoordValue& scaleFactor)
 {
     QString originX_s;
     QString originY_s;
     QSize currentSize = size();
-    QString widthAsString(QString::number(currentSize.width() * scaleFactor));
-    QString heightAsString(QString::number(currentSize.height() * scaleFactor));
+
+    MandelBrotRenderer::DoubleResult scaleFactor_float = generateFloatFromString(scaleFactor);
+    const double width = scaleFactor_float.second ? currentSize.width() * scaleFactor_float.first : currentSize.width();
+    const double height = scaleFactor_float.second ? currentSize.height() * scaleFactor_float.first : currentSize.height();
+
+    QString widthAsString(QString::number(width));
+    QString heightAsString(QString::number(height));
 
     QMutexLocker locker(&m_infoDisplayMutex);
 
@@ -1097,11 +1115,20 @@ void MandelbrotWidget::executeRender(bool hideProgress)
 
 void MandelbrotWidget::zoom(double zoomFactor)
 {
-    m_curScale *= zoomFactor;
-    update();
-    executeRender();
-    outputToLog("New operation : zoom");
-    m_scaleHasChanged = true;
+    PreciseFloatResult curScale_result = generateFloatFromPreciseString(m_curScale);
+    if (curScale_result.second)
+    {
+        Float128 zoomedScaleValue = curScale_result.first * zoomFactor;
+        m_curScale = generatePreciseFloatingPointString(zoomedScaleValue);
+        update();
+        executeRender();
+        outputToLog("New operation : zoom");
+        m_scaleHasChanged = true;
+    }
+    else
+    {
+        outputToLog("zoom operation skipped, invalid scaling value detected");
+    }
 }
 
 void MandelbrotWidget::enableOptions()
@@ -1114,14 +1141,18 @@ void MandelbrotWidget::disableOptions()
     m_toolsMenu->setEnabled(false);
 }
 
-QString MandelbrotWidget::computeDeltaWithHigherPrecision(QString& value, int deltaPixels, double currentScale)
+QString MandelbrotWidget::computeDeltaWithHigherPrecision(QString& value, int deltaPixels, QString& currentScale)
 {
-    Float128 preciseDelta = deltaPixels * static_cast<Float128>(currentScale);
+    PreciseFloatResult scaleValue = generateFloatFromPreciseString(currentScale);
+    Q_ASSERT(scaleValue.second);
+    Float128 preciseScaleFactor = scaleValue.second ? scaleValue.first : Float128(1.0);
+    Float128 preciseDelta = deltaPixels * preciseScaleFactor;
     PreciseFloatResult floatValue = generateFloatFromPreciseString(value);
     Q_ASSERT(floatValue.second);
     Float128 preciseOrigin = floatValue.second ? floatValue.first : Float128(0.0);
     Float128 preciseValue = preciseOrigin + preciseDelta;
-    return (MandelBrotRenderer::generatePreciseFloatingPointString(preciseValue));
+    const QString result = MandelBrotRenderer::generatePreciseFloatingPointString(preciseValue);
+    return (result);
 }
 
 //! [18]

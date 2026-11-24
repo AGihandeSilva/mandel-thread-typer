@@ -144,8 +144,8 @@ using PreciseFloatResult = std::pair<Float128, bool>;
         /* RenderParameters settings */
             CoordValue m_originX;
             CoordValue m_originY;
-            double m_curScale;
-            double m_pixmapScale;
+            CoordValue m_curScale;
+            CoordValue m_pixmapScale;
 
         /* Renderer settings */
             bool m_threadMediatorEnabled;
@@ -156,6 +156,9 @@ using PreciseFloatResult = std::pair<Float128, bool>;
     struct ComputeTaskResults
     {
         MQuintVector*   m_rawResultData;
+#if defined(DEBUG_RAW_DATA)
+        MQuintVector* m_rawIterationsData;
+#endif
         qint64         m_iterationSum;
     };
 
@@ -190,6 +193,45 @@ using PreciseFloatResult = std::pair<Float128, bool>;
         const double m_yMin;
         const double m_yMax;
     };
+
+    template <typename T>
+    std::stringstream GetStringRepresentation(T value)
+    {
+        std::stringstream result;
+        result.precision(std::numeric_limits<Float128>::max_digits10);
+        result.flags(std::ios_base::fmtflags(std::ios_base::scientific));
+
+        result << value;
+
+        return result;
+
+    }
+
+    template <typename T>
+    std::stringstream GetFixedStringRepresentation(T value)
+    {
+        std::stringstream result;
+        result.precision(std::numeric_limits<Float128>::max_digits10);
+        result.flags(std::ios_base::fmtflags(std::ios_base::fixed));
+
+        result << value;
+
+        return result;
+
+    }
+
+    template <typename T>
+    T generateScaledInteger(Float128 value, Float128 scalingUpFactor, int shiftDown)
+    {
+        value *= scalingUpFactor;
+        return static_cast<T>(value);
+    }
+
+    template <typename T>
+    T generateScaledIntegerFromPreciseString(PreciseFloatResult floatValue, Float128 scalingUpFactor, int shiftDown)
+    {
+        return generateScaledInteger<T>(floatValue.first, scalingUpFactor, shiftDown);
+    }
 
 }
 

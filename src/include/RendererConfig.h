@@ -16,7 +16,8 @@ public:
     RendererConfig() = default;
 
     RendererConfig(bool detailedDisplayEnabled,
-                   QSize size, QPoint pos, const MandelBrotRenderer::CoordValue& originX, const MandelBrotRenderer::CoordValue& originY, double curScale, double pixmapScale,
+                   QSize size, QPoint pos, const MandelBrotRenderer::CoordValue& originX, const MandelBrotRenderer::CoordValue& originY, 
+                   const MandelBrotRenderer::CoordValue& curScale, const MandelBrotRenderer::CoordValue& pixmapScale,
                    bool threadMediatorEnabled, int m_colorMapSize, MandelBrotRenderer::internalDataType dataType);
 
     explicit RendererConfig(MandelBrotRenderer::RenderState&& state);

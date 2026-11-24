@@ -27,15 +27,42 @@ Windows
 ----------
 Windows 11
 
-Qt 6.3.2, CMake v4.4.0,  Microsoft Visual Studio Community 2022 (tested on Version 17.14.45)
+tested with Qt 6.3.2, CMake v4.4.0,  Microsoft Visual Studio Community 2022 (Version 17.14.45)
 
-Qt Creator (tested with v8.0.2) can also import CMake files and can be used with the VS compiler as an alternative flow
+
+**Build Instructions**
+
+*In the src subdirectory, use the following:*
+
+```shell
+ cmake .
+
+```
+*(this may take a while to download required third party libraries)*
+
+*then build the generated Visual Studio solution*
+
+*Qt Creator (tested with v8.0.2) can also import CMake files and can be used with the VS compiler as an alternative flow*
 
 Linux
 -------
-Ubuntu 26.0.4.1 LTS
+tested on Ubuntu 26.0.4.1 LTS with Qt 6.11.2, CMake 4.2.3 and gcc 15.2.0 (optionally Qt Creator 20.0.2)
 
-tested with Qt 6.11.2, CMake 4.2.3 and gcc 15.2.0 (optionally Qt Creator 20.0.2)
+
+**Build Instructions**
+
+*In the src subdirectory, use the following:*
+
+```bash
+cmake .
+make
+
+```
+*or import the CMake file into Qt Creator, then configure the build setups in the resulting project*
+
+
+
+
 
 
 
@@ -52,7 +79,8 @@ TODOs
 * Bug fixing - some occasional problems occur
      + e.g. sometimes the renderer shows blank output rather than the computed results, usually when traversing the render history (buffering scheme bug?)
         + investigating...
-     + fix incorrect handling of the image offset/size values sometimes seen for very small regions when resizing via the GUI
+     + ~~fix incorrect handling of the image offset/size values sometimes seen for very small regions when resizing/moving via the GUI~~
+        + this should be fixed as of 24/11/26
 
 * Separate the compute engine and GUI code for software testing and better reusability
 
