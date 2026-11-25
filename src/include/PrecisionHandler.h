@@ -11,12 +11,11 @@ namespace MandelBrotRenderer
 bool operator== (const RenderState& lhs, const RenderState& rhs);
 bool operator!= (const RenderState& lhs, const RenderState& rhs);
 
-bool comparefloatingPointValues(double thisValue, double otherValue);
+bool comparefloatingPointValues(PreciseFloatStandardType thisValue, PreciseFloatStandardType otherValue);
 
-QString generatePreciseFloatingPointString(Float128 preciseValue);
+QString generatePreciseFloatingPointString(PreciseFloatStandardType preciseValue);
 
-PreciseFloatResult generateFloatFromPreciseString(QString floatString, std::streamsize precision = std::numeric_limits<Float128>::max_digits10);
-QString generateDoubleAsString(double value);
+PreciseFloatResult generateFloatFromPreciseString(QString floatString, std::streamsize precision = PreciseFloatStandardNumDigits);
 
 DoubleResult generateFloatFromString(const QString& floatString);
 

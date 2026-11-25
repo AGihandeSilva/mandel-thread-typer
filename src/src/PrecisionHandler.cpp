@@ -11,14 +11,15 @@ namespace MandelBrotRenderer
 {
 bool operator==(const RenderState &lhs, const RenderState &rhs)
 {
-    DoubleResult originX_float_l = generateFloatFromString(lhs.m_originX);
-    DoubleResult originX_float_r = generateFloatFromString(rhs.m_originX);
-    DoubleResult originY_float_l = generateFloatFromString(lhs.m_originY);
-    DoubleResult originY_float_r = generateFloatFromString(rhs.m_originY);
-    DoubleResult curScale_float_l = generateFloatFromString(lhs.m_curScale);
-    DoubleResult curScale_float_r = generateFloatFromString(rhs.m_curScale);
-    DoubleResult pixmapScale_float_l = generateFloatFromString(lhs.m_pixmapScale);
-    DoubleResult pixmapScale_float_r = generateFloatFromString(rhs.m_pixmapScale);
+    PreciseFloatResult originX_float_l = generateFloatFromPreciseString(lhs.m_originX);
+    PreciseFloatResult  originX_float_r = generateFloatFromPreciseString(rhs.m_originX);
+    PreciseFloatResult  originY_float_l = generateFloatFromPreciseString(lhs.m_originY);
+    PreciseFloatResult  originY_float_r = generateFloatFromPreciseString(rhs.m_originY);
+    PreciseFloatResult  curScale_float_l = generateFloatFromPreciseString(lhs.m_curScale);
+    PreciseFloatResult  curScale_float_r = generateFloatFromPreciseString(rhs.m_curScale);
+    PreciseFloatResult  pixmapScale_float_l = generateFloatFromPreciseString(lhs.m_pixmapScale);
+    PreciseFloatResult  pixmapScale_float_r = generateFloatFromPreciseString(rhs.m_pixmapScale);
+
     return(lhs.m_size == rhs.m_size &&
         lhs.m_pos == rhs.m_pos &&
         originX_float_l.second && originX_float_r.second &&
@@ -36,7 +37,7 @@ bool operator!=(const RenderState &lhs, const RenderState &rhs)
     return (!(lhs == rhs));
 }
 
-bool comparefloatingPointValues(double thisValue, double otherValue)
+bool comparefloatingPointValues(PreciseFloatStandardType thisValue, PreciseFloatStandardType otherValue)
 {
     static constexpr double equalityThreshold = 1.0001;
     return (otherValue != 0.0 &&
@@ -54,63 +55,37 @@ DoubleResult generateFloatFromString(const QString& floatString)
 
 
 
-QString generatePreciseFloatingPointString(Float128 preciseValue)
+QString generatePreciseFloatingPointString(PreciseFloatStandardType preciseValue)
 {
     QMutexLocker lock(PrecisionHandler::getPreciseValuesHandler().getMutex());
     std::stringstream ss;
-    ss.precision(std::numeric_limits<Float128>::max_digits10);
+    ss.precision(PreciseFloatStandardNumDigits);
     ss.flags(std::ios_base::fmtflags(std::ios_base::scientific));
-#if (PREFER_BOOST_MULTIPRECISION_FLOAT_128 != 1)
-    //GCC __float128 doesn't seem to support this operation
-    ss << static_cast<double>(preciseValue);
-#else
     ss << preciseValue;
-#endif //(PREFER_BOOST_MULTIPRECISION_FLOAT_128 != 1)
 
     return QString(ss.str().data());
 }
 
-#if !defined(__GNUC__)
 PreciseFloatResult generateFloatFromPreciseString(QString floatString, std::streamsize precision)
 {
     QMutexLocker lock(PrecisionHandler::getPreciseValuesHandler().getMutex());
 
     std::stringstream ss(floatString.toStdString());
     ss.precision(precision);
-    //ss.flags(std::ios_base::fmtflags(std::ios_base::scientific));
+    ss.flags(std::ios_base::fmtflags(std::ios_base::scientific));
 
     if (ss.bad())
     {
-        return std::make_pair(Float128{}, false);
+        return std::make_pair(PreciseFloatStandardType{}, false);
     }
 
-    Float128 value;
+    PreciseFloatStandardType value;
     ss >> value;
     if (ss.fail())
     {
-        return std::make_pair(Float128{}, false);
+        return std::make_pair(PreciseFloatStandardType{}, false);
     }
 
     return std::make_pair(value, true);
 }
-#endif //!defined(__GNUC__)
-
-//TODO use templated functions to eliminate this code duplication
-QString generateDoubleAsString(double value)
-{
-    QMutexLocker lock(PrecisionHandler::getPreciseValuesHandler().getMutex());
-    std::stringstream ss;
-    ss.precision(std::numeric_limits<double>::max_digits10);
-    ss.flags(std::ios_base::fmtflags(std::ios_base::scientific));
-    ss << value;
-
-    return QString(ss.str().data());
-}
-
-#if defined(__GNUC__)
-PreciseFloatResult generateFloatFromPreciseString(QString floatString, std::streamsize)
-{
-return std::make_pair((strtoflt128(floatString.toStdString().data(), nullptr)), true);
-}
-#endif
 }

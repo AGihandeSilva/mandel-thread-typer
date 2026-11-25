@@ -47,8 +47,7 @@ void RenderParametersWidget::setUpFields()
     const int magnitude = 6;
     const int boxHeight = 20;
     const int otherCharacters = 3;
-    const int characterWidth = otherCharacters + magnitude +
-            std::numeric_limits<MandelBrotRenderer::Float128>::max_digits10;
+    const int characterWidth = otherCharacters + magnitude + MandelBrotRenderer::PreciseFloatStandardNumDigits;
 
     const int extraMarginInPercent = 5;
     QString testString(characterWidth, '8');

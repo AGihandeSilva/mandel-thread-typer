@@ -39,7 +39,7 @@ namespace MandelBrotRenderer
     enum class internalDataType { singlePrecisionFloat = 0, doublePrecisionFloat = 1, customFloat20 =  2,
                                   float20dd = 3, float30dd = 4, float50dd = 5,
 
-                                 float80 = 6, float128 = 7, int32 = 8, int64 = 9, int128 = 10, unknownType = -1 };
+                                 float80 = 6, float128 = 7, int32 = 8, int64 = 9, int128 = 10, float256 = 11, unknownType = -1 };
 
     enum class setType { mandelbrot = 0, julia = 1 };
 
@@ -60,12 +60,22 @@ namespace MandelBrotRenderer
     using Float128 = __float128;
 #endif //PREFER_BOOST_MULTIPRECISION_FLOAT_128==1
 #endif //_WIN32
+    using Float256 = boost::multiprecision::cpp_bin_float_oct;
 
-using CoordValue = QString;
+    using CoordValue = QString;
 
-using CoordResult = std::pair<QString, bool>;
-using DoubleResult = std::pair<double, bool>;
-using PreciseFloatResult = std::pair<Float128, bool>;
+    using CoordResult = std::pair<QString, bool>;
+    using DoubleResult = std::pair<double, bool>;
+    using PreciseFloatStandardType = Float256;
+    constexpr int PreciseFloatStandardTypeDigits = 237; // the computed boost header max_digits10 value for this (73) doesn't seem correct, hardcode the documented number of digits
+
+#if defined (USE_FIXED_NUM_DIGITS_FOR_STANDARD_VALUE)
+    constexpr int PreciseFloatStandardNumDigits = PreciseFloatStandardTypeDigits;
+#else
+    constexpr int PreciseFloatStandardNumDigits = std::numeric_limits<PreciseFloatStandardType>::max_digits10;
+#endif
+
+    using PreciseFloatResult = std::pair<PreciseFloatStandardType, bool>;
 
     using CustomFloat = boost::multiprecision::number<boost::multiprecision::cpp_bin_float<18, boost::multiprecision::backends::digit_base_10, void, boost::int16_t, -63, 64>>;
     using Float20dd = boost::multiprecision::number<boost::multiprecision::cpp_bin_float<20>>;
@@ -198,7 +208,7 @@ using PreciseFloatResult = std::pair<Float128, bool>;
     std::stringstream GetStringRepresentation(T value)
     {
         std::stringstream result;
-        result.precision(std::numeric_limits<Float128>::max_digits10);
+        result.precision(PreciseFloatStandardNumDigits);
         result.flags(std::ios_base::fmtflags(std::ios_base::scientific));
 
         result << value;
@@ -211,7 +221,7 @@ using PreciseFloatResult = std::pair<Float128, bool>;
     std::stringstream GetFixedStringRepresentation(T value)
     {
         std::stringstream result;
-        result.precision(std::numeric_limits<Float128>::max_digits10);
+        result.precision(PreciseFloatStandardNumDigits);
         result.flags(std::ios_base::fmtflags(std::ios_base::fixed));
 
         result << value;
@@ -221,14 +231,14 @@ using PreciseFloatResult = std::pair<Float128, bool>;
     }
 
     template <typename T>
-    T generateScaledInteger(Float128 value, Float128 scalingUpFactor, int shiftDown)
+    T generateScaledInteger(PreciseFloatStandardType value, PreciseFloatStandardType scalingUpFactor, int shiftDown)
     {
         value *= scalingUpFactor;
         return static_cast<T>(value);
     }
 
     template <typename T>
-    T generateScaledIntegerFromPreciseString(PreciseFloatResult floatValue, Float128 scalingUpFactor, int shiftDown)
+    T generateScaledIntegerFromPreciseString(PreciseFloatResult floatValue, PreciseFloatStandardType scalingUpFactor, int shiftDown)
     {
         return generateScaledInteger<T>(floatValue.first, scalingUpFactor, shiftDown);
     }

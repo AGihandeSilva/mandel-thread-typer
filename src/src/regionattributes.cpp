@@ -32,12 +32,13 @@ RegionAttributes::RegionAttributes(MandelBrotRenderer::CoordValue& scaleFactor, 
 
 bool RegionAttributes::operator==(const RegionAttributes &other)
 {
-    DoubleResult originX_float_this = generateFloatFromString(originX);
-    DoubleResult originY_float_this = generateFloatFromString(originY);
-    DoubleResult originX_float_other = generateFloatFromString(other.originX);
-    DoubleResult originY_float_other = generateFloatFromString(other.originY);
-    DoubleResult scaleFactor_this = generateFloatFromString(scaleFactor);
-    DoubleResult scaleFactor_other = generateFloatFromString(other.scaleFactor);
+    PreciseFloatResult originX_float_this = generateFloatFromPreciseString(originX);
+    PreciseFloatResult originY_float_this = generateFloatFromPreciseString(originY);
+    PreciseFloatResult originX_float_other = generateFloatFromPreciseString(other.originX);
+    PreciseFloatResult originY_float_other = generateFloatFromPreciseString(other.originY);
+    PreciseFloatResult scaleFactor_this = generateFloatFromPreciseString(scaleFactor);
+    PreciseFloatResult scaleFactor_other = generateFloatFromPreciseString(other.scaleFactor);
+
     return (
                 scaleFactor_this.second && scaleFactor_other.second &&
                 comparefloatingPointValues(scaleFactor_this.first, scaleFactor_other.first) &&

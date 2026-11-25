@@ -130,6 +130,16 @@ const QString& RendererConfig::getPreciseOriginY() const
     return state.m_originY;
 }
 
+const QString& RendererConfig::getPreciseCurScale() const
+{
+    return state.m_curScale;
+}
+
+const QString& RendererConfig::getPrecisePixmapScale() const
+{
+    return state.m_pixmapScale;
+}
+
 double RendererConfig::getOriginX() const
 {
     DoubleResult originX_float = MandelBrotRenderer::generateFloatFromString(state.m_originX);

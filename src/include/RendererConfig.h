@@ -38,6 +38,8 @@ public:
     double getOriginY() const;
     const QString& getPreciseOriginX() const;
     const QString& getPreciseOriginY() const;
+    const QString& getPreciseCurScale() const;
+    const QString& getPrecisePixmapScale() const;
     double getCurScale() const;
     double getPixmapScale() const;
     bool getThreadMediatorEnabled() const;

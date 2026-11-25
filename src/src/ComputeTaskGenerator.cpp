@@ -19,6 +19,7 @@ template<typename T>
       concept UsesFloatingPointRepresentation = std::floating_point<T>
     || std::same_as<T, MandelBrotRenderer::Float80>
     || std::same_as<T, MandelBrotRenderer::Float128>
+    || std::same_as<T, MandelBrotRenderer::Float256>
     || std::same_as<T, MandelBrotRenderer::CustomFloat>
     || std::same_as<T, MandelBrotRenderer::Float20dd>
     || std::same_as<T, MandelBrotRenderer::Float30dd>

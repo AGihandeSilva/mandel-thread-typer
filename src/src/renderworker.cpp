@@ -317,6 +317,8 @@ bool RenderWorker::getComputeResult()
         result = executeTask<Float80>();
     } else if (parentThread->getRendererData().m_numericType == internalDataType::float128) {
         result = executeTask<Float128>();
+    } else if (parentThread->getRendererData().m_numericType == internalDataType::float256) {
+        result = executeTask<Float256>();
     } else if (parentThread->getRendererData().m_numericType == internalDataType::int128) {
         result = executeTask<Int128>();
     } else  {

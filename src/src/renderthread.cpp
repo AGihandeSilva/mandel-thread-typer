@@ -525,6 +525,7 @@ void RenderThread::initializeSupportedTypesTable(typeNameUser& nameUser)
     AddNumericTypeToSelector("50 decimal digit precision float", internalDataType::float50dd, nameUser, boostTypesUsed);
     AddNumericTypeToSelector("80 bit floating type", internalDataType::float80, nameUser, gccLikeTypesUsed);
     AddNumericTypeToSelector("128 bit floating type", internalDataType::float128, nameUser, gccLikeTypesUsed);
+    AddNumericTypeToSelector("256 bit floating type", internalDataType::float256, nameUser, gccLikeTypesUsed);
     AddNumericTypeToSelector("32 bit integer", internalDataType::int32, nameUser);
     AddNumericTypeToSelector("64 bit integer", internalDataType::int64, nameUser);
     AddNumericTypeToSelector("128 bit integer", internalDataType::int128, nameUser, gccLikeTypesUsed);
