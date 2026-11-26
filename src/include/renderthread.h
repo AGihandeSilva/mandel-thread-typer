@@ -101,7 +101,9 @@ class RenderThread : public QThread, public SettingsUser, public ButtonUser
     Q_OBJECT
 
 public:
-    explicit RenderThread(SettingsHandler& settingsHandler, QObject *parent = nullptr);
+    explicit RenderThread(SettingsHandler& settingsHandler, 
+        MandelBrotRenderer::uintVectorAllocator& vectorAllocator,
+        QObject *parent = nullptr);
     ~RenderThread() override { --count; quit();  wait(); }
 
     void render(const MandelBrotRenderer::CoordValue& originX, const MandelBrotRenderer::CoordValue& originY,
@@ -218,7 +220,7 @@ private:
     QButtonGroup* numPassesConfigurer;
     SettingsHandler& applicationSettingsHandler;
 
-    std::vector<MandelBrotRenderer::MQuintVector> bufferedResults;
+    std::vector<MandelBrotRenderer::PooledUintVector> bufferedResults;
     std::vector<RegionAttributes> bufferedAttributes;
 
     struct supportedType
@@ -238,8 +240,8 @@ private:
     std::map<MandelBrotRenderer::internalDataType, supportedTypeString> typeToDescriptionMap;
 
 #ifdef DEBUG_RAW_RESULTS
-    bool detectMismatches(MQuintVector results) const;
-    mutable std::vector<MQuintVector> finalResults;
+    bool detectMismatches(PooledUintVector results) const;
+    mutable std::vector<PooledUintVector> finalResults;
     mutable bool equals;
 #endif //DEBUG_RAW_RESULTS
 
@@ -265,10 +267,11 @@ private:
     QSemaphore* sem;
 
     MandelBrotRenderer::RendererData rendererData;
+    MandelBrotRenderer::uintVectorAllocator& m_vectorAllocator;
     RenderThreadMediator threadMediator;
 
     WindowThreadInfo* displayer;
-    MandelBrotRenderer::colorMapStore colormap {};
+    MandelBrotRenderer::colorMapStore colormap;
 
     static constexpr int PROGRESS_BAR_WAIT_IN_MS = 200;
     static constexpr int REQUESTED_TIMER_TICKS_PER_SECOND = InformationDisplay::getRequiredTimerTicksPerSecond();

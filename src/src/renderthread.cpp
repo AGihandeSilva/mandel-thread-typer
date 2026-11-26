@@ -89,7 +89,8 @@ using namespace MandelBrotRenderer;
 
 int RenderThread::count  = 0;
 
-RenderThread::RenderThread(SettingsHandler&settingsHandler, QObject *parent)
+RenderThread::RenderThread(SettingsHandler& settingsHandler, MandelBrotRenderer::uintVectorAllocator& vectorAllocator,
+    QObject *parent)
     : QThread{ parent }, elapsedTimeLastRun(-1), passesDone(0), m_mandelbrotWidgetThreadOwner(nullptr),
       m_quitIsPending(false),
       finishTheLoop(false), currentPass(0),
@@ -98,7 +99,7 @@ RenderThread::RenderThread(SettingsHandler&settingsHandler, QObject *parent)
       threadConfigurer(nullptr),
       numPassesConfigurer(nullptr),
       applicationSettingsHandler(settingsHandler),
-      bufferedResults(MAX_NUM_WORKER_THREADS, MQuintVector(0)),
+      bufferedResults(MAX_NUM_WORKER_THREADS, PooledUintVector(0)),
       bufferedAttributes(MAX_NUM_WORKER_THREADS, RegionAttributes()),
       originX(MandelbrotWidget::s_unInitializedFloatString),  //TODO improve this, check for the lifetime of this static value
       originY(MandelbrotWidget::s_unInitializedFloatString),
@@ -109,8 +110,10 @@ RenderThread::RenderThread(SettingsHandler&settingsHandler, QObject *parent)
       sem(nullptr),
       rendererData { numWorkerThreads, possiblePassValues[1], possiblePassValues[1], threadReallocationDefaultEnabled, m_colorMapSize,
                         internalDataType::unknownType, MandelBrotRenderer::notYetInitializedInt64},
-      threadMediator(rendererData),
-      displayer(nullptr)
+      m_vectorAllocator(vectorAllocator),
+      threadMediator(rendererData, vectorAllocator),
+      displayer(nullptr),
+      colormap(vectorAllocator)
 {
     ++count;
     restart = false;
@@ -311,7 +314,7 @@ void RenderThread::halt(const bool quitApplication)
 }
 
 #ifdef DEBUG_RAW_RESULTS
-bool RenderThread::detectMismatches(MQuintVector results) const
+bool RenderThread::detectMismatches(PooledUintVector results) const
 {
     if (finalResults.size() > 2) {
         finalResults.clear();
@@ -320,8 +323,8 @@ bool RenderThread::detectMismatches(MQuintVector results) const
     finalResults.push_back(results);
 
     int firstFailurePoint = -1;
-    MQuintVector mismatch0(0);
-    MQuintVector mismatch1(0);
+    PooledUintVector mismatch0(0);
+    PooledUintVector mismatch1(0);
     int mismatches(0);
     equals = true;
 
@@ -750,7 +753,8 @@ void RenderThread::run()
                                                                      &image,
                                                                     i,
                                                                     bufferedResults[static_cast<size_t>(i)],
-                                                                    bufferedAttributes[static_cast<size_t>(i)])
+                                                                    bufferedAttributes[static_cast<size_t>(i)],
+                                                                    m_vectorAllocator)
                                                 ,
                                                  haltChecker([&]{
                                                         return abort;
@@ -849,7 +853,7 @@ void RenderThread::publishCoordinates()
         return;
     }
 
-    MQuintVector rawResultData = data.extractRawResultData();
+    PooledUintVector rawResultData = data.extractRawResultData();
 
     if (rawResultData.empty())
     {
@@ -891,8 +895,7 @@ void RenderThread::publishCoordinates()
         }
     }
 
-    bufferedResults[static_cast<size_t>(segmentIndex)].clear();
-    bufferedResults[static_cast<size_t>(segmentIndex)].append(rawResultData);
+    bufferedResults[static_cast<size_t>(segmentIndex)] = rawResultData;
 
     bufferedAttributes[static_cast<size_t>(segmentIndex)] = data.getAttributes();
 

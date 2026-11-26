@@ -14,10 +14,13 @@
 
 using MandelBrotRenderer::nonExistentSegmentIndex;
 
-RenderThreadMediator::RenderThreadMediator(MandelBrotRenderer::RendererData& rendererData) :
+RenderThreadMediator::RenderThreadMediator(MandelBrotRenderer::RendererData& rendererData,
+    MandelBrotRenderer::uintVectorAllocator& vectorAllocator) :
     rendererData(rendererData),
     allocationUnderway(false), requestUnderway(false),
-    readyThreadIndex{}, busyThreadCount(0), waitingThreadCount(0), sharedSegmentCount(0)
+    readyThreadIndex{}, busyThreadCount(0), waitingThreadCount(0), 
+    segmentsForSharing(vectorAllocator),
+    sharedSegmentCount(0)
 {
     waitingThreads.fill({});
     doneThreads.fill(false);

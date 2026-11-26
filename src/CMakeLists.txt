@@ -8,7 +8,7 @@ set(USE_TEST_DEFINES ON)
 set(MANDELBROT_USE_SFINAE OFF)
 set(MANDELBROT_ENABLE_HTTP_SERVER_CODE OFF)
 set(DEBUG_RAW_DATA OFF)
-set(USE_FIXED_NUM_DIGITS_FOR_STANDARD_VALUE ON)
+set(ALLOCATE_EXTRA_CHARACTERS_FOR_STANDARD_VALUE ON)
 
 if (USE_GRPC)
 include(../grpc_cmake/common.cmake)
@@ -27,10 +27,10 @@ if (DEBUG_RAW_DATA)
 add_definitions(-DDEBUG_RAW_DATA)
 endif(DEBUG_RAW_DATA)
 
-if (USE_FIXED_NUM_DIGITS_FOR_STANDARD_VALUE)
+if (ALLOCATE_EXTRA_CHARACTERS_FOR_STANDARD_VALUE)
 #workaround for an apparent issue in the calculated number of digits returned by boost for float_oct 
-add_definitions(-DUSE_FIXED_NUM_DIGITS_FOR_STANDARD_VALUE)
-endif(USE_FIXED_NUM_DIGITS_FOR_STANDARD_VALUE)
+add_definitions(-DALLOCATE_EXTRA_CHARACTERS_FOR_STANDARD_VALUE)
+endif(ALLOCATE_EXTRA_CHARACTERS_FOR_STANDARD_VALUE)
 
 
 set(cmake_include_path ${cmake_include_path})

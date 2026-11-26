@@ -21,6 +21,7 @@
 
 #include <ios>
 #include <sstream>
+#include <memory_resource>
 
 #include <boost/multiprecision/cpp_int.hpp>
 #include <boost/multiprecision/cpp_bin_float.hpp>
@@ -39,13 +40,14 @@ namespace MandelBrotRenderer
     enum class internalDataType { singlePrecisionFloat = 0, doublePrecisionFloat = 1, customFloat20 =  2,
                                   float20dd = 3, float30dd = 4, float50dd = 5,
 
-                                 float80 = 6, float128 = 7, int32 = 8, int64 = 9, int128 = 10, float256 = 11, unknownType = -1 };
+                                 float80 = 6, float128 = 7, float256 = 8, int32 = 9, int64 = 10, int128 = 11,  unknownType = -1 };
 
     enum class setType { mandelbrot = 0, julia = 1 };
 
     using haltChecker   = std::function<bool(void)>;
     using atomicInt     = std::atomic<uint>;
-    using MQuintVector  = QVector<uint>;
+    using PooledUintVector = std::pmr::vector<uint>;
+    using uintVectorAllocator = std::pmr::polymorphic_allocator<PooledUintVector>;
     using MQintVector   = QVector<int>;
 #if defined(_WIN32)
     using Int128    = boost::multiprecision::int128_t;
@@ -67,9 +69,9 @@ namespace MandelBrotRenderer
     using CoordResult = std::pair<QString, bool>;
     using DoubleResult = std::pair<double, bool>;
     using PreciseFloatStandardType = Float256;
-    constexpr int PreciseFloatStandardTypeDigits = 237; // the computed boost header max_digits10 value for this (73) doesn't seem correct, hardcode the documented number of digits
+    constexpr int PreciseFloatStandardTypeDigits = std::numeric_limits<PreciseFloatStandardType>::max_digits10 + 10;
 
-#if defined (USE_FIXED_NUM_DIGITS_FOR_STANDARD_VALUE)
+#if defined (ALLOCATE_EXTRA_CHARACTERS_FOR_STANDARD_VALUE)
     constexpr int PreciseFloatStandardNumDigits = PreciseFloatStandardTypeDigits;
 #else
     constexpr int PreciseFloatStandardNumDigits = std::numeric_limits<PreciseFloatStandardType>::max_digits10;
@@ -111,8 +113,7 @@ namespace MandelBrotRenderer
 
     static constexpr internalDataType defaultRendererType = internalDataType::doublePrecisionFloat;
 
-    //using colorMapStore = MQuintVector;
-    using colorMapStore = std::vector<uint>;
+    using colorMapStore = PooledUintVector;
 
 #ifdef _WIN32
     using std::enable_if_t;
@@ -165,9 +166,9 @@ namespace MandelBrotRenderer
 
     struct ComputeTaskResults
     {
-        MQuintVector*   m_rawResultData;
+        PooledUintVector*   m_rawResultData;
 #if defined(DEBUG_RAW_DATA)
-        MQuintVector* m_rawIterationsData;
+        PooledUintVector* m_rawIterationsData;
 #endif
         qint64         m_iterationSum;
     };

@@ -51,6 +51,8 @@
 #ifndef MANDELBROTWIDGET_H
 #define MANDELBROTWIDGET_H
 
+#include <memory_resource>
+
 #include <QTextEdit>
 #include <QVBoxLayout>
 #include <QMutex>
@@ -198,6 +200,14 @@ private:
     template <typename T>
     bool validateRegion(T originX, T originY, T width, T height);
 
+    const std::pmr::pool_options m_pool_options { .max_blocks_per_chunk = 200, .largest_required_pool_block = 100000};
+
+    std::pmr::unsynchronized_pool_resource m_memoryPool;
+    MandelBrotRenderer::uintVectorAllocator m_vectorAllocator;
+    SettingsHandler m_settingsHandler;
+    InformationDisplay m_infoDisplayer;
+    RenderThread m_thread;
+
     QTextEdit* m_logger;
     QTextEdit* m_miscLogger;
     QVBoxLayout* m_mandelbrotWidgetLayout;
@@ -209,15 +219,12 @@ private:
     ParametersMenu* m_parametersMenu;
     RenderMenu* m_renderMenu;
     WindowMenu* m_windowMenu;
-    SettingsHandler m_settingsHandler;
-    InformationDisplay m_infoDisplayer;
 
     QWidget* m_centralPlotArea;
     QStatusBar* m_messageBar;
     QRubberBand* m_newSelectionArea;
     QPoint m_newSelectionOrigin;
 
-    RenderThread m_thread;
     QPixmap m_pixmap;
     QPoint m_pixmapOffset;
     QPoint m_lastDragPos;

@@ -95,7 +95,10 @@ using MandelBrotRenderer::generateFloatFromPreciseString;
 using namespace MandelBrotRenderer;
 
 MandelbrotWidget::MandelbrotWidget(QWidget *parent)
-    : QMainWindow(parent), m_settingsHandler(this), m_infoDisplayer(*this, m_settingsHandler), m_thread(m_settingsHandler, this),
+    : QMainWindow(parent),
+      m_memoryPool(m_pool_options),
+      m_vectorAllocator(&m_memoryPool), m_settingsHandler(this), m_infoDisplayer(*this, m_settingsHandler),
+      m_thread(m_settingsHandler, m_vectorAllocator, this),
       m_originX(s_unInitializedFloatString), m_originY(s_unInitializedFloatString),
         m_preciseOriginX(s_undefinedFloatString), m_preciseOriginY(s_undefinedFloatString),
       m_pixmapScale(s_unInitializedFloatString),

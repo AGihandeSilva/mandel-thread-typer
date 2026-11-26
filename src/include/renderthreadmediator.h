@@ -28,7 +28,8 @@ class RenderThreadMediator  : public QObject
     Q_OBJECT
 
 public:
-    RenderThreadMediator(MandelBrotRenderer::RendererData& rendererData);
+    RenderThreadMediator(MandelBrotRenderer::RendererData& rendererData,
+        MandelBrotRenderer::uintVectorAllocator& vectorAllocator);
 
 
     bool getEnabled() const;

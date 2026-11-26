@@ -19,13 +19,14 @@ class QMutex;
 class ComputedDataSegment
 {
 public:
-    ComputedDataSegment();
+    ComputedDataSegment(MandelBrotRenderer::uintVectorAllocator& allocator);
 
     explicit ComputedDataSegment(RegionAttributes attributes,
                         QImage *image,
                         int segmentIndex,
-                        MandelBrotRenderer::MQuintVector& bufferedResultData,
-                        const RegionAttributes& bufferedAttributes);
+                        MandelBrotRenderer::PooledUintVector& bufferedResultData,
+                        const RegionAttributes& bufferedAttributes,
+                        MandelBrotRenderer::uintVectorAllocator& allocator);
 
     virtual ~ComputedDataSegment();
 
@@ -51,8 +52,8 @@ public:
     QImage * getImage() const { return image; }
     int getFullHeight() const { return attributes.getFullHeight(); }
     MandelBrotRenderer::ComputeTaskResults& getFullResultData() { return taskResults; }
-    MandelBrotRenderer::MQuintVector& getRawResultData() { return m_rawResultData; }
-    MandelBrotRenderer::MQuintVector&& extractRawResultData() { consumed = true; return std::move(m_rawResultData); }
+    MandelBrotRenderer::PooledUintVector& getRawResultData() { return m_rawResultData; }
+    MandelBrotRenderer::PooledUintVector&& extractRawResultData() { consumed = true; return std::move(m_rawResultData); }
     void clearRawData();
 
     int getSegmentIndex() const { return segmentIndex; }
@@ -68,15 +69,17 @@ private:
 
     QImage *image;
     int rawDataSize;
-    MandelBrotRenderer::MQuintVector m_rawResultData;
+    MandelBrotRenderer::PooledUintVector m_rawResultData;
 #if defined(DEBUG_RAW_DATA)
-    MandelBrotRenderer::MQuintVector m_rawIterationsData;
+    MandelBrotRenderer::PooledUintVector m_rawIterationsData;
 #endif
     MandelBrotRenderer::ComputeTaskResults taskResults;
     int segmentIndex;
     bool consumed;
 
     RegionAttributes attributes;
+
+    MandelBrotRenderer::uintVectorAllocator& m_allocator;
 
     static int count;
 };
